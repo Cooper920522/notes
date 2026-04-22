@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 完整筆記 — 入門到精通</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --blue: #61dafb;
+    --dark-blue: #20232a;
+    --light-blue: #a8d8f0;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #61dafb;
+    --warn: #f0883e;
+    --purple: #d2a8ff;
+    --code-bg: #0d1117;
+    --tag-bg: #1a2332;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .react-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .react-atom {
+    width: 32px; height: 32px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .react-atom::before {
+    content: '⚛';
+    font-size: 28px;
+    color: var(--blue);
+    animation: spin 8s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .sidebar-logo h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); }
+
+  .search-box { margin: 12px 16px; position: relative; }
+  .search-box input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px 8px 32px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .search-box input:focus { border-color: var(--blue); }
+  .search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+  }
+
+  .nav-section { padding: 8px 0; }
+  .nav-section-title {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; color: var(--text-muted);
+    padding: 10px 20px 4px; text-transform: uppercase;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 20px; font-size: 13px; color: var(--text-muted);
+    cursor: pointer; transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--blue); border-left-color: var(--blue); background: rgba(97,218,251,0.06); }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .progress-bar { margin: auto 16px 16px; background: var(--surface2); border-radius: 4px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
+
+  /* ── MAIN ── */
+  #main { flex: 1; overflow-y: auto; max-width: 900px; padding: 48px 56px; }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .section-badge {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    letter-spacing: 0.8px; text-transform: uppercase;
+  }
+  .badge-beginner { background: rgba(97,218,251,0.15); color: var(--blue); }
+  .badge-intermediate { background: rgba(210,168,255,0.15); color: var(--purple); }
+  .badge-advanced { background: rgba(240,136,62,0.15); color: var(--warn); }
+
+  h2.section-title { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .section-desc { color: var(--text-muted); font-size: 14px; }
+
+  h3 {
+    font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600;
+    color: var(--text); margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  h3::before { content: ''; display: inline-block; width: 3px; height: 18px; background: var(--blue); border-radius: 2px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--purple); margin: 18px 0 8px; }
+  p { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.8; }
+
+  /* ── CODE ── */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; overflow-x: auto;
+    margin: 12px 0 20px; position: relative;
+  }
+  pre .lang-tag { position: absolute; top: 10px; right: 14px; font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e6edf3; }
+  :not(pre) > code { background: var(--tag-bg); padding: 2px 7px; border-radius: 5px; font-size: 12.5px; color: var(--light-blue); }
+
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cmt { color: #6e7681; font-style: italic; }
+  .num { color: #79c0ff; }
+  .prop { color: #e3b341; }
+  .tag { color: #7ee787; }
+  .attr { color: #79c0ff; }
+  .val { color: #a5d6ff; }
+  .comp { color: #61dafb; }
+  .hook { color: #d2a8ff; }
+
+  /* ── CALLOUT ── */
+  .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 13.5px; }
+  .callout-tip { background: rgba(97,218,251,0.08); border-color: var(--blue); }
+  .callout-info { background: rgba(210,168,255,0.08); border-color: var(--purple); }
+  .callout-warn { background: rgba(240,136,62,0.08); border-color: var(--warn); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .callout-tip strong { color: var(--blue); }
+  .callout-info strong { color: var(--purple); }
+  .callout-warn strong { color: var(--warn); }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 13px; }
+  .card-icon { font-size: 22px; margin-bottom: 8px; }
+  .card h4 { color: var(--blue); margin: 0 0 6px; font-size: 13.5px; }
+  .card p { color: var(--text-muted); margin: 0; font-size: 12.5px; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── NAV BUTTONS ── */
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; font-family: 'Noto Sans TC', sans-serif; text-decoration: none; }
+  .btn:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-primary { background: var(--blue); color: #0d1117; border-color: var(--blue); font-weight: 700; }
+  .btn-primary:hover { background: #8de8fc; color: #0d1117; }
+  .btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, rgba(97,218,251,0.08) 0%, rgba(32,35,42,0.3) 100%); border: 1px solid rgba(97,218,251,0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px; text-align: center; }
+  .hero .big-icon { font-size: 56px; margin-bottom: 12px; }
+  .hero h2 { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--blue); margin-bottom: 8px; }
+  .hero p { font-size: 14px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tag { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); }
+
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0 4px 20px; font-size: 13.5px; position: relative; color: var(--text); }
+  ul li::before { content: '›'; position: absolute; left: 6px; color: var(--blue); font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── COMPARE BOX ── */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .compare-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .compare-box h4 { margin: 0 0 10px; font-size: 13px; }
+  .compare-box.good { border-color: rgba(97,218,251,0.4); }
+  .compare-box.bad { border-color: rgba(240,136,62,0.3); }
+  .compare-box.good h4 { color: var(--blue); }
+  .compare-box.bad h4 { color: var(--warn); }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { padding: 24px 20px; }
+    .compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="react-icon">
+      <div class="react-atom"></div>
+      <h1>React 完整筆記</h1>
+    </div>
+    <p>入門 → 精通 · 系統化整理</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋概念..." oninput="filterNav(this.value)">
+  </div>
+
+  <div class="nav-section" id="navList">
+    <div class="nav-section-title">基礎入門</div>
+    <div class="nav-item active" onclick="showSection('overview')" data-label="React 概覽 什麼是React">
+      <span class="icon">🏠</span> 概覽與介紹
+    </div>
+    <div class="nav-item" onclick="showSection('jsx')" data-label="JSX 語法 模板">
+      <span class="icon">📄</span> JSX 語法
+    </div>
+    <div class="nav-item" onclick="showSection('components')" data-label="組件 component 函數組件">
+      <span class="icon">🧩</span> 組件基礎
+    </div>
+    <div class="nav-item" onclick="showSection('props')" data-label="props 屬性傳遞">
+      <span class="icon">📡</span> Props
+    </div>
+    <div class="nav-item" onclick="showSection('state')" data-label="state useState 狀態">
+      <span class="icon">⚡</span> State & useState
+    </div>
+
+    <div class="nav-section-title">核心 Hooks</div>
+    <div class="nav-item" onclick="showSection('useEffect')" data-label="useEffect 副作用 生命週期">
+      <span class="icon">🔄</span> useEffect
+    </div>
+    <div class="nav-item" onclick="showSection('useRef')" data-label="useRef DOM ref 參考">
+      <span class="icon">🎯</span> useRef
+    </div>
+    <div class="nav-item" onclick="showSection('useContext')" data-label="useContext context 跨層級">
+      <span class="icon">🌐</span> useContext
+    </div>
+    <div class="nav-item" onclick="showSection('useReducer')" data-label="useReducer reducer 複雜狀態">
+      <span class="icon">🔧</span> useReducer
+    </div>
+    <div class="nav-item" onclick="showSection('useMemo')" data-label="useMemo useCallback 效能 記憶化">
+      <span class="icon">🚀</span> useMemo & useCallback
+    </div>
+
+    <div class="nav-section-title">進階概念</div>
+    <div class="nav-item" onclick="showSection('customHooks')" data-label="自訂 hook custom hooks">
+      <span class="icon">🪝</span> 自訂 Hooks
+    </div>
+    <div class="nav-item" onclick="showSection('rendering')" data-label="渲染 條件 列表 key">
+      <span class="icon">🖼️</span> 條件 & 列表渲染
+    </div>
+    <div class="nav-item" onclick="showSection('forms')" data-label="表單 受控 非受控 input">
+      <span class="icon">📝</span> 表單處理
+    </div>
+    <div class="nav-item" onclick="showSection('portal')" data-label="portal forwardRef memo 進階API">
+      <span class="icon">🌀</span> 進階 API
+    </div>
+    <div class="nav-item" onclick="showSection('performance')" data-label="效能優化 memo lazy suspense">
+      <span class="icon">⚡</span> 效能優化
+    </div>
+    <div class="nav-item" onclick="showSection('patterns')" data-label="設計模式 compound HOC render props">
+      <span class="icon">🏗️</span> 設計模式
+    </div>
+
+    <div class="nav-section-title">生態系統</div>
+    <div class="nav-item" onclick="showSection('router')" data-label="React Router 路由 導航">
+      <span class="icon">🗺️</span> React Router
+    </div>
+    <div class="nav-item" onclick="showSection('stateManagement')" data-label="狀態管理 zustand redux">
+      <span class="icon">🗃️</span> 狀態管理
+    </div>
+    <div class="nav-item" onclick="showSection('dataFetching')" data-label="資料獲取 tanstack query swr fetch">
+      <span class="icon">🌐</span> 資料獲取
+    </div>
+    <div class="nav-item" onclick="showSection('typescript')" data-label="TypeScript TS 類型">
+      <span class="icon">💙</span> TypeScript
+    </div>
+  </div>
+
+  <div style="padding: 0 16px 4px;">
+    <div class="progress-label" id="progressLabel">學習進度 0%</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ══ 0. OVERVIEW ══ -->
+<section class="section active" id="sec-overview">
+  <div class="hero">
+    <div class="big-icon">⚛️</div>
+    <h2>React 完整學習筆記</h2>
+    <p>從零開始，系統化掌握 React 18 全部核心概念，以函數組件 + Hooks 為主軸</p>
+  </div>
+
+  <h3>什麼是 React？</h3>
+  <p>React 是由 Meta（Facebook）開發的 JavaScript 函式庫，專注於建構<strong>使用者介面</strong>。它不是完整的框架，而是 UI 層的解決方案，透過<strong>組件化</strong>與<strong>宣告式</strong>的方式描述 UI。</p>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🧩</div><h4>組件化</h4><p>UI 拆分成獨立、可複用的組件，每個組件管理自己的狀態</p></div>
+    <div class="card"><div class="card-icon">📜</div><h4>宣告式</h4><p>描述 UI 應該長什麼樣，React 負責更新 DOM</p></div>
+    <div class="card"><div class="card-icon">⚡</div><h4>Virtual DOM</h4><p>高效的 diff 演算法，最小化真實 DOM 操作</p></div>
+    <div class="card"><div class="card-icon">🔄</div><h4>單向資料流</h4><p>資料從父到子流動，狀態變化可預測</p></div>
+  </div>
+
+  <h3>React 18 新特性</h3>
+  <table>
+    <tr><th>特性</th><th>說明</th></tr>
+    <tr><td>Concurrent Mode</td><td>並發渲染，讓 React 能中斷、暫停、恢復渲染</td></tr>
+    <tr><td>Automatic Batching</td><td>自動批次更新 state，減少不必要的重渲染</td></tr>
+    <tr><td>Transitions</td><td>區分緊急與非緊急更新，useTransition / startTransition</td></tr>
+    <tr><td>Suspense 改進</td><td>支援伺服器端渲染的 Suspense</td></tr>
+    <tr><td>useId</td><td>生成穩定的唯一 ID，支援 SSR</td></tr>
+  </table>
+
+  <h3>本筆記涵蓋範圍</h3>
+  <div class="tag-row">
+    <span class="tag">JSX</span><span class="tag">函數組件</span><span class="tag">Props</span>
+    <span class="tag">useState</span><span class="tag">useEffect</span><span class="tag">useRef</span>
+    <span class="tag">useContext</span><span class="tag">useReducer</span><span class="tag">useMemo</span>
+    <span class="tag">自訂 Hooks</span><span class="tag">效能優化</span><span class="tag">設計模式</span>
+    <span class="tag">React Router</span><span class="tag">Zustand</span><span class="tag">TanStack Query</span>
+    <span class="tag">TypeScript</span>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" disabled>← 上一節</button>
+    <button class="btn btn-primary" onclick="showSection('jsx')">JSX 語法 →</button>
+  </div>
+</section>
+
+<!-- ══ 1. JSX ══ -->
+<section class="section" id="sec-jsx">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">JSX 語法</h2>
+    <p class="section-desc">JavaScript 的語法擴展，讓你在 JS 中寫類似 HTML 的結構</p>
+  </div>
+
+  <h3>JSX 基礎</h3>
+  <pre><code><span class="cmt">// JSX 最終會被 Babel 轉譯成 React.createElement()</span>
+<span class="kw">const</span> element = (
+  <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="val">"container"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Hello React<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>版本 {<span class="prop">version</span>}<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+)
+
+<span class="cmt">// JSX 表達式 — 大括號中放 JS</span>
+<span class="kw">const</span> name = <span class="str">'World'</span>
+<span class="kw">const</span> el = <span class="tag">&lt;h1&gt;</span>Hello, {name.<span class="fn">toUpperCase</span>()}!<span class="tag">&lt;/h1&gt;</span>
+
+<span class="cmt">// 條件渲染</span>
+<span class="kw">const</span> el = <span class="tag">&lt;div&gt;</span>{isLoggedIn ? <span class="tag">&lt;UserInfo /&gt;</span> : <span class="tag">&lt;LoginBtn /&gt;</span>}<span class="tag">&lt;/div&gt;</span>
+<span class="kw">const</span> el = <span class="tag">&lt;div&gt;</span>{isLoading && <span class="tag">&lt;Spinner /&gt;</span>}<span class="tag">&lt;/div&gt;</span>
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>JSX 與 HTML 的差異</h3>
+  <table>
+    <tr><th>HTML</th><th>JSX</th><th>說明</th></tr>
+    <tr><td><code>class</code></td><td><code>className</code></td><td>class 是 JS 保留字</td></tr>
+    <tr><td><code>for</code></td><td><code>htmlFor</code></td><td>for 是 JS 保留字</td></tr>
+    <tr><td><code>onclick</code></td><td><code>onClick</code></td><td>事件用 camelCase</td></tr>
+    <tr><td><code>&lt;br&gt;</code></td><td><code>&lt;br /&gt;</code></td><td>必須自閉合</td></tr>
+    <tr><td>style="color:red"</td><td>style={{ color: 'red' }}</td><td>style 是物件</td></tr>
+    <tr><td>多個根元素</td><td>必須有一個根</td><td>用 Fragment 包裝</td></tr>
+  </table>
+
+  <h3>Fragment</h3>
+  <pre><code><span class="cmt">// 不額外產生 DOM 節點的包裝容器</span>
+<span class="kw">import</span> { <span class="comp">Fragment</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">List</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Fragment&gt;</span>
+      <span class="tag">&lt;dt&gt;</span>標題<span class="tag">&lt;/dt&gt;</span>
+      <span class="tag">&lt;dd&gt;</span>描述<span class="tag">&lt;/dd&gt;</span>
+    <span class="tag">&lt;/Fragment&gt;</span>
+  )
+}
+
+<span class="cmt">// 縮寫語法（不能加 key）</span>
+<span class="kw">return</span> (
+  <span class="tag">&lt;&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>標題<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>內容<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/&gt;</span>
+)
+
+<span class="cmt">// 有 key 時需要完整寫法（如 v-for 中）</span>
+items.<span class="fn">map</span>(item => (
+  <span class="tag">&lt;Fragment</span> <span class="attr">key</span>={item.id}<span class="tag">&gt;</span>...<span class="tag">&lt;/Fragment&gt;</span>
+))
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('overview')">← 概覽</button>
+    <button class="btn btn-primary" onclick="showSection('components')">組件基礎 →</button>
+  </div>
+</section>
+
+<!-- ══ 2. COMPONENTS ══ -->
+<section class="section" id="sec-components">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">組件基礎</h2>
+    <p class="section-desc">React 應用由組件組成，現代 React 統一使用函數組件</p>
+  </div>
+
+  <h3>函數組件</h3>
+  <pre><code><span class="cmt">// 最簡單的組件 — 接收 props，回傳 JSX</span>
+<span class="kw">function</span> <span class="comp">Welcome</span>({ name }) {
+  <span class="kw">return</span> <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>
+}
+
+<span class="cmt">// 箭頭函數寫法</span>
+<span class="kw">const</span> <span class="comp">Welcome</span> = ({ name }) => <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>
+
+<span class="cmt">// 組件名稱必須大寫開頭！</span>
+<span class="cmt">// 小寫 = HTML 元素，大寫 = React 組件</span>
+
+<span class="cmt">// 使用組件</span>
+<span class="kw">function</span> <span class="comp">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;Welcome</span> <span class="attr">name</span>=<span class="val">"Alice"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;Welcome</span> <span class="attr">name</span>=<span class="val">"Bob"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>children prop</h3>
+  <pre><code><span class="cmt">// 接收子組件內容</span>
+<span class="kw">function</span> <span class="comp">Card</span>({ title, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="val">"card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{title}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="val">"card-body"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// 使用</span>
+<span class="tag">&lt;Card</span> <span class="attr">title</span>=<span class="val">"標題"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p&gt;</span>這是卡片內容<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Card&gt;</span>
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>純組件原則</h3>
+  <p>React 組件應該是<strong>純函數</strong>：相同的 props 輸入永遠產生相同的 JSX 輸出，不應有副作用。</p>
+
+  <div class="compare">
+    <div class="compare-box good">
+      <h4>✅ 純組件</h4>
+      <pre style="margin:0;padding:10px;font-size:12px"><code><span class="kw">function</span> <span class="comp">Pure</span>({ items }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {items.<span class="fn">map</span>(i => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={i.id}<span class="tag">&gt;</span>
+          {i.name}
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  )
+}</code></pre>
+    </div>
+    <div class="compare-box bad">
+      <h4>❌ 有副作用</h4>
+      <pre style="margin:0;padding:10px;font-size:12px"><code><span class="kw">let</span> count = <span class="num">0</span>
+
+<span class="kw">function</span> <span class="comp">Impure</span>() {
+  count++ <span class="cmt">// 修改外部變數！</span>
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>{count}<span class="tag">&lt;/p&gt;</span>
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('jsx')">← JSX</button>
+    <button class="btn btn-primary" onclick="showSection('props')">Props →</button>
+  </div>
+</section>
+
+<!-- ══ 3. PROPS ══ -->
+<section class="section" id="sec-props">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">Props</h2>
+    <p class="section-desc">父組件傳遞資料給子組件的方式，Props 是唯讀的</p>
+  </div>
+
+  <h3>傳遞與接收 Props</h3>
+  <pre><code><span class="cmt">// 父組件傳遞</span>
+<span class="tag">&lt;UserCard
+</span>  <span class="attr">name</span>=<span class="val">"Alice"</span>
+  <span class="attr">age</span>={<span class="num">25</span>}
+  <span class="attr">isAdmin</span>={<span class="kw">true</span>}
+  <span class="attr">tags</span>={[<span class="str">'React'</span>, <span class="str">'Vue'</span>]}
+  <span class="attr">onClick</span>={<span class="fn">handleClick</span>}
+<span class="tag">/&gt;</span>
+
+<span class="cmt">// 子組件接收 — 解構</span>
+<span class="kw">function</span> <span class="comp">UserCard</span>({ name, age, isAdmin = <span class="kw">false</span>, tags, onClick }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">onClick</span>={onClick}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{name} {isAdmin && <span class="str">'⭐'</span>}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p&gt;</span>年齡：{age}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>Props 展開</h3>
+  <pre><code><span class="kw">const</span> buttonProps = { <span class="prop">type</span>: <span class="str">'submit'</span>, <span class="prop">disabled</span>: <span class="kw">false</span>, <span class="prop">className</span>: <span class="str">'btn'</span> }
+
+<span class="cmt">// 展開傳入</span>
+<span class="tag">&lt;button</span> {...buttonProps}<span class="tag">&gt;</span>送出<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">// 轉發剩餘 props（常用於包裝原生元素）</span>
+<span class="kw">function</span> <span class="comp">MyInput</span>({ label, ...rest }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;label&gt;</span>
+      {label}
+      <span class="tag">&lt;input</span> {...rest} <span class="tag">/&gt;</span>  <span class="cmt">{/* 所有其他 props 傳給 input */}</span>
+    <span class="tag">&lt;/label&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ Props 是唯讀的</strong>
+    永遠不要在子組件中修改 props。如果需要基於 props 的可變狀態，用 useState 初始化一個本地 state。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('components')">← 組件</button>
+    <button class="btn btn-primary" onclick="showSection('state')">State →</button>
+  </div>
+</section>
+
+<!-- ══ 4. STATE ══ -->
+<section class="section" id="sec-state">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">State & useState</h2>
+    <p class="section-desc">組件的內部狀態，state 改變觸發重新渲染</p>
+  </div>
+
+  <h3>useState 基礎</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">Counter</span>() {
+  <span class="cmt">// [當前值, 更新函數] = useState(初始值)</span>
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>)
+  <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>)
+  <span class="kw">const</span> [user, setUser] = <span class="hook">useState</span>({ <span class="prop">name</span>: <span class="str">'Alice'</span>, <span class="prop">age</span>: <span class="num">25</span> })
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>+1<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>State 更新規則</h3>
+  <pre><code><span class="cmt">// ✅ 使用 updater function（依賴前一個 state 時必用）</span>
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>)
+
+<span class="cmt">// ❌ 危險！在批次更新中可能拿到舊值</span>
+<span class="fn">setCount</span>(count + <span class="num">1</span>)
+<span class="fn">setCount</span>(count + <span class="num">1</span>) <span class="cmt">// 這兩行實際上只加一次</span>
+
+<span class="cmt">// ✅ updater function 正確連續更新</span>
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>)
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>) <span class="cmt">// 正確加兩次</span>
+
+<span class="cmt">// 物件 state — 必須展開，不能直接修改</span>
+<span class="fn">setUser</span>(prev => ({ ...prev, <span class="prop">age</span>: <span class="num">26</span> }))  <span class="cmt">// ✅</span>
+<span class="prop">user</span>.<span class="prop">age</span> = <span class="num">26</span> <span class="cmt">// ❌ 直接修改，不會觸發重渲染</span>
+
+<span class="cmt">// 陣列 state — 使用不可變操作</span>
+<span class="fn">setItems</span>(prev => [...prev, newItem])          <span class="cmt">// 新增</span>
+<span class="fn">setItems</span>(prev => prev.<span class="fn">filter</span>(i => i.id !== id)) <span class="cmt">// 刪除</span>
+<span class="fn">setItems</span>(prev => prev.<span class="fn">map</span>(i =>               <span class="cmt">// 更新</span>
+  i.id === id ? { ...i, <span class="prop">done</span>: <span class="kw">true</span> } : i
+))
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>Lazy Initial State</h3>
+  <pre><code><span class="cmt">// 計算成本高的初始值，傳函數而非值</span>
+<span class="cmt">// 只有第一次渲染才會執行，之後不再呼叫</span>
+<span class="kw">const</span> [state, setState] = <span class="hook">useState</span>(() => {
+  <span class="kw">return</span> <span class="fn">expensiveCalculation</span>()
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 React vs Vue 的思維差異</strong>
+    Vue 的 ref 直接 .value = 新值就能觸發更新。React 的 state 必須透過 setter 函數，且永遠不能直接修改 state 物件（Immutability 原則）。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('props')">← Props</button>
+    <button class="btn btn-primary" onclick="showSection('useEffect')">useEffect →</button>
+  </div>
+</section>
+
+<!-- ══ 5. USE EFFECT ══ -->
+<section class="section" id="sec-useEffect">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">useEffect</h2>
+    <p class="section-desc">處理副作用：API 請求、訂閱、手動 DOM 操作、計時器</p>
+  </div>
+
+  <h3>基本用法</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">App</span>() {
+  <span class="cmt">// 每次渲染後都執行</span>
+  <span class="hook">useEffect</span>(() => {
+    document.title = <span class="str">'Hello'</span>
+  })
+
+  <span class="cmt">// 只在掛載時執行一次（[] = 沒有依賴）</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="fn">fetchData</span>()
+  }, [])
+
+  <span class="cmt">// userId 改變時執行</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="fn">fetchUser</span>(userId)
+  }, [userId])
+}
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>Cleanup 清理函數</h3>
+  <pre><code><span class="hook">useEffect</span>(() => {
+  <span class="cmt">// 設定訂閱</span>
+  <span class="kw">const</span> subscription = <span class="fn">subscribe</span>(userId)
+
+  <span class="cmt">// 回傳清理函數（下次 effect 執行前 or 卸載時呼叫）</span>
+  <span class="kw">return</span> () => {
+    subscription.<span class="fn">unsubscribe</span>()
+  }
+}, [userId])
+
+<span class="cmt">// timer 範例</span>
+<span class="hook">useEffect</span>(() => {
+  <span class="kw">const</span> id = <span class="fn">setInterval</span>(() => {
+    <span class="fn">setCount</span>(c => c + <span class="num">1</span>)
+  }, <span class="num">1000</span>)
+  <span class="kw">return</span> () => <span class="fn">clearInterval</span>(id)
+}, [])
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>常見使用場景對照</h3>
+  <table>
+    <tr><th>情境</th><th>依賴陣列</th><th>說明</th></tr>
+    <tr><td>掛載時執行</td><td><code>[]</td><td>等同 onMounted</td></tr>
+    <tr><td>每次渲染</td><td>無第二參數</td><td>謹慎使用</td></tr>
+    <tr><td>依賴變化</td><td><code>[dep1, dep2]</code></td><td>依賴更新時執行</td></tr>
+    <tr><td>卸載清理</td><td><code>[]</code> + return fn</td><td>等同 onUnmounted</td></tr>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ 常見錯誤：無限迴圈</strong>
+    如果在 useEffect 內部更新了某個 state，而這個 state 又在依賴陣列中，就會造成無限迴圈。解決方式：用 updater function、或重新思考邏輯結構。
+  </div>
+
+  <h3>useEffect 與 API 請求</h3>
+  <pre><code><span class="hook">useEffect</span>(() => {
+  <span class="kw">let</span> cancelled = <span class="kw">false</span>
+
+  <span class="kw">async function</span> <span class="fn">fetchData</span>() {
+    <span class="kw">try</span> {
+      <span class="fn">setLoading</span>(<span class="kw">true</span>)
+      <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(`/api/users/${userId}`)
+      <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>()
+      <span class="kw">if</span> (!cancelled) <span class="fn">setUser</span>(data)  <span class="cmt">// 防止 race condition</span>
+    } <span class="kw">catch</span> (err) {
+      <span class="kw">if</span> (!cancelled) <span class="fn">setError</span>(err)
+    } <span class="kw">finally</span> {
+      <span class="kw">if</span> (!cancelled) <span class="fn">setLoading</span>(<span class="kw">false</span>)
+    }
+  }
+
+  <span class="fn">fetchData</span>()
+  <span class="kw">return</span> () => { cancelled = <span class="kw">true</span> }  <span class="cmt">// 清理：防止 stale closure</span>
+}, [userId])
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('state')">← State</button>
+    <button class="btn btn-primary" onclick="showSection('useRef')">useRef →</button>
+  </div>
+</section>
+
+<!-- ══ 6. USE REF ══ -->
+<section class="section" id="sec-useRef">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">useRef</h2>
+    <p class="section-desc">存取 DOM 元素，或儲存不觸發重渲染的可變值</p>
+  </div>
+
+  <h3>存取 DOM</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useRef</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">TextInput</span>() {
+  <span class="kw">const</span> inputRef = <span class="hook">useRef</span>(<span class="kw">null</span>)
+
+  <span class="hook">useEffect</span>(() => {
+    inputRef.current.<span class="fn">focus</span>()  <span class="cmt">// 掛載後自動聚焦</span>
+  }, [])
+
+  <span class="kw">return</span> <span class="tag">&lt;input</span> <span class="attr">ref</span>={inputRef} <span class="tag">/&gt;</span>
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>儲存可變值（不觸發重渲染）</h3>
+  <pre><code><span class="kw">function</span> <span class="comp">Timer</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>)
+  <span class="kw">const</span> timerId = <span class="hook">useRef</span>(<span class="kw">null</span>)
+
+  <span class="kw">function</span> <span class="fn">start</span>() {
+    timerId.current = <span class="fn">setInterval</span>(() => {
+      <span class="fn">setCount</span>(c => c + <span class="num">1</span>)
+    }, <span class="num">1000</span>)
+  }
+
+  <span class="kw">function</span> <span class="fn">stop</span>() {
+    <span class="fn">clearInterval</span>(timerId.current)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={start}<span class="tag">&gt;</span>開始<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={stop}<span class="tag">&gt;</span>停止<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>儲存前一次的值</h3>
+  <pre><code><span class="kw">function</span> <span class="fn">usePrevious</span>(value) {
+  <span class="kw">const</span> ref = <span class="hook">useRef</span>()
+  <span class="hook">useEffect</span>(() => {
+    ref.current = value  <span class="cmt">// 每次 render 後更新</span>
+  })
+  <span class="kw">return</span> ref.current    <span class="cmt">// 回傳上一次的值</span>
+}
+
+<span class="cmt">// 使用</span>
+<span class="kw">const</span> prevCount = <span class="fn">usePrevious</span>(count)
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('useEffect')">← useEffect</button>
+    <button class="btn btn-primary" onclick="showSection('useContext')">useContext →</button>
+  </div>
+</section>
+
+<!-- ══ 7. USE CONTEXT ══ -->
+<section class="section" id="sec-useContext">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">useContext</h2>
+    <p class="section-desc">跨層級傳遞資料，解決 Props Drilling 問題</p>
+  </div>
+
+  <pre><code><span class="kw">import</span> { <span class="fn">createContext</span>, <span class="hook">useContext</span>, <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// 1. 建立 Context（通常在獨立檔案）</span>
+<span class="kw">const</span> <span class="comp">ThemeContext</span> = <span class="fn">createContext</span>(<span class="str">'light'</span>)  <span class="cmt">// 預設值</span>
+
+<span class="cmt">// 2. Provider 包裝需要使用的組件</span>
+<span class="kw">function</span> <span class="comp">App</span>() {
+  <span class="kw">const</span> [theme, setTheme] = <span class="hook">useState</span>(<span class="str">'dark'</span>)
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ThemeContext.Provider</span> <span class="attr">value</span>={{ theme, setTheme }}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Layout /&gt;</span>
+    <span class="tag">&lt;/ThemeContext.Provider&gt;</span>
+  )
+}
+
+<span class="cmt">// 3. 任意深度的子組件使用</span>
+<span class="kw">function</span> <span class="comp">Button</span>() {
+  <span class="kw">const</span> { theme, setTheme } = <span class="hook">useContext</span>(<span class="comp">ThemeContext</span>)
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setTheme</span>(t => t === <span class="str">'dark'</span> ? <span class="str">'light'</span> : <span class="str">'dark'</span>)}<span class="tag">&gt;</span>
+       目前：{theme}
+    <span class="tag">&lt;/button&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>封裝成自訂 Hook（最佳實踐）</h3>
+  <pre><code><span class="cmt">// context/ThemeContext.jsx</span>
+<span class="kw">const</span> <span class="comp">ThemeContext</span> = <span class="fn">createContext</span>(<span class="kw">null</span>)
+
+<span class="kw">export function</span> <span class="comp">ThemeProvider</span>({ children }) {
+  <span class="kw">const</span> [theme, setTheme] = <span class="hook">useState</span>(<span class="str">'light'</span>)
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ThemeContext.Provider</span> <span class="attr">value</span>={{ theme, setTheme }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/ThemeContext.Provider&gt;</span>
+  )
+}
+
+<span class="cmt">// 封裝 hook，並加入保護</span>
+<span class="kw">export function</span> <span class="fn">useTheme</span>() {
+  <span class="kw">const</span> ctx = <span class="hook">useContext</span>(<span class="comp">ThemeContext</span>)
+  <span class="kw">if</span> (!ctx) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'useTheme 必須在 ThemeProvider 內使用'</span>)
+  <span class="kw">return</span> ctx
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 Context 的效能考量</strong>
+    Context value 改變時，所有使用 useContext 的子組件都會重新渲染。如果 value 是物件，記得用 useMemo 包裝，或拆分成多個 Context（讀取與寫入分開）。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('useRef')">← useRef</button>
+    <button class="btn btn-primary" onclick="showSection('useReducer')">useReducer →</button>
+  </div>
+</section>
+
+<!-- ══ 8. USE REDUCER ══ -->
+<section class="section" id="sec-useReducer">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">useReducer</h2>
+    <p class="section-desc">複雜 state 邏輯的最佳選擇，類似 Redux 的模式</p>
+  </div>
+
+  <pre><code><span class="kw">import</span> { <span class="hook">useReducer</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// 1. 定義初始 state</span>
+<span class="kw">const</span> initialState = { <span class="prop">count</span>: <span class="num">0</span>, <span class="prop">step</span>: <span class="num">1</span> }
+
+<span class="cmt">// 2. 定義 reducer（純函數）</span>
+<span class="kw">function</span> <span class="fn">reducer</span>(state, action) {
+  <span class="kw">switch</span> (action.<span class="prop">type</span>) {
+    <span class="kw">case</span> <span class="str">'increment'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count + state.step }
+    <span class="kw">case</span> <span class="str">'decrement'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count - state.step }
+    <span class="kw">case</span> <span class="str">'setStep'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">step</span>: action.<span class="prop">payload</span> }
+    <span class="kw">case</span> <span class="str">'reset'</span>:
+      <span class="kw">return</span> initialState
+    <span class="kw">default</span>:
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`未知 action: ${action.type}`</span>)
+  }
+}
+
+<span class="cmt">// 3. 組件中使用</span>
+<span class="kw">function</span> <span class="comp">Counter</span>() {
+  <span class="kw">const</span> [state, dispatch] = <span class="hook">useReducer</span>(reducer, initialState)
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>計數：{state.count}，步進：{state.step}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">'increment'</span> })}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">'setStep'</span>, <span class="prop">payload</span>: <span class="num">5</span> })}<span class="tag">&gt;</span>步進設為5<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <table>
+    <tr><th>特性</th><th>useState</th><th>useReducer</th></tr>
+    <tr><td>適用場景</td><td>簡單獨立的 state</td><td>複雜、相關聯的 state</td></tr>
+    <tr><td>更新方式</td><td>直接 setter</td><td>dispatch action</td></tr>
+    <tr><td>測試</td><td>較難單元測試</td><td>reducer 純函數，易測試</td></tr>
+    <tr><td>可讀性</td><td>簡單</td><td>邏輯集中，更清晰</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('useContext')">← useContext</button>
+    <button class="btn btn-primary" onclick="showSection('useMemo')">useMemo →</button>
+  </div>
+</section>
+
+<!-- ══ 9. USEMEMO ══ -->
+<section class="section" id="sec-useMemo">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">useMemo & useCallback</h2>
+    <p class="section-desc">記憶化計算結果與函數，避免不必要的重新計算</p>
+  </div>
+
+  <h3>useMemo — 記憶化計算值</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useMemo</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">ProductList</span>({ products, filterText }) {
+  <span class="cmt">// 只有 products 或 filterText 改變時才重新過濾</span>
+  <span class="kw">const</span> filteredProducts = <span class="hook">useMemo</span>(() => {
+    <span class="kw">return</span> products.<span class="fn">filter</span>(p =>
+      p.name.<span class="fn">includes</span>(filterText)
+    )
+  }, [products, filterText])
+
+  <span class="kw">return</span> <span class="tag">&lt;ul&gt;</span>{filteredProducts.<span class="fn">map</span>(p => <span class="tag">&lt;li</span> <span class="attr">key</span>={p.id}<span class="tag">&gt;</span>{p.name}<span class="tag">&lt;/li&gt;</span>)}<span class="tag">&lt;/ul&gt;</span>
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>useCallback — 記憶化函數</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useCallback</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">Parent</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>)
+
+  <span class="cmt">// 沒有 useCallback：每次 Parent 重渲染，handleClick 都是新函數</span>
+  <span class="cmt">// Child 因為 props 改變而跟著重渲染</span>
+
+  <span class="cmt">// 有 useCallback：count 不變時，handleClick 是同一個函數引用</span>
+  <span class="kw">const</span> handleClick = <span class="hook">useCallback</span>(() => {
+    console.<span class="fn">log</span>(<span class="str">'clicked'</span>, count)
+  }, [count])
+
+  <span class="kw">return</span> <span class="tag">&lt;Child</span> <span class="attr">onClick</span>={handleClick} <span class="tag">/&gt;</span>
+}
+
+<span class="cmt">// Child 用 React.memo 包裝才有意義</span>
+<span class="kw">const</span> <span class="comp">Child</span> = <span class="fn">React</span>.<span class="fn">memo</span>(({ onClick }) => {
+  console.<span class="fn">log</span>(<span class="str">'Child render'</span>)
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onClick}<span class="tag">&gt;</span>點我<span class="tag">&lt;/button&gt;</span>
+})
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ 不要過度使用</strong>
+    useMemo 和 useCallback 本身有計算成本。只在確認有效能問題時使用，不要預防性地到處加。大多數情況下，React 的重渲染已經足夠快。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('useReducer')">← useReducer</button>
+    <button class="btn btn-primary" onclick="showSection('customHooks')">自訂 Hooks →</button>
+  </div>
+</section>
+
+<!-- ══ 10. CUSTOM HOOKS ══ -->
+<section class="section" id="sec-customHooks">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">自訂 Hooks</h2>
+    <p class="section-desc">提取並複用有狀態的邏輯，React 最強大的邏輯複用方式</p>
+  </div>
+
+  <h3>useWindowSize</h3>
+  <pre><code><span class="kw">function</span> <span class="fn">useWindowSize</span>() {
+  <span class="kw">const</span> [size, setSize] = <span class="hook">useState</span>({
+    <span class="prop">width</span>: window.innerWidth,
+    <span class="prop">height</span>: window.innerHeight
+  })
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">function</span> <span class="fn">handleResize</span>() {
+      <span class="fn">setSize</span>({ <span class="prop">width</span>: window.innerWidth, <span class="prop">height</span>: window.innerHeight })
+    }
+    window.<span class="fn">addEventListener</span>(<span class="str">'resize'</span>, handleResize)
+    <span class="kw">return</span> () => window.<span class="fn">removeEventListener</span>(<span class="str">'resize'</span>, handleResize)
+  }, [])
+
+  <span class="kw">return</span> size
+}
+
+<span class="cmt">// 使用</span>
+<span class="kw">const</span> { width, height } = <span class="fn">useWindowSize</span>()
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>useDebounce</h3>
+  <pre><code><span class="kw">function</span> <span class="fn">useDebounce</span>(value, delay = <span class="num">500</span>) {
+  <span class="kw">const</span> [debouncedValue, setDebouncedValue] = <span class="hook">useState</span>(value)
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">const</span> timer = <span class="fn">setTimeout</span>(() => {
+      <span class="fn">setDebouncedValue</span>(value)
+    }, delay)
+    <span class="kw">return</span> () => <span class="fn">clearTimeout</span>(timer)
+  }, [value, delay])
+
+  <span class="kw">return</span> debouncedValue
+}
+
+<span class="cmt">// 使用 — 搜尋框防抖</span>
+<span class="kw">const</span> [query, setQuery] = <span class="hook">useState</span>(<span class="str">''</span>)
+<span class="kw">const</span> debouncedQuery = <span class="fn">useDebounce</span>(query, <span class="num">300</span>)
+
+<span class="hook">useEffect</span>(() => {
+  <span class="fn">searchAPI</span>(debouncedQuery)  <span class="cmt">// 只有停止輸入 300ms 後才發請求</span>
+}, [debouncedQuery])
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>自訂 Hook 規則</h3>
+  <ul>
+    <li>名稱必須以 <code>use</code> 開頭</li>
+    <li>只能在函數組件或其他 Hook 的頂層呼叫</li>
+    <li>不能在條件式或迴圈中呼叫</li>
+    <li>可以呼叫其他 Hooks</li>
+  </ul>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('useMemo')">← useMemo</button>
+    <button class="btn btn-primary" onclick="showSection('rendering')">條件 & 列表渲染 →</button>
+  </div>
+</section>
+
+<!-- ══ 11. RENDERING ══ -->
+<section class="section" id="sec-rendering">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">條件 & 列表渲染</h2>
+    <p class="section-desc">用 JS 原生語法控制 UI 的顯示邏輯</p>
+  </div>
+
+  <h3>條件渲染</h3>
+  <pre><code><span class="cmt">// if/else</span>
+<span class="kw">function</span> <span class="comp">Greeting</span>({ isLoggedIn }) {
+  <span class="kw">if</span> (isLoggedIn) <span class="kw">return</span> <span class="tag">&lt;UserGreeting /&gt;</span>
+  <span class="kw">return</span> <span class="tag">&lt;GuestGreeting /&gt;</span>
+}
+
+<span class="cmt">// 三元運算（JSX 中常用）</span>
+<span class="kw">const</span> el = (
+  <span class="tag">&lt;div&gt;</span>
+    {isLoggedIn ? <span class="tag">&lt;LogoutBtn /&gt;</span> : <span class="tag">&lt;LoginBtn /&gt;</span>}
+  <span class="tag">&lt;/div&gt;</span>
+)
+
+<span class="cmt">// && 短路（只有 true 才顯示）</span>
+<span class="kw">const</span> el = <span class="tag">&lt;div&gt;</span>{unreadCount > <span class="num">0</span> && <span class="tag">&lt;Badge</span> <span class="attr">count</span>={unreadCount} <span class="tag">/&gt;</span>}<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">// ⚠️ 注意：0 && X 會渲染數字 0！</span>
+<span class="cmt">// 改用：{count > 0 && X} 或 {!!count && X}</span>
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>列表渲染</h3>
+  <pre><code><span class="kw">function</span> <span class="comp">UserList</span>({ users }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {users.<span class="fn">map</span>(user => (
+        <span class="cmt">// key 必須在最外層元素，且在同層唯一</span>
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>
+          {user.name} — {user.email}
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  )
+}
+
+<span class="cmt">// 空列表處理</span>
+<span class="kw">if</span> (users.length === <span class="num">0</span>) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>沒有使用者<span class="tag">&lt;/p&gt;</span>
+
+<span class="cmt">// 複雜列表 — 抽出組件</span>
+<span class="kw">function</span> <span class="comp">UserItem</span>({ user }) {
+  <span class="kw">return</span> <span class="tag">&lt;li&gt;</span>{user.name}<span class="tag">&lt;/li&gt;</span>
+}
+
+users.<span class="fn">map</span>(user => <span class="tag">&lt;UserItem</span> <span class="attr">key</span>={user.id} <span class="attr">user</span>={user} <span class="tag">/&gt;</span>)
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('customHooks')">← 自訂 Hooks</button>
+    <button class="btn btn-primary" onclick="showSection('forms')">表單處理 →</button>
+  </div>
+</section>
+
+<!-- ══ 12. FORMS ══ -->
+<section class="section" id="sec-forms">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">表單處理</h2>
+    <p class="section-desc">受控組件 vs 非受控組件</p>
+  </div>
+
+  <h3>受控組件（Controlled）</h3>
+  <pre><code><span class="cmt">// state 是唯一資料來源</span>
+<span class="kw">function</span> <span class="comp">LoginForm</span>() {
+  <span class="kw">const</span> [form, setForm] = <span class="hook">useState</span>({ <span class="prop">email</span>: <span class="str">''</span>, <span class="prop">password</span>: <span class="str">''</span> })
+
+  <span class="kw">function</span> <span class="fn">handleChange</span>(e) {
+    <span class="fn">setForm</span>(prev => ({ ...prev, [e.target.<span class="prop">name</span>]: e.target.<span class="prop">value</span> }))
+  }
+
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>(e) {
+    e.<span class="fn">preventDefault</span>()
+    console.<span class="fn">log</span>(form)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="val">"email"</span>
+        <span class="attr">value</span>={form.email}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="val">"password"</span>
+        <span class="attr">type</span>=<span class="val">"password"</span>
+        <span class="attr">value</span>={form.password}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>登入<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>非受控組件（Uncontrolled）</h3>
+  <pre><code><span class="cmt">// 用 ref 直接存取 DOM，不需要 onChange</span>
+<span class="kw">function</span> <span class="comp">FileUpload</span>() {
+  <span class="kw">const</span> fileRef = <span class="hook">useRef</span>(<span class="kw">null</span>)
+
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>(e) {
+    e.<span class="fn">preventDefault</span>()
+    console.<span class="fn">log</span>(fileRef.current.files[<span class="num">0</span>])
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"file"</span> <span class="attr">ref</span>={fileRef} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>上傳<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 實務建議</strong>
+    複雜表單推薦使用 <strong>React Hook Form</strong>（高效能、低重渲染）或 <strong>Formik</strong>，不需要自己管理所有表單狀態。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('rendering')">← 條件列表</button>
+    <button class="btn btn-primary" onclick="showSection('portal')">進階 API →</button>
+  </div>
+</section>
+
+<!-- ══ 13. PORTAL ══ -->
+<section class="section" id="sec-portal">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">進階 API</h2>
+    <p class="section-desc">Portal、forwardRef、memo、useImperativeHandle</p>
+  </div>
+
+  <h3>createPortal — 渲染到其他 DOM 節點</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">createPortal</span> } <span class="kw">from</span> <span class="str">'react-dom'</span>
+
+<span class="kw">function</span> <span class="comp">Modal</span>({ isOpen, children }) {
+  <span class="kw">if</span> (!isOpen) <span class="kw">return null</span>
+  <span class="cmt">// 把 Modal 渲染到 body 下，避免 CSS 層疊問題</span>
+  <span class="kw">return</span> <span class="fn">createPortal</span>(
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="val">"modal-overlay"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="val">"modal"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>,
+    document.<span class="fn">body</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>forwardRef — 轉發 ref 到子組件</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">forwardRef</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// 讓父組件可以存取子組件內部的 DOM</span>
+<span class="kw">const</span> <span class="comp">MyInput</span> = <span class="fn">forwardRef</span>(({ label, ...props }, ref) => {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;label&gt;</span>
+      {label}
+      <span class="tag">&lt;input</span> <span class="attr">ref</span>={ref} {...props} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/label&gt;</span>
+  )
+})
+
+<span class="cmt">// 父組件</span>
+<span class="kw">const</span> inputRef = <span class="hook">useRef</span>(<span class="kw">null</span>)
+<span class="tag">&lt;MyInput</span> <span class="attr">ref</span>={inputRef} <span class="attr">label</span>=<span class="val">"姓名"</span> <span class="tag">/&gt;</span>
+inputRef.current.<span class="fn">focus</span>()
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>React.memo — 避免不必要重渲染</h3>
+  <pre><code><span class="cmt">// 只有 props 改變時才重新渲染</span>
+<span class="kw">const</span> <span class="comp">ExpensiveChild</span> = <span class="fn">React</span>.<span class="fn">memo</span>(({ data }) => {
+  console.<span class="fn">log</span>(<span class="str">'ExpensiveChild render'</span>)
+  <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>{data}<span class="tag">&lt;/div&gt;</span>
+})
+
+<span class="cmt">// 自訂比較函數</span>
+<span class="kw">const</span> <span class="comp">MyComp</span> = <span class="fn">React</span>.<span class="fn">memo</span>(<span class="comp">Component</span>, (prevProps, nextProps) => {
+  <span class="cmt">// 回傳 true = props 相同（不重渲染）</span>
+  <span class="cmt">// 回傳 false = props 不同（重渲染）</span>
+  <span class="kw">return</span> prevProps.id === nextProps.id
+})
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('forms')">← 表單</button>
+    <button class="btn btn-primary" onclick="showSection('performance')">效能優化 →</button>
+  </div>
+</section>
+
+<!-- ══ 14. PERFORMANCE ══ -->
+<section class="section" id="sec-performance">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">效能優化</h2>
+    <p class="section-desc">程式碼分割、懶加載、Transitions、虛擬列表</p>
+  </div>
+
+  <h3>程式碼分割 — lazy & Suspense</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">lazy</span>, <span class="comp">Suspense</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// 只有需要時才載入</span>
+<span class="kw">const</span> <span class="comp">HeavyChart</span> = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./HeavyChart'</span>))
+
+<span class="kw">function</span> <span class="comp">Dashboard</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Suspense</span> <span class="attr">fallback</span>={<span class="tag">&lt;Spinner /&gt;</span>}<span class="tag">&gt;</span>
+      <span class="tag">&lt;HeavyChart /&gt;</span>
+    <span class="tag">&lt;/Suspense&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>useTransition — 非緊急更新</h3>
+  <pre><code><span class="kw">import</span> { <span class="hook">useTransition</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="comp">Search</span>() {
+  <span class="kw">const</span> [query, setQuery] = <span class="hook">useState</span>(<span class="str">''</span>)
+  <span class="kw">const</span> [results, setResults] = <span class="hook">useState</span>([])
+  <span class="kw">const</span> [isPending, startTransition] = <span class="hook">useTransition</span>()
+
+  <span class="kw">function</span> <span class="fn">handleSearch</span>(e) {
+    <span class="fn">setQuery</span>(e.target.value)  <span class="cmt">// 緊急：立即更新輸入框</span>
+
+    <span class="fn">startTransition</span>(() => {
+      <span class="fn">setResults</span>(<span class="fn">expensiveSearch</span>(e.target.value))  <span class="cmt">// 非緊急：可被中斷</span>
+    })
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">value</span>={query} <span class="attr">onChange</span>={handleSearch} <span class="tag">/&gt;</span>
+      {isPending ? <span class="tag">&lt;Spinner /&gt;</span> : <span class="tag">&lt;ResultList</span> <span class="attr">results</span>={results} <span class="tag">/&gt;</span>}
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>效能優化清單</h3>
+  <table>
+    <tr><th>策略</th><th>工具</th></tr>
+    <tr><td>避免不必要重渲染</td><td>React.memo、useMemo、useCallback</td></tr>
+    <tr><td>程式碼分割</td><td>React.lazy + Suspense、動態 import</td></tr>
+    <tr><td>非緊急更新</td><td>useTransition、startTransition</td></tr>
+    <tr><td>長列表</td><td>react-window、TanStack Virtual</td></tr>
+    <tr><td>圖片</td><td>lazy loading、next/image（Next.js）</td></tr>
+    <tr><td>分析工具</td><td>React DevTools Profiler、why-did-you-render</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('portal')">← 進階 API</button>
+    <button class="btn btn-primary" onclick="showSection('patterns')">設計模式 →</button>
+  </div>
+</section>
+
+<!-- ══ 15. PATTERNS ══ -->
+<section class="section" id="sec-patterns">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">設計模式</h2>
+    <p class="section-desc">Compound Components、Render Props、HOC</p>
+  </div>
+
+  <h3>Compound Components（複合組件）</h3>
+  <pre><code><span class="cmt">// 讓父組件和子組件共享隱式狀態</span>
+<span class="kw">const</span> <span class="comp">SelectContext</span> = <span class="fn">createContext</span>(<span class="kw">null</span>)
+
+<span class="kw">function</span> <span class="comp">Select</span>({ children }) {
+  <span class="kw">const</span> [selected, setSelected] = <span class="hook">useState</span>(<span class="kw">null</span>)
+  <span class="kw">return</span> (
+    <span class="tag">&lt;SelectContext.Provider</span> <span class="attr">value</span>={{ selected, setSelected }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/SelectContext.Provider&gt;</span>
+  )
+}
+
+<span class="comp">Select</span>.<span class="comp">Option</span> = <span class="kw">function</span> <span class="comp">Option</span>({ value, children }) {
+  <span class="kw">const</span> { selected, setSelected } = <span class="hook">useContext</span>(<span class="comp">SelectContext</span>)
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span>
+      <span class="attr">onClick</span>={() => <span class="fn">setSelected</span>(value)}
+      <span class="attr">className</span>={selected === value ? <span class="str">'selected'</span> : <span class="str">''</span>}
+    <span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// 使用</span>
+<span class="tag">&lt;Select&gt;</span>
+  <span class="tag">&lt;Select.Option</span> <span class="attr">value</span>=<span class="val">"a"</span><span class="tag">&gt;</span>選項 A<span class="tag">&lt;/Select.Option&gt;</span>
+  <span class="tag">&lt;Select.Option</span> <span class="attr">value</span>=<span class="val">"b"</span><span class="tag">&gt;</span>選項 B<span class="tag">&lt;/Select.Option&gt;</span>
+<span class="tag">&lt;/Select&gt;</span>
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>Render Props</h3>
+  <pre><code><span class="cmt">// 透過 prop 傳入渲染函數，共享邏輯</span>
+<span class="kw">function</span> <span class="comp">MouseTracker</span>({ render }) {
+  <span class="kw">const</span> [pos, setPos] = <span class="hook">useState</span>({ <span class="prop">x</span>: <span class="num">0</span>, <span class="prop">y</span>: <span class="num">0</span> })
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">onMouseMove</span>={e => <span class="fn">setPos</span>({ <span class="prop">x</span>: e.clientX, <span class="prop">y</span>: e.clientY })}<span class="tag">&gt;</span>
+      {<span class="fn">render</span>(pos)}
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// 使用</span>
+<span class="tag">&lt;MouseTracker</span> <span class="attr">render</span>={({ x, y }) => <span class="tag">&lt;p&gt;</span>X: {x}, Y: {y}<span class="tag">&lt;/p&gt;</span>} <span class="tag">/&gt;</span>
+
+<span class="cmt">// 現代寫法：自訂 Hook 更簡潔</span>
+<span class="kw">const</span> { x, y } = <span class="fn">useMousePosition</span>()
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 現代趨勢</strong>
+    Render Props 和 HOC 主要是 Hooks 出現前的模式。現代 React 優先使用自訂 Hooks 來共享邏輯，更簡潔易讀。Compound Components 仍然是設計組件 API 的好模式。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('performance')">← 效能優化</button>
+    <button class="btn btn-primary" onclick="showSection('router')">React Router →</button>
+  </div>
+</section>
+
+<!-- ══ 16. ROUTER ══ -->
+<section class="section" id="sec-router">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">React Router v6</h2>
+    <p class="section-desc">React 最常用的路由解決方案</p>
+  </div>
+
+  <h3>基本設定</h3>
+  <pre><code><span class="kw">import</span> { <span class="comp">BrowserRouter</span>, <span class="comp">Routes</span>, <span class="comp">Route</span>, <span class="comp">Link</span> } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+
+<span class="kw">function</span> <span class="comp">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;BrowserRouter&gt;</span>
+      <span class="tag">&lt;nav&gt;</span>
+        <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="val">"/"</span><span class="tag">&gt;</span>首頁<span class="tag">&lt;/Link&gt;</span>
+        <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="val">"/about"</span><span class="tag">&gt;</span>關於<span class="tag">&lt;/Link&gt;</span>
+      <span class="tag">&lt;/nav&gt;</span>
+
+      <span class="tag">&lt;Routes&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"/"</span> <span class="attr">element</span>={<span class="tag">&lt;Home /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"/about"</span> <span class="attr">element</span>={<span class="tag">&lt;About /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"/users/:id"</span> <span class="attr">element</span>={<span class="tag">&lt;UserDetail /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"*"</span> <span class="attr">element</span>={<span class="tag">&lt;NotFound /&gt;</span>} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Routes&gt;</span>
+    <span class="tag">&lt;/BrowserRouter&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>Hooks</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">useNavigate</span>, <span class="fn">useParams</span>, <span class="fn">useLocation</span>, <span class="fn">useSearchParams</span> } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+
+<span class="kw">function</span> <span class="comp">UserDetail</span>() {
+  <span class="kw">const</span> { id } = <span class="fn">useParams</span>()           <span class="cmt">// /users/123 → id = '123'</span>
+  <span class="kw">const</span> navigate = <span class="fn">useNavigate</span>()       <span class="cmt">// 程式導航</span>
+  <span class="kw">const</span> location = <span class="fn">useLocation</span>()       <span class="cmt">// 當前路由資訊</span>
+  <span class="kw">const</span> [params, setParams] = <span class="fn">useSearchParams</span>()  <span class="cmt">// query string</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>User: {id}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">navigate</span>(<span class="str">'/users'</span>)}<span class="tag">&gt;</span>返回<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">navigate</span>(-<span class="num">1</span>)}<span class="tag">&gt;</span>上一頁<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <h3>巢狀路由 & Outlet</h3>
+  <pre><code><span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"/admin"</span> <span class="attr">element</span>={<span class="tag">&lt;AdminLayout /&gt;</span>}<span class="tag">&gt;</span>
+  <span class="tag">&lt;Route</span> <span class="attr">index</span> <span class="attr">element</span>={<span class="tag">&lt;AdminHome /&gt;</span>} <span class="tag">/&gt;</span>
+  <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="val">"users"</span> <span class="attr">element</span>={<span class="tag">&lt;AdminUsers /&gt;</span>} <span class="tag">/&gt;</span>
+<span class="tag">&lt;/Route&gt;</span>
+
+<span class="cmt">// AdminLayout.jsx</span>
+<span class="kw">import</span> { <span class="comp">Outlet</span> } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+
+<span class="kw">function</span> <span class="comp">AdminLayout</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;AdminSidebar /&gt;</span>
+      <span class="tag">&lt;Outlet /&gt;</span>  <span class="cmt">{/* 子路由渲染在這裡 */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('patterns')">← 設計模式</button>
+    <button class="btn btn-primary" onclick="showSection('stateManagement')">狀態管理 →</button>
+  </div>
+</section>
+
+<!-- ══ 17. STATE MANAGEMENT ══ -->
+<section class="section" id="sec-stateManagement">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">狀態管理</h2>
+    <p class="section-desc">Zustand（推薦）、Redux Toolkit、Jotai</p>
+  </div>
+
+  <h3>Zustand — 最簡潔的全域狀態</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">create</span> } <span class="kw">from</span> <span class="str">'zustand'</span>
+
+<span class="cmt">// 建立 store</span>
+<span class="kw">const</span> useCounterStore = <span class="fn">create</span>((set, get) => ({
+  <span class="prop">count</span>: <span class="num">0</span>,
+  <span class="prop">step</span>: <span class="num">1</span>,
+
+  <span class="fn">increment</span>: () => <span class="fn">set</span>(state => ({ <span class="prop">count</span>: state.count + state.step })),
+  <span class="fn">decrement</span>: () => <span class="fn">set</span>(state => ({ <span class="prop">count</span>: state.count - state.step })),
+  <span class="fn">reset</span>: () => <span class="fn">set</span>({ <span class="prop">count</span>: <span class="num">0</span> }),
+
+  <span class="cmt">// 非同步 action</span>
+  <span class="fn">fetchCount</span>: <span class="kw">async</span> () => {
+    <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">getCount</span>()
+    <span class="fn">set</span>({ <span class="prop">count</span>: data })
+  }
+}))
+
+<span class="cmt">// 組件中使用</span>
+<span class="kw">function</span> <span class="comp">Counter</span>() {
+  <span class="cmt">// 只訂閱需要的部分（效能優化）</span>
+  <span class="kw">const</span> count = <span class="fn">useCounterStore</span>(state => state.count)
+  <span class="kw">const</span> increment = <span class="fn">useCounterStore</span>(state => state.increment)
+
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={increment}<span class="tag">&gt;</span>{count}<span class="tag">&lt;/button&gt;</span>
+}
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>Redux Toolkit — 企業級方案</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">createSlice</span>, <span class="fn">configureStore</span> } <span class="kw">from</span> <span class="str">'@reduxjs/toolkit'</span>
+
+<span class="cmt">// Slice = state + reducers + actions</span>
+<span class="kw">const</span> counterSlice = <span class="fn">createSlice</span>({
+  <span class="prop">name</span>: <span class="str">'counter'</span>,
+  <span class="prop">initialState</span>: { <span class="prop">value</span>: <span class="num">0</span> },
+  <span class="prop">reducers</span>: {
+    <span class="fn">increment</span>: state => { state.value += <span class="num">1</span> },  <span class="cmt">// Immer 讓你可以直接修改</span>
+    <span class="fn">decrement</span>: state => { state.value -= <span class="num">1</span> },
+    <span class="fn">incrementByAmount</span>: (state, action) => { state.value += action.payload }
+  }
+})
+
+<span class="kw">export const</span> { increment, decrement, incrementByAmount } = counterSlice.actions
+
+<span class="kw">const</span> store = <span class="fn">configureStore</span>({ <span class="prop">reducer</span>: { <span class="prop">counter</span>: counterSlice.reducer } })
+
+<span class="cmt">// 組件使用（需配合 react-redux）</span>
+<span class="kw">import</span> { <span class="fn">useSelector</span>, <span class="fn">useDispatch</span> } <span class="kw">from</span> <span class="str">'react-redux'</span>
+<span class="kw">const</span> count = <span class="fn">useSelector</span>(state => state.counter.value)
+<span class="kw">const</span> dispatch = <span class="fn">useDispatch</span>()
+<span class="fn">dispatch</span>(<span class="fn">increment</span>())
+<span class="lang-tag">JS</span></code></pre>
+
+  <table>
+    <tr><th>方案</th><th>適用場景</th><th>學習曲線</th></tr>
+    <tr><td>useState + Context</td><td>小型應用</td><td>低</td></tr>
+    <tr><td>Zustand</td><td>中小型應用，推薦首選</td><td>低</td></tr>
+    <tr><td>Jotai / Recoil</td><td>原子化狀態</td><td>中</td></tr>
+    <tr><td>Redux Toolkit</td><td>大型、需要 DevTools</td><td>高</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('router')">← React Router</button>
+    <button class="btn btn-primary" onclick="showSection('dataFetching')">資料獲取 →</button>
+  </div>
+</section>
+
+<!-- ══ 18. DATA FETCHING ══ -->
+<section class="section" id="sec-dataFetching">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">資料獲取</h2>
+    <p class="section-desc">TanStack Query 是現代 React 資料獲取的標準解法</p>
+  </div>
+
+  <h3>TanStack Query（React Query）</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">useQuery</span>, <span class="fn">useMutation</span>, <span class="comp">QueryClient</span>, <span class="comp">QueryClientProvider</span> } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>
+
+<span class="cmt">// 設定</span>
+<span class="kw">const</span> queryClient = <span class="kw">new</span> <span class="fn">QueryClient</span>()
+
+<span class="kw">function</span> <span class="comp">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;QueryClientProvider</span> <span class="attr">client</span>={queryClient}<span class="tag">&gt;</span>
+      <span class="tag">&lt;MyApp /&gt;</span>
+    <span class="tag">&lt;/QueryClientProvider&gt;</span>
+  )
+}
+
+<span class="cmt">// 查詢資料</span>
+<span class="kw">function</span> <span class="comp">UserList</span>() {
+  <span class="kw">const</span> { data, isLoading, error, refetch } = <span class="fn">useQuery</span>({
+    <span class="prop">queryKey</span>: [<span class="str">'users'</span>],
+    <span class="prop">queryFn</span>: () => <span class="fn">fetch</span>(<span class="str">'/api/users'</span>).<span class="fn">then</span>(r => r.<span class="fn">json</span>()),
+    <span class="prop">staleTime</span>: <span class="num">5</span> * <span class="num">60</span> * <span class="num">1000</span>,  <span class="cmt">// 5分鐘內不重新獲取</span>
+  })
+
+  <span class="kw">if</span> (isLoading) <span class="kw">return</span> <span class="tag">&lt;Spinner /&gt;</span>
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="tag">&lt;Error</span> <span class="attr">message</span>={error.message} <span class="tag">/&gt;</span>
+  <span class="kw">return</span> <span class="tag">&lt;ul&gt;</span>{data.<span class="fn">map</span>(u => <span class="tag">&lt;li</span> <span class="attr">key</span>={u.id}<span class="tag">&gt;</span>{u.name}<span class="tag">&lt;/li&gt;</span>)}<span class="tag">&lt;/ul&gt;</span>
+}
+
+<span class="cmt">// 修改資料（POST/PUT/DELETE）</span>
+<span class="kw">function</span> <span class="comp">AddUser</span>() {
+  <span class="kw">const</span> mutation = <span class="fn">useMutation</span>({
+    <span class="prop">mutationFn</span>: (newUser) => <span class="fn">fetch</span>(<span class="str">'/api/users'</span>, {
+      <span class="prop">method</span>: <span class="str">'POST'</span>, <span class="prop">body</span>: <span class="fn">JSON</span>.<span class="fn">stringify</span>(newUser)
+    }),
+    <span class="prop">onSuccess</span>: () => {
+      queryClient.<span class="fn">invalidateQueries</span>({ <span class="prop">queryKey</span>: [<span class="str">'users'</span>] })
+    }
+  })
+
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => mutation.<span class="fn">mutate</span>({ <span class="prop">name</span>: <span class="str">'Alice'</span> })}<span class="tag">&gt;</span>新增<span class="tag">&lt;/button&gt;</span>
+}
+<span class="lang-tag">JSX</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 TanStack Query 解決了什麼？</strong>
+    自動快取、背景重新獲取、錯誤重試、請求去重複、樂觀更新、分頁/無限滾動 — 這些你用 useEffect 自己寫需要大量程式碼，TanStack Query 全部內建。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('stateManagement')">← 狀態管理</button>
+    <button class="btn btn-primary" onclick="showSection('typescript')">TypeScript →</button>
+  </div>
+</section>
+
+<!-- ══ 19. TYPESCRIPT ══ -->
+<section class="section" id="sec-typescript">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">TypeScript</h2>
+    <p class="section-desc">React + TypeScript 的常用型別與最佳實踐</p>
+  </div>
+
+  <h3>組件 Props 型別</h3>
+  <pre><code><span class="cmt">// 定義 Props 型別</span>
+<span class="kw">interface</span> ButtonProps {
+  <span class="prop">label</span>: <span class="kw">string</span>
+  <span class="prop">variant</span>?: <span class="str">'primary'</span> | <span class="str">'secondary'</span>
+  <span class="prop">disabled</span>?: <span class="kw">boolean</span>
+  <span class="prop">onClick</span>?: () => <span class="kw">void</span>
+  <span class="prop">children</span>?: React.ReactNode  <span class="cmt">// 子元素</span>
+}
+
+<span class="kw">function</span> <span class="comp">Button</span>({ label, variant = <span class="str">'primary'</span>, disabled, onClick }: ButtonProps) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">className</span>={`btn btn-${variant}`}
+      <span class="attr">disabled</span>={disabled}
+      <span class="attr">onClick</span>={onClick}
+    <span class="tag">&gt;</span>{label}<span class="tag">&lt;/button&gt;</span>
+  )
+}
+<span class="lang-tag">TSX</span></code></pre>
+
+  <h3>Hooks 型別</h3>
+  <pre><code><span class="cmt">// useState</span>
+<span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>&lt;<span class="kw">number</span>&gt;(<span class="num">0</span>)
+<span class="kw">const</span> [user, setUser] = <span class="hook">useState</span>&lt;User | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
+
+<span class="cmt">// useRef</span>
+<span class="kw">const</span> inputRef = <span class="hook">useRef</span>&lt;HTMLInputElement&gt;(<span class="kw">null</span>)
+<span class="kw">const</span> timerRef = <span class="hook">useRef</span>&lt;ReturnType&lt;<span class="kw">typeof</span> setInterval&gt;&gt;(<span class="kw">null</span>)
+
+<span class="cmt">// useReducer</span>
+<span class="kw">type</span> Action =
+  | { <span class="prop">type</span>: <span class="str">'increment'</span> }
+  | { <span class="prop">type</span>: <span class="str">'setCount'</span>; <span class="prop">payload</span>: <span class="kw">number</span> }
+
+<span class="kw">function</span> <span class="fn">reducer</span>(state: State, action: Action): State {
+  <span class="kw">switch</span> (action.<span class="prop">type</span>) {
+    <span class="kw">case</span> <span class="str">'increment'</span>: <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count + <span class="num">1</span> }
+    <span class="kw">case</span> <span class="str">'setCount'</span>: <span class="kw">return</span> { ...state, <span class="prop">count</span>: action.payload }
+  }
+}
+<span class="lang-tag">TS</span></code></pre>
+
+  <h3>事件型別</h3>
+  <pre><code><span class="cmt">// 常用事件型別</span>
+<span class="kw">function</span> <span class="fn">handleChange</span>(e: React.<span class="comp">ChangeEvent</span>&lt;HTMLInputElement&gt;) {
+  <span class="fn">setValue</span>(e.target.value)
+}
+
+<span class="kw">function</span> <span class="fn">handleSubmit</span>(e: React.<span class="comp">FormEvent</span>&lt;HTMLFormElement&gt;) {
+  e.<span class="fn">preventDefault</span>()
+}
+
+<span class="kw">function</span> <span class="fn">handleClick</span>(e: React.<span class="comp">MouseEvent</span>&lt;HTMLButtonElement&gt;) {
+  console.<span class="fn">log</span>(e.currentTarget)
+}
+
+<span class="cmt">// 常用型別速查</span>
+<span class="cmt">// React.ReactNode       — 任何可渲染的值</span>
+<span class="cmt">// React.ReactElement    — JSX 元素</span>
+<span class="cmt">// React.FC&lt;Props&gt;       — 函數組件（較少用，直接 function 宣告更好）</span>
+<span class="cmt">// React.CSSProperties   — style 物件型別</span>
+<span class="cmt">// React.Dispatch&lt;A&gt;    — useReducer 的 dispatch 型別</span>
+<span class="lang-tag">TS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('dataFetching')">← 資料獲取</button>
+    <button class="btn btn-primary" onclick="showSection('overview')">🏠 回到首頁</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+const sectionMap = {
+  overview: 'sec-overview',
+  jsx: 'sec-jsx',
+  components: 'sec-components',
+  props: 'sec-props',
+  state: 'sec-state',
+  useEffect: 'sec-useEffect',
+  useRef: 'sec-useRef',
+  useContext: 'sec-useContext',
+  useReducer: 'sec-useReducer',
+  useMemo: 'sec-useMemo',
+  customHooks: 'sec-customHooks',
+  rendering: 'sec-rendering',
+  forms: 'sec-forms',
+  portal: 'sec-portal',
+  performance: 'sec-performance',
+  patterns: 'sec-patterns',
+  router: 'sec-router',
+  stateManagement: 'sec-stateManagement',
+  dataFetching: 'sec-dataFetching',
+  typescript: 'sec-typescript'
+}
+
+const visited = new Set(['overview'])
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  const secEl = document.getElementById(sectionMap[id])
+  if (secEl) secEl.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick')?.includes(`'${id}'`)) item.classList.add('active')
+  })
+  visited.add(id)
+  updateProgress()
+  document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function updateProgress() {
+  const total = Object.keys(sectionMap).length
+  const pct = Math.round((visited.size / total) * 100)
+  document.getElementById('progressFill').style.width = pct + '%'
+  document.getElementById('progressLabel').textContent = `學習進度 ${pct}%`
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase()
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = (item.getAttribute('data-label') || item.textContent).toLowerCase()
+    item.style.display = label.includes(q) ? 'flex' : 'none'
+  })
+  document.querySelectorAll('.nav-section-title').forEach(t => {
+    t.style.display = q ? 'none' : ''
+  })
+}
+
+updateProgress()
+</script>
+</body>
+</html>
