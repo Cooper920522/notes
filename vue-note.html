@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vue 完整筆記 — 入門到精通</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --green: #42b883;
+    --dark-green: #35495e;
+    --light-green: #a8dfc8;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #58a6ff;
+    --warn: #f0883e;
+    --code-bg: #0d1117;
+    --tag-bg: #1f2d3d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .vue-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .vue-diamond {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--green), var(--dark-green));
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  .sidebar-logo h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-logo p {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .search-box {
+    margin: 12px 16px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px 8px 32px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .search-box input:focus { border-color: var(--green); }
+  .search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+  }
+
+  .nav-section {
+    padding: 8px 0;
+  }
+
+  .nav-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    padding: 10px 20px 4px;
+    text-transform: uppercase;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+
+  .nav-item.active {
+    color: var(--green);
+    border-left-color: var(--green);
+    background: rgba(66, 184, 131, 0.06);
+  }
+
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .progress-bar {
+    margin: auto 16px 16px;
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    flex: 1;
+    overflow-y: auto;
+    max-width: 900px;
+    padding: 48px 56px;
+  }
+
+  .section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .badge-beginner { background: rgba(66,184,131,0.15); color: var(--green); }
+  .badge-intermediate { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-advanced { background: rgba(240,136,62,0.15); color: var(--warn); }
+
+  h2.section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .section-desc { color: var(--text-muted); font-size: 14px; }
+
+  h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 18px;
+    background: var(--green);
+    border-radius: 2px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 18px 0 8px;
+  }
+
+  p { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.8; }
+
+  /* ── CODE BLOCKS ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    position: relative;
+  }
+
+  pre .lang-tag {
+    position: absolute;
+    top: 10px; right: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #e6edf3;
+  }
+
+  :not(pre) > code {
+    background: var(--tag-bg);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 12.5px;
+    color: var(--light-green);
+  }
+
+  /* Syntax highlight */
+  .kw { color: #ff7b72; } /* keyword */
+  .fn { color: #d2a8ff; } /* function */
+  .str { color: #a5d6ff; } /* string */
+  .cmt { color: #6e7681; font-style: italic; } /* comment */
+  .num { color: #79c0ff; } /* number */
+  .prop { color: #e3b341; } /* property */
+  .tag { color: #7ee787; } /* html tag */
+  .attr { color: #79c0ff; } /* attribute */
+  .val { color: #a5d6ff; } /* value */
+  .vue { color: #42b883; } /* vue specific */
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 3px solid;
+    font-size: 13.5px;
+  }
+
+  .callout-tip { background: rgba(66,184,131,0.08); border-color: var(--green); }
+  .callout-info { background: rgba(88,166,255,0.08); border-color: var(--accent); }
+  .callout-warn { background: rgba(240,136,62,0.08); border-color: var(--warn); }
+
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .callout-tip strong { color: var(--green); }
+  .callout-info strong { color: var(--accent); }
+  .callout-warn strong { color: var(--warn); }
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 13px;
+  }
+
+  .card-icon { font-size: 22px; margin-bottom: 8px; }
+  .card h4 { color: var(--green); margin: 0 0 6px; font-size: 13.5px; }
+  .card p { color: var(--text-muted); margin: 0; font-size: 12.5px; }
+
+  /* ── COMPARE TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── LIFECYCLE DIAGRAM ── */
+  .lifecycle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 20px 0;
+  }
+
+  .lc-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 200px;
+    text-align: center;
+    position: relative;
+  }
+
+  .lc-node.hook {
+    background: rgba(66,184,131,0.1);
+    border-color: var(--green);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .lc-node.event {
+    background: rgba(88,166,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .lc-arrow {
+    width: 2px;
+    height: 20px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .lc-arrow::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* ── TABS ── */
+  .tab-container { margin: 16px 0; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+  .tab-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab-content { display: none; padding: 16px 0; }
+  .tab-content.active { display: block; }
+
+  /* ── NAV BUTTONS ── */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.15s;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-decoration: none;
+  }
+
+  .btn:hover { border-color: var(--green); color: var(--green); }
+  .btn-primary { background: var(--green); color: #0d1117; border-color: var(--green); font-weight: 700; }
+  .btn-primary:hover { background: #5dd4a0; color: #0d1117; }
+  .btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── OVERVIEW HERO ── */
+  .hero {
+    background: linear-gradient(135deg, rgba(66,184,131,0.08) 0%, rgba(53,73,94,0.15) 100%);
+    border: 1px solid rgba(66,184,131,0.2);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .hero .big-icon { font-size: 56px; margin-bottom: 12px; }
+  .hero h2 { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+  .hero p { font-size: 14px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  ul { list-style: none; padding: 0; }
+  ul li {
+    padding: 4px 0 4px 20px;
+    font-size: 13.5px;
+    position: relative;
+    color: var(--text);
+  }
+  ul li::before {
+    content: '›';
+    position: absolute;
+    left: 6px;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="vue-icon">
+      <div class="vue-diamond"></div>
+      <h1>Vue 完整筆記</h1>
+    </div>
+    <p>入門 → 精通 · 系統化整理</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋概念..." oninput="filterNav(this.value)">
+  </div>
+
+  <div class="nav-section" id="navList">
+    <div class="nav-section-title">基礎入門</div>
+    <div class="nav-item active" onclick="showSection('overview')" data-label="Vue 概覽 什麼是Vue">
+      <span class="icon">🏠</span> 概覽與介紹
+    </div>
+    <div class="nav-item" onclick="showSection('instance')" data-label="Vue 實例 應用程式 createApp">
+      <span class="icon">⚙️</span> Vue 實例與應用
+    </div>
+    <div class="nav-item" onclick="showSection('template')" data-label="模板語法 插值 指令">
+      <span class="icon">📄</span> 模板語法
+    </div>
+    <div class="nav-item" onclick="showSection('reactivity')" data-label="響應式 ref reactive 資料">
+      <span class="icon">⚡</span> 響應式系統
+    </div>
+    <div class="nav-item" onclick="showSection('computed')" data-label="計算屬性 computed watch 偵聽器">
+      <span class="icon">🧮</span> Computed & Watch
+    </div>
+
+    <div class="nav-section-title">核心概念</div>
+    <div class="nav-item" onclick="showSection('binding')" data-label="class style 綁定 v-bind">
+      <span class="icon">🎨</span> Class & Style 綁定
+    </div>
+    <div class="nav-item" onclick="showSection('conditions')" data-label="條件渲染 v-if v-show 列表 v-for">
+      <span class="icon">🔀</span> 條件 & 列表渲染
+    </div>
+    <div class="nav-item" onclick="showSection('events')" data-label="事件處理 v-on 修飾符">
+      <span class="icon">🖱️</span> 事件處理
+    </div>
+    <div class="nav-item" onclick="showSection('forms')" data-label="表單 v-model 雙向綁定">
+      <span class="icon">📝</span> 表單與 v-model
+    </div>
+    <div class="nav-item" onclick="showSection('lifecycle')" data-label="生命週期 onMounted hooks">
+      <span class="icon">🔄</span> 生命週期
+    </div>
+
+    <div class="nav-section-title">組件系統</div>
+    <div class="nav-item" onclick="showSection('components')" data-label="組件 component props emit">
+      <span class="icon">🧩</span> 組件基礎
+    </div>
+    <div class="nav-item" onclick="showSection('props')" data-label="Props emit 組件通訊">
+      <span class="icon">📡</span> Props & Emit
+    </div>
+    <div class="nav-item" onclick="showSection('slots')" data-label="slot 插槽 具名 作用域">
+      <span class="icon">🪆</span> Slots 插槽
+    </div>
+    <div class="nav-item" onclick="showSection('provide')" data-label="provide inject 依賴注入">
+      <span class="icon">💉</span> Provide & Inject
+    </div>
+
+    <div class="nav-section-title">進階特性</div>
+    <div class="nav-item" onclick="showSection('composables')" data-label="composables 組合式函數 use">
+      <span class="icon">🔧</span> Composables
+    </div>
+    <div class="nav-item" onclick="showSection('directives')" data-label="自訂指令 directive">
+      <span class="icon">🎯</span> 自訂指令
+    </div>
+    <div class="nav-item" onclick="showSection('teleport')" data-label="teleport suspense keep-alive 內建組件">
+      <span class="icon">🌀</span> 內建特殊組件
+    </div>
+    <div class="nav-item" onclick="showSection('performance')" data-label="效能優化 lazy v-memo shallowRef">
+      <span class="icon">🚀</span> 效能優化
+    </div>
+
+    <div class="nav-section-title">生態系統</div>
+    <div class="nav-item" onclick="showSection('router')" data-label="Vue Router 路由 導航守衛">
+      <span class="icon">🗺️</span> Vue Router
+    </div>
+    <div class="nav-item" onclick="showSection('pinia')" data-label="Pinia 狀態管理 store">
+      <span class="icon">🍍</span> Pinia 狀態管理
+    </div>
+    <div class="nav-item" onclick="showSection('nuxt')" data-label="Nuxt SSR SSG 伺服器渲染">
+      <span class="icon">💚</span> Nuxt 3 整合
+    </div>
+  </div>
+
+  <div style="padding: 0 16px 4px;">
+    <div class="progress-label" id="progressLabel">學習進度 0%</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- ════════════════════════════════ 0. OVERVIEW ════════════════════════════════ -->
+<section class="section active" id="sec-overview">
+  <div class="hero">
+    <div class="big-icon">💚</div>
+    <h2>Vue.js 完整學習筆記</h2>
+    <p>從零開始，系統化掌握 Vue 3 全部核心概念，搭配 Composition API 最佳實踐</p>
+  </div>
+
+  <h3>什麼是 Vue.js？</h3>
+  <p>Vue.js 是一個用於建構 <strong>使用者介面</strong> 的漸進式 JavaScript 框架。它的設計從核心開始只關注視圖層，容易上手，又能與其他函式庫或已有的專案整合。</p>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">⚡</div><h4>響應式</h4><p>資料變更自動更新 DOM，無需手動操作</p></div>
+    <div class="card"><div class="card-icon">🧩</div><h4>組件化</h4><p>UI 拆分為獨立可複用的組件</p></div>
+    <div class="card"><div class="card-icon">🌊</div><h4>漸進式</h4><p>可以只引入核心，也可整合完整生態</p></div>
+    <div class="card"><div class="card-icon">📦</div><h4>虛擬 DOM</h4><p>高效能 diff 演算法，最小化 DOM 操作</p></div>
+  </div>
+
+  <h3>Vue 2 vs Vue 3 差異</h3>
+  <table>
+    <tr><th>特性</th><th>Vue 2</th><th>Vue 3</th></tr>
+    <tr><td>API 風格</td><td>Options API</td><td>Composition API（推薦）+ Options API</td></tr>
+    <tr><td>響應式系統</td><td>Object.defineProperty</td><td>Proxy（更完整、更快）</td></tr>
+    <tr><td>TypeScript</td><td>較難整合</td><td>原生支援 TS</td></tr>
+    <tr><td>打包工具</td><td>Vue CLI / Webpack</td><td>Vite（推薦）</td></tr>
+    <tr><td>根節點</td><td>只能一個根元素</td><td>支援多個根節點 Fragment</td></tr>
+    <tr><td>全域 API</td><td>Vue.use() 等全域方法</td><td>app 實例方法，支援多個應用</td></tr>
+  </table>
+
+  <h3>本筆記涵蓋範圍</h3>
+  <div class="tag-row">
+    <span class="tag">響應式系統</span>
+    <span class="tag">模板語法</span>
+    <span class="tag">組件通訊</span>
+    <span class="tag">Composition API</span>
+    <span class="tag">生命週期</span>
+    <span class="tag">Composables</span>
+    <span class="tag">自訂指令</span>
+    <span class="tag">Vue Router</span>
+    <span class="tag">Pinia</span>
+    <span class="tag">Nuxt 3</span>
+    <span class="tag">效能優化</span>
+    <span class="tag">TypeScript</span>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" disabled>← 上一節</button>
+    <button class="btn btn-primary" onclick="showSection('instance')">Vue 實例 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 1. INSTANCE ════════════════════════════════ -->
+<section class="section" id="sec-instance">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">Vue 實例與應用</h2>
+    <p class="section-desc">了解 Vue 應用的建立方式與根組件概念</p>
+  </div>
+
+  <h3>建立 Vue 應用</h3>
+  <pre><code><span class="cmt">// main.js — 應用程式入口</span>
+<span class="kw">import</span> { <span class="fn">createApp</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">import</span> App <span class="kw">from</span> <span class="str">'./App.vue'</span>
+
+<span class="cmt">// 1. 建立應用實例</span>
+<span class="kw">const</span> app = <span class="fn">createApp</span>(App)
+
+<span class="cmt">// 2. 掛載到 DOM</span>
+app.<span class="fn">mount</span>(<span class="str">'#app'</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>SFC 單文件組件結構</h3>
+  <pre><code><span class="cmt">&lt;!-- App.vue — 單文件組件 (Single File Component) --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>{{ <span class="prop">title</span> }}<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script setup&gt;</span>
+<span class="cmt">// Composition API 語法糖 (推薦用法)</span>
+<span class="kw">import</span> { <span class="fn">ref</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">const</span> <span class="prop">title</span> = <span class="fn">ref</span>(<span class="str">'Hello Vue!'</span>)
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style scoped&gt;</span>
+<span class="cmt">/* scoped = 樣式只影響當前組件 */</span>
+<span class="tag">&lt;/style&gt;</span>
+<span class="lang-tag">VUE</span></code></pre>
+
+  <h3>全域設定 app 實例</h3>
+  <pre><code><span class="kw">const</span> app = <span class="fn">createApp</span>(App)
+
+<span class="cmt">// 全域組件</span>
+app.<span class="fn">component</span>(<span class="str">'MyButton'</span>, MyButton)
+
+<span class="cmt">// 全域指令</span>
+app.<span class="fn">directive</span>(<span class="str">'focus'</span>, { mounted: (el) => el.<span class="fn">focus</span>() })
+
+<span class="cmt">// 全域屬性 (可在所有組件用 $myUtil 存取)</span>
+app.config.globalProperties.<span class="prop">$myUtil</span> = myUtil
+
+<span class="cmt">// 使用 plugin</span>
+app.<span class="fn">use</span>(router)
+app.<span class="fn">use</span>(pinia)
+
+app.<span class="fn">mount</span>(<span class="str">'#app'</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('overview')">← 概覽</button>
+    <button class="btn btn-primary" onclick="showSection('template')">模板語法 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 2. TEMPLATE ════════════════════════════════ -->
+<section class="section" id="sec-template">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">模板語法</h2>
+    <p class="section-desc">Vue 模板是合法的 HTML，透過指令與插值繫結資料</p>
+  </div>
+
+  <h3>文字插值</h3>
+  <pre><code><span class="cmt">&lt;!-- 雙大括號插值 (Mustache 語法) --&gt;</span>
+<span class="tag">&lt;p&gt;</span>{{ <span class="prop">message</span> }}<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;p&gt;</span>{{ <span class="prop">count</span> + 1 }}<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;p&gt;</span>{{ <span class="prop">isOk</span> ? <span class="str">'是'</span> : <span class="str">'否'</span> }}<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;p&gt;</span>{{ <span class="prop">text</span>.<span class="fn">toUpperCase</span>() }}<span class="tag">&lt;/p&gt;</span>
+
+<span class="cmt">&lt;!-- 原始 HTML (⚠️ 小心 XSS) --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">v-html</span>=<span class="val">"rawHtml"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 只渲染一次，不響應更新 --&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">v-once</span><span class="tag">&gt;</span>{{ <span class="prop">staticText</span> }}<span class="tag">&lt;/span&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>v-bind 屬性綁定</h3>
+  <pre><code><span class="cmt">&lt;!-- 完整寫法 --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">v-bind:src</span>=<span class="val">"imageUrl"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- 縮寫 : (冒號) --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">:src</span>=<span class="val">"imageUrl"</span> <span class="attr">:alt</span>=<span class="val">"imageAlt"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">:disabled</span>=<span class="val">"isLoading"</span><span class="tag">&gt;</span>送出<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 動態屬性名 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:[dynamicAttr]</span>=<span class="val">"value"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 批次綁定物件 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">v-bind</span>=<span class="val">"{ id: 'box', class: 'container' }"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>常用指令一覽</h3>
+  <table>
+    <tr><th>指令</th><th>用途</th><th>範例</th></tr>
+    <tr><td><code>v-bind</code> / <code>:</code></td><td>屬性綁定</td><td><code>:href="url"</code></td></tr>
+    <tr><td><code>v-on</code> / <code>@</code></td><td>事件監聽</td><td><code>@click="handler"</code></td></tr>
+    <tr><td><code>v-model</code></td><td>雙向綁定</td><td><code>v-model="text"</code></td></tr>
+    <tr><td><code>v-if / v-else</code></td><td>條件渲染（移除 DOM）</td><td><code>v-if="show"</code></td></tr>
+    <tr><td><code>v-show</code></td><td>顯示/隱藏（CSS）</td><td><code>v-show="visible"</code></td></tr>
+    <tr><td><code>v-for</code></td><td>列表渲染</td><td><code>v-for="item in list"</code></td></tr>
+    <tr><td><code>v-html</code></td><td>插入 HTML 字串</td><td><code>v-html="content"</code></td></tr>
+    <tr><td><code>v-text</code></td><td>設定 textContent</td><td><code>v-text="label"</code></td></tr>
+    <tr><td><code>v-once</code></td><td>只渲染一次</td><td><code>v-once</code></td></tr>
+    <tr><td><code>v-pre</code></td><td>跳過編譯</td><td><code>v-pre</code></td></tr>
+    <tr><td><code>v-cloak</code></td><td>防止閃爍</td><td><code>v-cloak</code></td></tr>
+    <tr><td><code>v-memo</code></td><td>記憶子樹（效能）</td><td><code>v-memo="[dep]"</code></td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('instance')">← Vue 實例</button>
+    <button class="btn btn-primary" onclick="showSection('reactivity')">響應式系統 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 3. REACTIVITY ════════════════════════════════ -->
+<section class="section" id="sec-reactivity">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">響應式系統</h2>
+    <p class="section-desc">Vue 3 的響應式核心：ref、reactive、以及 Proxy 機制</p>
+  </div>
+
+  <h3>ref — 基本類型響應式</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">ref</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="cmt">// 建立響應式資料</span>
+<span class="kw">const</span> <span class="prop">count</span> = <span class="fn">ref</span>(<span class="num">0</span>)
+<span class="kw">const</span> <span class="prop">name</span> = <span class="fn">ref</span>(<span class="str">'Vue'</span>)
+<span class="kw">const</span> <span class="prop">items</span> = <span class="fn">ref</span>([])
+
+<span class="cmt">// JS 中需要 .value 存取</span>
+<span class="prop">count</span>.value++
+console.<span class="fn">log</span>(<span class="prop">name</span>.value)
+
+<span class="cmt">// 模板中自動解包，不需要 .value</span>
+<span class="cmt">// &lt;p&gt;{{ count }}&lt;/p&gt;  ← 直接使用</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>reactive — 物件類型響應式</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">reactive</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">state</span> = <span class="fn">reactive</span>({
+  <span class="prop">count</span>: <span class="num">0</span>,
+  <span class="prop">user</span>: { <span class="prop">name</span>: <span class="str">'Alice'</span>, <span class="prop">age</span>: <span class="num">25</span> }
+})
+
+<span class="cmt">// 直接存取，不需要 .value</span>
+<span class="prop">state</span>.<span class="prop">count</span>++
+<span class="prop">state</span>.<span class="prop">user</span>.<span class="prop">name</span> = <span class="str">'Bob'</span>
+
+<span class="cmt">// ⚠️ 不能解構 reactive！會失去響應性</span>
+<span class="cmt">// const { count } = state  ← 壞！count 不響應了</span>
+
+<span class="cmt">// ✅ 用 toRefs 安全解構</span>
+<span class="kw">import</span> { <span class="fn">toRefs</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">const</span> { <span class="prop">count</span>, <span class="prop">user</span> } = <span class="fn">toRefs</span>(<span class="prop">state</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 ref vs reactive 怎麼選？</strong>
+    <strong>ref</strong>：基本類型（string, number, boolean）、或需要整體替換的物件<br>
+    <strong>reactive</strong>：複雜物件，不需要整體替換<br>
+    實務上很多人 <strong>統一用 ref</strong>，避免記憶規則
+  </div>
+
+  <h3>toRef、toRefs、isRef</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">toRef</span>, <span class="fn">toRefs</span>, <span class="fn">isRef</span>, <span class="fn">unref</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">state</span> = <span class="fn">reactive</span>({ <span class="prop">name</span>: <span class="str">'Vue'</span>, <span class="prop">count</span>: <span class="num">0</span> })
+
+<span class="cmt">// toRef — 單一屬性轉成 ref</span>
+<span class="kw">const</span> <span class="prop">name</span> = <span class="fn">toRef</span>(<span class="prop">state</span>, <span class="str">'name'</span>)
+
+<span class="cmt">// toRefs — 整個物件的屬性都轉成 ref</span>
+<span class="kw">const</span> { <span class="prop">name</span>, <span class="prop">count</span> } = <span class="fn">toRefs</span>(<span class="prop">state</span>)
+
+<span class="cmt">// isRef — 判斷是否為 ref</span>
+<span class="fn">isRef</span>(<span class="prop">count</span>) <span class="cmt">// true</span>
+
+<span class="cmt">// unref — 取值 (是ref就.value，不是就直接回傳)</span>
+<span class="fn">unref</span>(<span class="prop">count</span>) <span class="cmt">// 等同 count.value</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>shallowRef & shallowReactive（效能優化）</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">shallowRef</span>, <span class="fn">shallowReactive</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="cmt">// 只有第一層是響應式，深層不追蹤</span>
+<span class="kw">const</span> <span class="prop">bigList</span> = <span class="fn">shallowRef</span>([...largeData])
+
+<span class="cmt">// 觸發更新需要整體替換</span>
+<span class="prop">bigList</span>.value = [...<span class="prop">bigList</span>.value, newItem]
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('template')">← 模板語法</button>
+    <button class="btn btn-primary" onclick="showSection('computed')">Computed & Watch →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 4. COMPUTED & WATCH ════════════════════════════════ -->
+<section class="section" id="sec-computed">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">Computed & Watch</h2>
+    <p class="section-desc">計算屬性與偵聽器是響應式系統中最重要的工具</p>
+  </div>
+
+  <h3>computed — 計算屬性</h3>
+  <p>基於其他響應式資料<strong>衍生計算</strong>，有快取機制，依賴不變就不重算。</p>
+  <pre><code><span class="kw">import</span> { <span class="fn">ref</span>, <span class="fn">computed</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">firstName</span> = <span class="fn">ref</span>(<span class="str">'John'</span>)
+<span class="kw">const</span> <span class="prop">lastName</span> = <span class="fn">ref</span>(<span class="str">'Doe'</span>)
+
+<span class="cmt">// 只讀計算屬性</span>
+<span class="kw">const</span> <span class="prop">fullName</span> = <span class="fn">computed</span>(() => `${<span class="prop">firstName</span>.value} ${<span class="prop">lastName</span>.value}`)
+
+<span class="cmt">// 可讀寫計算屬性</span>
+<span class="kw">const</span> <span class="prop">fullNameRW</span> = <span class="fn">computed</span>({
+  <span class="fn">get</span>: () => `${<span class="prop">firstName</span>.value} ${<span class="prop">lastName</span>.value}`,
+  <span class="fn">set</span>: (newVal) => {
+    [<span class="prop">firstName</span>.value, <span class="prop">lastName</span>.value] = newVal.<span class="fn">split</span>(<span class="str">' '</span>)
+  }
+})
+
+<span class="cmt">// 使用</span>
+console.<span class="fn">log</span>(<span class="prop">fullName</span>.value) <span class="cmt">// 'John Doe'</span>
+<span class="prop">fullNameRW</span>.value = <span class="str">'Jane Smith'</span> <span class="cmt">// 觸發 set</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ 注意</strong>
+    computed 的 getter 不應有副作用（如發請求、改 DOM）。它只應計算並回傳值。
+  </div>
+
+  <h3>watch — 偵聽器</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">ref</span>, <span class="fn">watch</span>, <span class="fn">watchEffect</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">count</span> = <span class="fn">ref</span>(<span class="num">0</span>)
+
+<span class="cmt">// 偵聽單個 ref</span>
+<span class="fn">watch</span>(<span class="prop">count</span>, (newVal, oldVal) => {
+  console.<span class="fn">log</span>(`count: ${oldVal} → ${newVal}`)
+})
+
+<span class="cmt">// 偵聽多個來源</span>
+<span class="fn">watch</span>([<span class="prop">firstName</span>, <span class="prop">lastName</span>], ([newFirst, newLast]) => {
+  console.<span class="fn">log</span>(<span class="str">'名字變了'</span>)
+})
+
+<span class="cmt">// 偵聽物件內部（deep）</span>
+<span class="fn">watch</span>(() => <span class="prop">state</span>.<span class="prop">user</span>, (user) => {
+  console.<span class="fn">log</span>(user)
+}, { <span class="prop">deep</span>: <span class="kw">true</span> })
+
+<span class="cmt">// 立即執行（immediate）</span>
+<span class="fn">watch</span>(<span class="prop">count</span>, <span class="fn">handler</span>, { <span class="prop">immediate</span>: <span class="kw">true</span> })
+
+<span class="cmt">// 停止偵聽</span>
+<span class="kw">const</span> <span class="prop">stop</span> = <span class="fn">watch</span>(<span class="prop">count</span>, <span class="fn">handler</span>)
+<span class="fn">stop</span>() <span class="cmt">// 手動停止</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>watchEffect — 自動追蹤依賴</h3>
+  <pre><code><span class="cmt">// 自動追蹤內部所有響應式依賴</span>
+<span class="kw">const</span> <span class="prop">stop</span> = <span class="fn">watchEffect</span>(() => {
+  <span class="cmt">// 會追蹤 userId 和 token</span>
+  console.<span class="fn">log</span>(<span class="prop">userId</span>.value, <span class="prop">token</span>.value)
+})
+
+<span class="cmt">// 副作用清理（下次執行前呼叫）</span>
+<span class="fn">watchEffect</span>((onCleanup) => {
+  <span class="kw">const</span> timer = <span class="fn">setTimeout</span>(() => fetchData(<span class="prop">id</span>.value), <span class="num">300</span>)
+  <span class="fn">onCleanup</span>(() => <span class="fn">clearTimeout</span>(timer))
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <table>
+    <tr><th>特性</th><th>computed</th><th>watch</th><th>watchEffect</th></tr>
+    <tr><td>用途</td><td>衍生資料</td><td>偵測變化執行副作用</td><td>自動追蹤 + 副作用</td></tr>
+    <tr><td>快取</td><td>✅ 有</td><td>❌</td><td>❌</td></tr>
+    <tr><td>回傳值</td><td>計算結果</td><td>無</td><td>無</td></tr>
+    <tr><td>手動指定依賴</td><td>自動</td><td>✅ 手動</td><td>自動</td></tr>
+    <tr><td>可取 oldVal</td><td>❌</td><td>✅</td><td>❌</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('reactivity')">← 響應式</button>
+    <button class="btn btn-primary" onclick="showSection('binding')">Class & Style →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 5. BINDING ════════════════════════════════ -->
+<section class="section" id="sec-binding">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">Class & Style 綁定</h2>
+    <p class="section-desc">動態控制樣式是 Vue 最常用的功能之一</p>
+  </div>
+
+  <h3>Class 綁定</h3>
+  <pre><code><span class="cmt">&lt;!-- 物件語法 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:class</span>=<span class="val">"{ active: isActive, 'text-danger': hasError }"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 陣列語法 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:class</span>=<span class="val">"[activeClass, errorClass]"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 陣列中使用三元 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:class</span>=<span class="val">"[isActive ? 'active' : '', 'base-class']"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 靜態 + 動態混用 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"btn"</span> <span class="attr">:class</span>=<span class="val">"{ 'btn-active': isActive }"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>Style 綁定</h3>
+  <pre><code><span class="cmt">&lt;!-- 物件語法（推薦） --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:style</span>=<span class="val">"{ color: textColor, fontSize: size + 'px' }"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 陣列語法（合併多個樣式物件） --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:style</span>=<span class="val">"[baseStyles, overrideStyles]"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- CSS 變數 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">:style</span>=<span class="val">"{ '--theme-color': themeColor }"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>v-bind:class 在組件上的行為</h3>
+  <p>加在子組件上的 class 會<strong>自動合併</strong>到子組件的根元素。若子組件有多個根節點，需用 <code>$attrs.class</code> 手動指定目標。</p>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('computed')">← Computed</button>
+    <button class="btn btn-primary" onclick="showSection('conditions')">條件 & 列表 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 6. CONDITIONS ════════════════════════════════ -->
+<section class="section" id="sec-conditions">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">條件 & 列表渲染</h2>
+    <p class="section-desc">控制 DOM 的顯示與生成</p>
+  </div>
+
+  <h3>v-if / v-else-if / v-else</h3>
+  <pre><code><span class="tag">&lt;div</span> <span class="attr">v-if</span>=<span class="val">"type === 'A'"</span><span class="tag">&gt;</span>類型 A<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">v-else-if</span>=<span class="val">"type === 'B'"</span><span class="tag">&gt;</span>類型 B<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">v-else</span><span class="tag">&gt;</span>其他<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- &lt;template&gt; 作為不渲染的包裝容器 --&gt;</span>
+<span class="tag">&lt;template</span> <span class="attr">v-if</span>=<span class="val">"show"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>標題<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;p&gt;</span>內容<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 v-if vs v-show</strong>
+    v-if：條件為 false 時完全不渲染 DOM（有更高切換代價）<br>
+    v-show：永遠渲染，只切換 display:none（更適合頻繁切換）
+  </div>
+
+  <h3>v-for 列表渲染</h3>
+  <pre><code><span class="cmt">&lt;!-- 陣列 --&gt;</span>
+<span class="tag">&lt;li</span> <span class="attr">v-for</span>=<span class="val">"(item, index) in items"</span> <span class="attr">:key</span>=<span class="val">"item.id"</span><span class="tag">&gt;</span>
+  {{ index }}. {{ item.name }}
+<span class="tag">&lt;/li&gt;</span>
+
+<span class="cmt">&lt;!-- 物件 --&gt;</span>
+<span class="tag">&lt;li</span> <span class="attr">v-for</span>=<span class="val">"(value, key, index) in obj"</span> <span class="attr">:key</span>=<span class="val">"key"</span><span class="tag">&gt;</span>
+  {{ key }}: {{ value }}
+<span class="tag">&lt;/li&gt;</span>
+
+<span class="cmt">&lt;!-- 數字範圍 --&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">v-for</span>=<span class="val">"n in 5"</span> <span class="attr">:key</span>=<span class="val">"n"</span><span class="tag">&gt;</span>{{ n }}<span class="tag">&lt;/span&gt;</span>
+
+<span class="cmt">&lt;!-- v-for + v-if（v-if 優先，放在內部）--&gt;</span>
+<span class="tag">&lt;template</span> <span class="attr">v-for</span>=<span class="val">"item in items"</span> <span class="attr">:key</span>=<span class="val">"item.id"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;li</span> <span class="attr">v-if</span>=<span class="val">"item.active"</span><span class="tag">&gt;</span>{{ item.name }}<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ :key 很重要！</strong>
+    v-for 必須搭配唯一的 :key，幫助 Vue 辨識每個節點，避免渲染 bug。不要用 index 作為 key（在列表重排時會出問題）。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('binding')">← Class & Style</button>
+    <button class="btn btn-primary" onclick="showSection('events')">事件處理 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 7. EVENTS ════════════════════════════════ -->
+<section class="section" id="sec-events">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">事件處理</h2>
+    <p class="section-desc">用 v-on (@) 監聽 DOM 事件，搭配修飾符更優雅</p>
+  </div>
+
+  <h3>基本事件綁定</h3>
+  <pre><code><span class="cmt">&lt;!-- 內聯處理 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="val">"count++"</span><span class="tag">&gt;</span>+1<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 方法處理 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="val">"handleClick"</span><span class="tag">&gt;</span>點我<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 傳參 + event 物件 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="val">"handleClick(item, $event)"</span><span class="tag">&gt;</span>點我<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 多個處理器 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="val">"handler1(); handler2()"</span><span class="tag">&gt;&lt;/button&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>事件修飾符</h3>
+  <pre><code><span class="cmt">&lt;!-- 停止冒泡 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click.stop</span>=<span class="val">"handler"</span><span class="tag">&gt;&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 阻止預設行為 --&gt;</span>
+<span class="tag">&lt;form</span> <span class="attr">@submit.prevent</span>=<span class="val">"onSubmit"</span><span class="tag">&gt;&lt;/form&gt;</span>
+
+<span class="cmt">&lt;!-- 只在自身觸發（不冒泡來的）--&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">@click.self</span>=<span class="val">"handler"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 只觸發一次 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">@click.once</span>=<span class="val">"handler"</span><span class="tag">&gt;&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- 捕獲模式 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">@click.capture</span>=<span class="val">"handler"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 被動模式（提升滾動效能）--&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">@scroll.passive</span>=<span class="val">"onScroll"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- 修飾符可鏈式 --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">@click.stop.prevent</span>=<span class="val">"handler"</span><span class="tag">&gt;&lt;/a&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>鍵盤修飾符</h3>
+  <pre><code><span class="cmt">&lt;!-- Enter 鍵 --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">@keyup.enter</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- 常用按鍵別名 --&gt;</span>
+<span class="cmt">&lt;!-- .enter .tab .delete .esc .space .up .down .left .right --&gt;</span>
+
+<span class="cmt">&lt;!-- 系統修飾鍵 --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">@keyup.ctrl.enter</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- 滑鼠按鍵 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">@click.right</span>=<span class="val">"onRightClick"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('conditions')">← 條件列表</button>
+    <button class="btn btn-primary" onclick="showSection('forms')">表單 v-model →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 8. FORMS ════════════════════════════════ -->
+<section class="section" id="sec-forms">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">表單與 v-model</h2>
+    <p class="section-desc">雙向資料綁定，讓表單處理更直覺</p>
+  </div>
+
+  <h3>v-model 基本用法</h3>
+  <pre><code><span class="cmt">&lt;!-- 文字輸入 --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">v-model</span>=<span class="val">"text"</span> <span class="attr">placeholder</span>=<span class="val">"輸入..."</span><span class="tag">&gt;</span>
+<span class="tag">&lt;p&gt;</span>輸入值：{{ text }}<span class="tag">&lt;/p&gt;</span>
+
+<span class="cmt">&lt;!-- Textarea --&gt;</span>
+<span class="tag">&lt;textarea</span> <span class="attr">v-model</span>=<span class="val">"content"</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+
+<span class="cmt">&lt;!-- Checkbox 單一（boolean）--&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"checkbox"</span> <span class="attr">v-model</span>=<span class="val">"checked"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- Checkbox 多個（陣列）--&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"checkbox"</span> <span class="attr">v-model</span>=<span class="val">"checkedItems"</span> <span class="attr">value</span>=<span class="val">"A"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"checkbox"</span> <span class="attr">v-model</span>=<span class="val">"checkedItems"</span> <span class="attr">value</span>=<span class="val">"B"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- Radio --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"radio"</span> <span class="attr">v-model</span>=<span class="val">"picked"</span> <span class="attr">value</span>=<span class="val">"one"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- Select --&gt;</span>
+<span class="tag">&lt;select</span> <span class="attr">v-model</span>=<span class="val">"selected"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"a"</span><span class="tag">&gt;</span>選項 A<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"b"</span><span class="tag">&gt;</span>選項 B<span class="tag">&lt;/option&gt;</span>
+<span class="tag">&lt;/select&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>v-model 修飾符</h3>
+  <pre><code><span class="cmt">&lt;!-- .lazy — 改為 change 事件觸發（失焦才更新）--&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">v-model.lazy</span>=<span class="val">"text"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- .number — 自動轉成數字 --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">v-model.number</span>=<span class="val">"age"</span> <span class="attr">type</span>=<span class="val">"number"</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- .trim — 去除首尾空白 --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">v-model.trim</span>=<span class="val">"username"</span><span class="tag">&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>組件上的 v-model</h3>
+  <pre><code><span class="cmt">// 父組件</span>
+<span class="tag">&lt;MyInput</span> <span class="attr">v-model</span>=<span class="val">"value"</span> <span class="tag">/&gt;</span>
+<span class="cmt">// 等同於</span>
+<span class="tag">&lt;MyInput</span> <span class="attr">:modelValue</span>=<span class="val">"value"</span> <span class="attr">@update:modelValue</span>=<span class="val">"v => value = v"</span> <span class="tag">/&gt;</span>
+
+<span class="cmt">// MyInput.vue 子組件</span>
+<span class="kw">const</span> <span class="prop">props</span> = <span class="fn">defineProps</span>([<span class="str">'modelValue'</span>])
+<span class="kw">const</span> <span class="prop">emit</span> = <span class="fn">defineEmits</span>([<span class="str">'update:modelValue'</span>])
+
+<span class="cmt">// 多個 v-model（Vue 3.4+）</span>
+<span class="tag">&lt;MyForm</span> <span class="attr">v-model:name</span>=<span class="val">"name"</span> <span class="attr">v-model:age</span>=<span class="val">"age"</span> <span class="tag">/&gt;</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('events')">← 事件處理</button>
+    <button class="btn btn-primary" onclick="showSection('lifecycle')">生命週期 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 9. LIFECYCLE ════════════════════════════════ -->
+<section class="section" id="sec-lifecycle">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">生命週期</h2>
+    <p class="section-desc">組件從建立到銷毀的完整過程</p>
+  </div>
+
+  <div class="lifecycle">
+    <div class="lc-node event">createApp().mount()</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onBeforeMount</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node event">DOM 掛載完成</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onMounted ✅ 最常用</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node event">資料變更（響應式更新）</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onBeforeUpdate</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onUpdated</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node event">組件被卸載</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onBeforeUnmount</div>
+    <div class="lc-arrow"></div>
+    <div class="lc-node hook">onUnmounted ✅ 清理用</div>
+  </div>
+
+  <h3>Composition API 生命週期 Hooks</h3>
+  <pre><code><span class="kw">import</span> {
+  <span class="fn">onBeforeMount</span>, <span class="fn">onMounted</span>,
+  <span class="fn">onBeforeUpdate</span>, <span class="fn">onUpdated</span>,
+  <span class="fn">onBeforeUnmount</span>, <span class="fn">onUnmounted</span>,
+  <span class="fn">onErrorCaptured</span>, <span class="fn">onActivated</span>, <span class="fn">onDeactivated</span>
+} <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="fn">onMounted</span>(() => {
+  <span class="cmt">// DOM 已掛載，可以操作 DOM、發 API 請求</span>
+  console.<span class="fn">log</span>(<span class="str">'mounted!'</span>)
+})
+
+<span class="fn">onUnmounted</span>(() => {
+  <span class="cmt">// 清理：取消訂閱、清除 timer、移除 event listener</span>
+  <span class="fn">clearInterval</span>(timer)
+})
+
+<span class="fn">onErrorCaptured</span>((err, instance, info) => {
+  <span class="cmt">// 捕獲子組件的錯誤</span>
+  console.<span class="fn">error</span>(err)
+  <span class="kw">return</span> <span class="kw">false</span> <span class="cmt">// 阻止繼續往上傳播</span>
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>keep-alive 的特殊 Hooks</h3>
+  <pre><code><span class="cmt">// 只在被 &lt;KeepAlive&gt; 包裝的組件中觸發</span>
+<span class="fn">onActivated</span>(() => {
+  <span class="cmt">// 組件從快取中恢復顯示</span>
+})
+
+<span class="fn">onDeactivated</span>(() => {
+  <span class="cmt">// 組件被快取（不是真正卸載）</span>
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 最佳實踐</strong>
+    onMounted：API 呼叫、DOM 操作、初始化第三方函式庫<br>
+    onUnmounted：清除 timer、取消 EventListener、取消 API 請求
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('forms')">← 表單</button>
+    <button class="btn btn-primary" onclick="showSection('components')">組件基礎 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 10. COMPONENTS ════════════════════════════════ -->
+<section class="section" id="sec-components">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">組件基礎</h2>
+    <p class="section-desc">組件是 Vue 應用的核心構建單元</p>
+  </div>
+
+  <h3>定義與使用組件</h3>
+  <pre><code><span class="cmt">&lt;!-- MyButton.vue --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"my-btn"</span> <span class="attr">@click</span>=<span class="val">"$emit('click')"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;slot /&gt;</span>
+  <span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- 父組件使用 --&gt;</span>
+<span class="tag">&lt;script setup&gt;</span>
+<span class="kw">import</span> MyButton <span class="kw">from</span> <span class="str">'./MyButton.vue'</span>
+<span class="cmt">// script setup 中 import 後即可直接使用，無需 components 選項</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;MyButton</span> <span class="attr">@click</span>=<span class="val">"handleClick"</span><span class="tag">&gt;</span>點我<span class="tag">&lt;/MyButton&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="lang-tag">VUE</span></code></pre>
+
+  <h3>動態組件</h3>
+  <pre><code><span class="cmt">&lt;!-- 動態切換組件 --&gt;</span>
+<span class="tag">&lt;component</span> <span class="attr">:is</span>=<span class="val">"currentComponent"</span> <span class="tag">/&gt;</span>
+
+<span class="cmt">// script 中</span>
+<span class="kw">const</span> <span class="prop">tabs</span> = { <span class="prop">home</span>: HomeComp, <span class="prop">about</span>: AboutComp }
+<span class="kw">const</span> <span class="prop">currentTab</span> = <span class="fn">ref</span>(<span class="str">'home'</span>)
+<span class="kw">const</span> <span class="prop">currentComponent</span> = <span class="fn">computed</span>(() => <span class="prop">tabs</span>[<span class="prop">currentTab</span>.value])
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>非同步組件</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">defineAsyncComponent</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="cmt">// 基本用法</span>
+<span class="kw">const</span> AsyncComp = <span class="fn">defineAsyncComponent</span>(() =>
+  <span class="kw">import</span>(<span class="str">'./HeavyComponent.vue'</span>)
+)
+
+<span class="cmt">// 進階設定</span>
+<span class="kw">const</span> AsyncComp = <span class="fn">defineAsyncComponent</span>({
+  <span class="prop">loader</span>: () => <span class="kw">import</span>(<span class="str">'./HeavyComponent.vue'</span>),
+  <span class="prop">loadingComponent</span>: LoadingSpinner,
+  <span class="prop">errorComponent</span>: ErrorDisplay,
+  <span class="prop">delay</span>: <span class="num">200</span>,     <span class="cmt">// 顯示 loading 前的延遲</span>
+  <span class="prop">timeout</span>: <span class="num">3000</span>  <span class="cmt">// 超時顯示 error</span>
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('lifecycle')">← 生命週期</button>
+    <button class="btn btn-primary" onclick="showSection('props')">Props & Emit →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 11. PROPS & EMIT ════════════════════════════════ -->
+<section class="section" id="sec-props">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Props & Emit</h2>
+    <p class="section-desc">父子組件的溝通管道</p>
+  </div>
+
+  <h3>defineProps</h3>
+  <pre><code><span class="cmt">// 基本宣告</span>
+<span class="kw">const</span> <span class="prop">props</span> = <span class="fn">defineProps</span>([<span class="str">'title'</span>, <span class="str">'count'</span>])
+
+<span class="cmt">// 帶型別驗證</span>
+<span class="kw">const</span> <span class="prop">props</span> = <span class="fn">defineProps</span>({
+  <span class="prop">title</span>: String,
+  <span class="prop">count</span>: {
+    <span class="prop">type</span>: Number,
+    <span class="prop">required</span>: <span class="kw">true</span>
+  },
+  <span class="prop">items</span>: {
+    <span class="prop">type</span>: Array,
+    <span class="prop">default</span>: () => []  <span class="cmt">// 物件/陣列必須用 factory function</span>
+  },
+  <span class="prop">status</span>: {
+    <span class="prop">type</span>: String,
+    <span class="prop">validator</span>: (val) => [<span class="str">'active'</span>, <span class="str">'inactive'</span>].<span class="fn">includes</span>(val)
+  }
+})
+
+<span class="cmt">// TypeScript 寫法（推薦）</span>
+<span class="kw">const</span> <span class="prop">props</span> = <span class="fn">defineProps</span>&lt;{
+  <span class="prop">title</span>: <span class="kw">string</span>
+  <span class="prop">count</span>?: <span class="kw">number</span>
+}&gt;()
+
+<span class="cmt">// 帶預設值的 TS（使用 withDefaults）</span>
+<span class="kw">const</span> <span class="prop">props</span> = <span class="fn">withDefaults</span>(<span class="fn">defineProps</span>&lt;{ <span class="prop">count</span>?: <span class="kw">number</span> }&gt;(), {
+  <span class="prop">count</span>: <span class="num">0</span>
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>defineEmits</h3>
+  <pre><code><span class="cmt">// 基本宣告</span>
+<span class="kw">const</span> <span class="prop">emit</span> = <span class="fn">defineEmits</span>([<span class="str">'update'</span>, <span class="str">'close'</span>])
+
+<span class="cmt">// 帶型別驗證</span>
+<span class="kw">const</span> <span class="prop">emit</span> = <span class="fn">defineEmits</span>({
+  <span class="prop">submit</span>: (payload: { name: <span class="kw">string</span> }) => {
+    <span class="kw">return</span> <span class="kw">typeof</span> payload.name === <span class="str">'string'</span>
+  }
+})
+
+<span class="cmt">// 觸發事件</span>
+<span class="fn">emit</span>(<span class="str">'update'</span>, newValue)
+<span class="fn">emit</span>(<span class="str">'close'</span>)
+
+<span class="cmt">// 父組件監聽</span>
+<span class="tag">&lt;MyComp</span> <span class="attr">@update</span>=<span class="val">"handleUpdate"</span> <span class="attr">@close</span>=<span class="val">"handleClose"</span> <span class="tag">/&gt;</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>$attrs / useAttrs — 透傳屬性</h3>
+  <pre><code><span class="cmt">// 子組件中存取未宣告為 props/emits 的屬性</span>
+<span class="kw">import</span> { <span class="fn">useAttrs</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+<span class="kw">const</span> <span class="prop">attrs</span> = <span class="fn">useAttrs</span>()
+
+<span class="cmt">// 禁止自動繼承（手動控制傳遞目標）</span>
+<span class="fn">defineOptions</span>({ <span class="prop">inheritAttrs</span>: <span class="kw">false</span> })
+
+<span class="cmt">// 模板中手動透傳給特定元素</span>
+<span class="tag">&lt;input</span> <span class="attr">v-bind</span>=<span class="val">"$attrs"</span> <span class="tag">/&gt;</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('components')">← 組件基礎</button>
+    <button class="btn btn-primary" onclick="showSection('slots')">Slots 插槽 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 12. SLOTS ════════════════════════════════ -->
+<section class="section" id="sec-slots">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Slots 插槽</h2>
+    <p class="section-desc">讓父組件控制子組件內部的渲染內容</p>
+  </div>
+
+  <h3>基本插槽</h3>
+  <pre><code><span class="cmt">&lt;!-- Card.vue 子組件 --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;slot&gt;</span>預設內容（父沒傳時顯示）<span class="tag">&lt;/slot&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- 父組件使用 --&gt;</span>
+<span class="tag">&lt;Card&gt;</span>
+  <span class="tag">&lt;p&gt;</span>這是插入的內容<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Card&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>具名插槽</h3>
+  <pre><code><span class="cmt">&lt;!-- Layout.vue --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;header&gt;</span><span class="tag">&lt;slot</span> <span class="attr">name</span>=<span class="val">"header"</span> <span class="tag">/&gt;&lt;/header&gt;</span>
+  <span class="tag">&lt;main&gt;</span><span class="tag">&lt;slot /&gt;</span><span class="tag">&lt;/main&gt;</span>  <span class="cmt">&lt;!-- 預設插槽 --&gt;</span>
+  <span class="tag">&lt;footer&gt;</span><span class="tag">&lt;slot</span> <span class="attr">name</span>=<span class="val">"footer"</span> <span class="tag">/&gt;&lt;/footer&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- 父組件 --&gt;</span>
+<span class="tag">&lt;Layout&gt;</span>
+  <span class="tag">&lt;template</span> <span class="attr">#header</span><span class="tag">&gt;</span>  <span class="cmt">&lt;!-- # 是 v-slot: 縮寫 --&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>頁頭<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;/template&gt;</span>
+
+  <span class="tag">&lt;p&gt;</span>主要內容（預設插槽）<span class="tag">&lt;/p&gt;</span>
+
+  <span class="tag">&lt;template</span> <span class="attr">#footer</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;p&gt;</span>頁腳<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;/Layout&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>作用域插槽（Scoped Slots）</h3>
+  <p>子組件可以向插槽傳遞資料，父組件可以使用這些資料來決定如何渲染。</p>
+  <pre><code><span class="cmt">&lt;!-- DataTable.vue — 子組件傳資料給插槽 --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;tbody&gt;</span>
+    <span class="tag">&lt;tr</span> <span class="attr">v-for</span>=<span class="val">"item in items"</span> <span class="attr">:key</span>=<span class="val">"item.id"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;slot</span> <span class="attr">:item</span>=<span class="val">"item"</span> <span class="attr">:index</span>=<span class="val">"index"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/tr&gt;</span>
+  <span class="tag">&lt;/tbody&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- 父組件解構使用 --&gt;</span>
+<span class="tag">&lt;DataTable</span> <span class="attr">:items</span>=<span class="val">"users"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;template</span> <span class="attr">#default</span>=<span class="val">"{ item, index }"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;td&gt;</span>{{ index + 1 }}<span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;td&gt;</span>{{ item.name }}<span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;/DataTable&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('props')">← Props & Emit</button>
+    <button class="btn btn-primary" onclick="showSection('provide')">Provide & Inject →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 13. PROVIDE / INJECT ════════════════════════════════ -->
+<section class="section" id="sec-provide">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Provide & Inject</h2>
+    <p class="section-desc">跨越組件層級的依賴注入，解決 Props Drilling 問題</p>
+  </div>
+
+  <pre><code><span class="cmt">// 祖先組件 provide</span>
+<span class="kw">import</span> { <span class="fn">provide</span>, <span class="fn">ref</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">theme</span> = <span class="fn">ref</span>(<span class="str">'dark'</span>)
+<span class="fn">provide</span>(<span class="str">'theme'</span>, <span class="prop">theme</span>)  <span class="cmt">// 提供響應式值</span>
+<span class="fn">provide</span>(<span class="str">'setTheme'</span>, (v) => <span class="prop">theme</span>.value = v)  <span class="cmt">// 提供修改函數</span>
+
+<span class="cmt">// 任意深度子孫組件 inject</span>
+<span class="kw">import</span> { <span class="fn">inject</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">const</span> <span class="prop">theme</span> = <span class="fn">inject</span>(<span class="str">'theme'</span>)         <span class="cmt">// 接收</span>
+<span class="kw">const</span> <span class="prop">theme</span> = <span class="fn">inject</span>(<span class="str">'theme'</span>, <span class="str">'light'</span>) <span class="cmt">// 帶預設值</span>
+<span class="kw">const</span> <span class="prop">setTheme</span> = <span class="fn">inject</span>(<span class="str">'setTheme'</span>)
+
+<span class="cmt">// 使用 Symbol 作為 key（避免命名衝突，推薦）</span>
+<span class="cmt">// injection-keys.js</span>
+<span class="kw">export const</span> <span class="prop">THEME_KEY</span> = <span class="fn">Symbol</span>(<span class="str">'theme'</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 建議保持資料流向清晰</strong>
+    修改 provide 的資料應由提供方負責。在子組件中直接修改 inject 進來的響應式資料雖然可行，但會破壞單向資料流，難以追蹤。建議 provide 一個修改函數給子組件使用。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('slots')">← Slots</button>
+    <button class="btn btn-primary" onclick="showSection('composables')">Composables →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 14. COMPOSABLES ════════════════════════════════ -->
+<section class="section" id="sec-composables">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">Composables 組合式函數</h2>
+    <p class="section-desc">Vue 3 最重要的邏輯複用模式，取代 Vue 2 的 Mixins</p>
+  </div>
+
+  <h3>什麼是 Composable？</h3>
+  <p>Composable 是一個函數，封裝並複用<strong>有狀態的邏輯</strong>。它利用 Composition API 的響應式系統，提供類似 React Hooks 的體驗。</p>
+
+  <h3>實作範例 — useFetch</h3>
+  <pre><code><span class="cmt">// composables/useFetch.js</span>
+<span class="kw">import</span> { <span class="fn">ref</span>, <span class="fn">watchEffect</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="kw">export function</span> <span class="fn">useFetch</span>(url) {
+  <span class="kw">const</span> <span class="prop">data</span> = <span class="fn">ref</span>(<span class="kw">null</span>)
+  <span class="kw">const</span> <span class="prop">error</span> = <span class="fn">ref</span>(<span class="kw">null</span>)
+  <span class="kw">const</span> <span class="prop">loading</span> = <span class="fn">ref</span>(<span class="kw">false</span>)
+
+  <span class="fn">watchEffect</span>(async () => {
+    <span class="prop">data</span>.value = <span class="kw">null</span>
+    <span class="prop">error</span>.value = <span class="kw">null</span>
+    <span class="prop">loading</span>.value = <span class="kw">true</span>
+    <span class="kw">try</span> {
+      <span class="prop">data</span>.value = <span class="kw">await</span> (await <span class="fn">fetch</span>(<span class="fn">toValue</span>(url))).<span class="fn">json</span>()
+    } <span class="kw">catch</span> (e) {
+      <span class="prop">error</span>.value = e
+    } <span class="kw">finally</span> {
+      <span class="prop">loading</span>.value = <span class="kw">false</span>
+    }
+  })
+
+  <span class="kw">return</span> { <span class="prop">data</span>, <span class="prop">error</span>, <span class="prop">loading</span> }
+}
+
+<span class="cmt">// 組件中使用</span>
+<span class="kw">const</span> { <span class="prop">data</span>, <span class="prop">loading</span>, <span class="prop">error</span> } = <span class="fn">useFetch</span>(<span class="str">'/api/users'</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>實作範例 — useLocalStorage</h3>
+  <pre><code><span class="kw">export function</span> <span class="fn">useLocalStorage</span>(key, defaultValue) {
+  <span class="kw">const</span> <span class="prop">stored</span> = localStorage.<span class="fn">getItem</span>(key)
+  <span class="kw">const</span> <span class="prop">value</span> = <span class="fn">ref</span>(<span class="prop">stored</span> ? <span class="fn">JSON</span>.<span class="fn">parse</span>(<span class="prop">stored</span>) : defaultValue)
+
+  <span class="fn">watch</span>(<span class="prop">value</span>, (newVal) => {
+    localStorage.<span class="fn">setItem</span>(key, <span class="fn">JSON</span>.<span class="fn">stringify</span>(newVal))
+  }, { <span class="prop">deep</span>: <span class="kw">true</span> })
+
+  <span class="kw">return</span> <span class="prop">value</span>
+}
+
+<span class="cmt">// 使用</span>
+<span class="kw">const</span> <span class="prop">theme</span> = <span class="fn">useLocalStorage</span>(<span class="str">'theme'</span>, <span class="str">'dark'</span>)
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>Composable 命名慣例</h3>
+  <ul>
+    <li>函數名稱以 <code>use</code> 開頭（如 <code>useCounter</code>、<code>useAuth</code>）</li>
+    <li>放在 <code>composables/</code> 資料夾</li>
+    <li>只能在 <code>&lt;script setup&gt;</code> 或 <code>setup()</code> 頂層呼叫</li>
+    <li>不能在條件判斷或迴圈中呼叫</li>
+  </ul>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('provide')">← Provide & Inject</button>
+    <button class="btn btn-primary" onclick="showSection('directives')">自訂指令 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 15. DIRECTIVES ════════════════════════════════ -->
+<section class="section" id="sec-directives">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">自訂指令</h2>
+    <p class="section-desc">當你需要直接操作 DOM 時，自訂指令是最佳選擇</p>
+  </div>
+
+  <pre><code><span class="cmt">// 自訂指令的 hooks 與生命週期一致</span>
+<span class="kw">const</span> <span class="prop">vFocus</span> = {
+  <span class="fn">mounted</span>(el) { el.<span class="fn">focus</span>() }
+}
+
+<span class="cmt">// 在 script setup 中，v 開頭的變數即為自訂指令</span>
+<span class="cmt">// &lt;input v-focus /&gt;</span>
+
+<span class="cmt">// 完整 hooks</span>
+<span class="kw">const</span> <span class="prop">vColor</span> = {
+  <span class="fn">created</span>(el, binding, vnode) {},
+  <span class="fn">beforeMount</span>(el, binding) {},
+  <span class="fn">mounted</span>(el, binding) {
+    <span class="cmt">// binding.value — 指令的值（v-color="'red'"）</span>
+    <span class="cmt">// binding.arg   — 修飾符前的參數（v-color:bg）</span>
+    <span class="cmt">// binding.modifiers — 修飾符物件（v-color.bold）</span>
+    el.style.color = binding.value
+  },
+  <span class="fn">beforeUpdate</span>(el, binding) {},
+  <span class="fn">updated</span>(el, binding) {},
+  <span class="fn">beforeUnmount</span>(el) {},
+  <span class="fn">unmounted</span>(el) {}
+}
+
+<span class="cmt">// 全域註冊</span>
+app.<span class="fn">directive</span>(<span class="str">'highlight'</span>, {
+  <span class="fn">mounted</span>(el, binding) {
+    el.style.backgroundColor = binding.value || <span class="str">'yellow'</span>
+  }
+})
+<span class="cmt">// 使用：&lt;p v-highlight="'pink'"&gt;...&lt;/p&gt;</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('composables')">← Composables</button>
+    <button class="btn btn-primary" onclick="showSection('teleport')">內建特殊組件 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 16. SPECIAL COMPONENTS ════════════════════════════════ -->
+<section class="section" id="sec-teleport">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">內建特殊組件</h2>
+    <p class="section-desc">Teleport、Suspense、KeepAlive、Transition</p>
+  </div>
+
+  <h3>Teleport — 傳送 DOM</h3>
+  <pre><code><span class="cmt">&lt;!-- 把 Modal 渲染到 body 下，而非當前組件的 DOM 位置 --&gt;</span>
+<span class="tag">&lt;Teleport</span> <span class="attr">to</span>=<span class="val">"body"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal"</span> <span class="attr">v-if</span>=<span class="val">"showModal"</span><span class="tag">&gt;</span>
+    彈窗內容
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/Teleport&gt;</span>
+
+<span class="cmt">&lt;!-- 可停用 --&gt;</span>
+<span class="tag">&lt;Teleport</span> <span class="attr">to</span>=<span class="val">"body"</span> <span class="attr">:disabled</span>=<span class="val">"isMobile"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/Teleport&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>KeepAlive — 組件快取</h3>
+  <pre><code><span class="cmt">&lt;!-- 切換 tab 時保留組件狀態 --&gt;</span>
+<span class="tag">&lt;KeepAlive</span> <span class="attr">:include</span>=<span class="val">"['ComponentA', 'ComponentB']"</span> <span class="attr">:max</span>=<span class="val">"5"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;component</span> <span class="attr">:is</span>=<span class="val">"currentTab"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/KeepAlive&gt;</span>
+
+<span class="cmt">&lt;!-- 組件需要有 name 選項才能被 include 識別 --&gt;</span>
+<span class="fn">defineOptions</span>({ <span class="prop">name</span>: <span class="str">'ComponentA'</span> })
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>Suspense — 非同步組件等待</h3>
+  <pre><code><span class="tag">&lt;Suspense&gt;</span>
+  <span class="tag">&lt;template</span> <span class="attr">#default</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;AsyncComponent</span> <span class="tag">/&gt;</span>  <span class="cmt">&lt;!-- 非同步組件或有 async setup() 的組件 --&gt;</span>
+  <span class="tag">&lt;/template&gt;</span>
+  <span class="tag">&lt;template</span> <span class="attr">#fallback</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;LoadingSpinner</span> <span class="tag">/&gt;</span>  <span class="cmt">&lt;!-- 等待時顯示 --&gt;</span>
+  <span class="tag">&lt;/template&gt;</span>
+<span class="tag">&lt;/Suspense&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>Transition — 過場動畫</h3>
+  <pre><code><span class="tag">&lt;Transition</span> <span class="attr">name</span>=<span class="val">"fade"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p</span> <span class="attr">v-if</span>=<span class="val">"show"</span><span class="tag">&gt;</span>淡入淡出<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Transition&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="prop">.fade-enter-active</span>, <span class="prop">.fade-leave-active</span> { transition: opacity 0.3s; }
+<span class="prop">.fade-enter-from</span>, <span class="prop">.fade-leave-to</span> { opacity: 0; }
+<span class="tag">&lt;/style&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('directives')">← 自訂指令</button>
+    <button class="btn btn-primary" onclick="showSection('performance')">效能優化 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 17. PERFORMANCE ════════════════════════════════ -->
+<section class="section" id="sec-performance">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">效能優化</h2>
+    <p class="section-desc">讓 Vue 應用跑得更快的關鍵技巧</p>
+  </div>
+
+  <h3>響應式優化</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">shallowRef</span>, <span class="fn">shallowReactive</span>, <span class="fn">markRaw</span>, <span class="fn">readonly</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="cmt">// 大型不需響應的物件 → markRaw 防止被代理</span>
+<span class="kw">const</span> <span class="prop">chart</span> = <span class="fn">markRaw</span>(<span class="kw">new</span> <span class="fn">BigChartLibrary</span>())
+
+<span class="cmt">// 大型列表用 shallowRef 只追蹤第一層</span>
+<span class="kw">const</span> <span class="prop">bigList</span> = <span class="fn">shallowRef</span>(generateLargeList())
+
+<span class="cmt">// readonly — 確保不被意外修改</span>
+<span class="kw">const</span> <span class="prop">config</span> = <span class="fn">readonly</span>({ <span class="prop">apiUrl</span>: <span class="str">'...'</span> })
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>v-memo — 記憶子樹</h3>
+  <pre><code><span class="cmt">&lt;!-- 只有 selected 或 item.id 變化時才重新渲染 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">v-for</span>=<span class="val">"item in list"</span> <span class="attr">:key</span>=<span class="val">"item.id"</span>
+     <span class="attr">v-memo</span>=<span class="val">"[item.id === selected]"</span><span class="tag">&gt;</span>
+  {{ item.name }}
+<span class="tag">&lt;/div&gt;</span>
+<span class="lang-tag">HTML</span></code></pre>
+
+  <h3>程式碼分割 — 路由層級懶加載</h3>
+  <pre><code><span class="cmt">// router/index.js</span>
+<span class="kw">const</span> <span class="prop">routes</span> = [
+  {
+    <span class="prop">path</span>: <span class="str">'/about'</span>,
+    <span class="cmt">// 只有訪問這個路由時才載入</span>
+    <span class="prop">component</span>: () => <span class="kw">import</span>(<span class="str">'./views/About.vue'</span>)
+  }
+]
+
+<span class="cmt">// 組件懶加載</span>
+<span class="kw">const</span> HeavyChart = <span class="fn">defineAsyncComponent</span>(
+  () => <span class="kw">import</span>(<span class="str">'./components/HeavyChart.vue'</span>)
+)
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>效能優化清單</h3>
+  <table>
+    <tr><th>策略</th><th>方法</th></tr>
+    <tr><td>減少響應式開銷</td><td>markRaw、shallowRef、Object.freeze</td></tr>
+    <tr><td>避免不必要重渲染</td><td>v-memo、computed 快取</td></tr>
+    <tr><td>列表優化</td><td>唯一 key、虛擬滾動（vue-virtual-scroller）</td></tr>
+    <tr><td>程式碼分割</td><td>路由懶加載、defineAsyncComponent</td></tr>
+    <tr><td>圖片優化</td><td>lazy loading、WebP 格式</td></tr>
+    <tr><td>打包優化</td><td>Tree shaking、Rollup 分析</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('teleport')">← 特殊組件</button>
+    <button class="btn btn-primary" onclick="showSection('router')">Vue Router →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 18. ROUTER ════════════════════════════════ -->
+<section class="section" id="sec-router">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">Vue Router</h2>
+    <p class="section-desc">官方路由解決方案，打造 SPA 頁面導航</p>
+  </div>
+
+  <h3>基本設定</h3>
+  <pre><code><span class="cmt">// router/index.js</span>
+<span class="kw">import</span> { <span class="fn">createRouter</span>, <span class="fn">createWebHistory</span> } <span class="kw">from</span> <span class="str">'vue-router'</span>
+
+<span class="kw">const</span> <span class="prop">router</span> = <span class="fn">createRouter</span>({
+  <span class="prop">history</span>: <span class="fn">createWebHistory</span>(),  <span class="cmt">// HTML5 History 模式</span>
+  <span class="prop">routes</span>: [
+    { <span class="prop">path</span>: <span class="str">'/'</span>, <span class="prop">component</span>: HomeView },
+    { <span class="prop">path</span>: <span class="str">'/users/:id'</span>, <span class="prop">component</span>: UserView },
+    {
+      <span class="prop">path</span>: <span class="str">'/admin'</span>,
+      <span class="prop">component</span>: AdminLayout,
+      <span class="prop">meta</span>: { <span class="prop">requiresAuth</span>: <span class="kw">true</span> },
+      <span class="prop">children</span>: [
+        { <span class="prop">path</span>: <span class="str">''</span>, <span class="prop">component</span>: AdminHome },
+        { <span class="prop">path</span>: <span class="str">'users'</span>, <span class="prop">component</span>: AdminUsers }
+      ]
+    },
+    { <span class="prop">path</span>: <span class="str">'/:pathMatch(.*)*'</span>, <span class="prop">component</span>: NotFound }
+  ]
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>組件中使用路由</h3>
+  <pre><code><span class="kw">import</span> { <span class="fn">useRouter</span>, <span class="fn">useRoute</span> } <span class="kw">from</span> <span class="str">'vue-router'</span>
+
+<span class="kw">const</span> <span class="prop">router</span> = <span class="fn">useRouter</span>()  <span class="cmt">// 用於導航</span>
+<span class="kw">const</span> <span class="prop">route</span> = <span class="fn">useRoute</span>()    <span class="cmt">// 用於讀取當前路由資訊</span>
+
+<span class="cmt">// 讀取路由參數</span>
+<span class="prop">route</span>.<span class="prop">params</span>.<span class="prop">id</span>      <span class="cmt">// 動態路由參數</span>
+<span class="prop">route</span>.<span class="prop">query</span>.<span class="prop">page</span>    <span class="cmt">// query string</span>
+<span class="prop">route</span>.<span class="prop">meta</span>          <span class="cmt">// 路由元資料</span>
+
+<span class="cmt">// 程式導航</span>
+<span class="prop">router</span>.<span class="fn">push</span>(<span class="str">'/home'</span>)
+<span class="prop">router</span>.<span class="fn">push</span>({ <span class="prop">name</span>: <span class="str">'user'</span>, <span class="prop">params</span>: { <span class="prop">id</span>: <span class="num">123</span> } })
+<span class="prop">router</span>.<span class="fn">replace</span>(<span class="str">'/home'</span>)  <span class="cmt">// 不加入歷史</span>
+<span class="prop">router</span>.<span class="fn">go</span>(-<span class="num">1</span>)             <span class="cmt">// 上一頁</span>
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>導航守衛</h3>
+  <pre><code><span class="cmt">// 全域守衛</span>
+<span class="prop">router</span>.<span class="fn">beforeEach</span>((to, from, next) => {
+  <span class="kw">if</span> (to.meta.<span class="prop">requiresAuth</span> && !<span class="fn">isLoggedIn</span>()) {
+    <span class="fn">next</span>({ <span class="prop">path</span>: <span class="str">'/login'</span> })
+  } <span class="kw">else</span> {
+    <span class="fn">next</span>()
+  }
+})
+
+<span class="cmt">// 組件內守衛</span>
+<span class="kw">import</span> { <span class="fn">onBeforeRouteLeave</span>, <span class="fn">onBeforeRouteUpdate</span> } <span class="kw">from</span> <span class="str">'vue-router'</span>
+
+<span class="fn">onBeforeRouteLeave</span>((to, from) => {
+  <span class="kw">if</span> (<span class="prop">hasUnsavedChanges</span>.value) {
+    <span class="kw">return</span> <span class="fn">confirm</span>(<span class="str">'確定要離開嗎？未儲存的變更將遺失。'</span>)
+  }
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('performance')">← 效能優化</button>
+    <button class="btn btn-primary" onclick="showSection('pinia')">Pinia →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 19. PINIA ════════════════════════════════ -->
+<section class="section" id="sec-pinia">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">Pinia 狀態管理</h2>
+    <p class="section-desc">Vue 3 官方推薦的狀態管理庫，取代 Vuex</p>
+  </div>
+
+  <h3>定義 Store</h3>
+  <pre><code><span class="cmt">// stores/counter.js</span>
+<span class="kw">import</span> { <span class="fn">defineStore</span> } <span class="kw">from</span> <span class="str">'pinia'</span>
+<span class="kw">import</span> { <span class="fn">ref</span>, <span class="fn">computed</span> } <span class="kw">from</span> <span class="str">'vue'</span>
+
+<span class="cmt">// Setup Store 風格（推薦，類似 script setup）</span>
+<span class="kw">export const</span> <span class="fn">useCounterStore</span> = <span class="fn">defineStore</span>(<span class="str">'counter'</span>, () => {
+  <span class="cmt">// state</span>
+  <span class="kw">const</span> <span class="prop">count</span> = <span class="fn">ref</span>(<span class="num">0</span>)
+
+  <span class="cmt">// getters</span>
+  <span class="kw">const</span> <span class="prop">doubled</span> = <span class="fn">computed</span>(() => <span class="prop">count</span>.value * <span class="num">2</span>)
+
+  <span class="cmt">// actions</span>
+  <span class="kw">function</span> <span class="fn">increment</span>() { <span class="prop">count</span>.value++ }
+  <span class="kw">async function</span> <span class="fn">fetchCount</span>() {
+    <span class="prop">count</span>.value = <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">getCount</span>()
+  }
+
+  <span class="kw">return</span> { <span class="prop">count</span>, <span class="prop">doubled</span>, <span class="fn">increment</span>, <span class="fn">fetchCount</span> }
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <h3>使用 Store</h3>
+  <pre><code><span class="tag">&lt;script setup&gt;</span>
+<span class="kw">import</span> { <span class="fn">useCounterStore</span> } <span class="kw">from</span> <span class="str">'@/stores/counter'</span>
+<span class="kw">import</span> { <span class="fn">storeToRefs</span> } <span class="kw">from</span> <span class="str">'pinia'</span>
+
+<span class="kw">const</span> <span class="prop">store</span> = <span class="fn">useCounterStore</span>()
+
+<span class="cmt">// ✅ 用 storeToRefs 解構響應式資料（保持響應性）</span>
+<span class="kw">const</span> { <span class="prop">count</span>, <span class="prop">doubled</span> } = <span class="fn">storeToRefs</span>(<span class="prop">store</span>)
+
+<span class="cmt">// actions 直接解構即可（函數不需要響應性）</span>
+<span class="kw">const</span> { <span class="fn">increment</span> } = <span class="prop">store</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;p&gt;</span>{{ count }} (x2 = {{ doubled }})<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">@click</span>=<span class="val">"increment"</span><span class="tag">&gt;</span>+1<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+<span class="lang-tag">VUE</span></code></pre>
+
+  <h3>Store 間相互使用</h3>
+  <pre><code><span class="cmt">// stores/user.js</span>
+<span class="kw">export const</span> <span class="fn">useUserStore</span> = <span class="fn">defineStore</span>(<span class="str">'user'</span>, () => {
+  <span class="kw">const</span> <span class="prop">authStore</span> = <span class="fn">useAuthStore</span>() <span class="cmt">// 直接使用其他 store</span>
+  <span class="kw">const</span> <span class="prop">profile</span> = <span class="fn">ref</span>(<span class="kw">null</span>)
+
+  <span class="kw">async function</span> <span class="fn">fetchProfile</span>() {
+    <span class="kw">if</span> (<span class="prop">authStore</span>.<span class="prop">isLoggedIn</span>) {
+      <span class="prop">profile</span>.value = <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">getProfile</span>()
+    }
+  }
+  <span class="kw">return</span> { <span class="prop">profile</span>, <span class="fn">fetchProfile</span> }
+})
+<span class="lang-tag">JS</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('router')">← Vue Router</button>
+    <button class="btn btn-primary" onclick="showSection('nuxt')">Nuxt 3 →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ 20. NUXT ════════════════════════════════ -->
+<section class="section" id="sec-nuxt">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">Nuxt 3 整合</h2>
+    <p class="section-desc">基於 Vue 3 的全端框架，支援 SSR / SSG / SPA</p>
+  </div>
+
+  <h3>Nuxt 3 目錄結構</h3>
+  <pre><code>├── <span class="vue">pages/</span>          <span class="cmt">← 自動路由（約定式路由）</span>
+│   ├── index.vue   <span class="cmt">← /</span>
+│   ├── about.vue   <span class="cmt">← /about</span>
+│   └── users/
+│       └── [id].vue <span class="cmt">← /users/:id（動態路由）</span>
+├── <span class="vue">components/</span>     <span class="cmt">← 自動 import，無需手動 import</span>
+├── <span class="vue">composables/</span>    <span class="cmt">← 自動 import</span>
+├── <span class="vue">layouts/</span>        <span class="cmt">← 佈局組件</span>
+├── <span class="vue">server/</span>         <span class="cmt">← 伺服器端 API Routes</span>
+│   └── api/
+│       └── users.get.ts
+├── <span class="vue">plugins/</span>        <span class="cmt">← 插件（在應用啟動時執行）</span>
+├── <span class="vue">middleware/</span>     <span class="cmt">← 路由中間件</span>
+├── <span class="vue">stores/</span>         <span class="cmt">← Pinia stores（自動 import）</span>
+└── nuxt.config.ts
+<span class="lang-tag">TREE</span></code></pre>
+
+  <h3>Nuxt 特有的資料獲取</h3>
+  <pre><code><span class="tag">&lt;script setup&gt;</span>
+<span class="cmt">// useFetch — SSR 安全，自動處理快取</span>
+<span class="kw">const</span> { <span class="prop">data</span>, <span class="prop">pending</span>, <span class="prop">error</span>, <span class="fn">refresh</span> } = <span class="kw">await</span> <span class="fn">useFetch</span>(<span class="str">'/api/users'</span>)
+
+<span class="cmt">// useAsyncData — 更靈活的版本</span>
+<span class="kw">const</span> { <span class="prop">data</span> } = <span class="kw">await</span> <span class="fn">useAsyncData</span>(<span class="str">'users'</span>, () => $<span class="fn">fetch</span>(<span class="str">'/api/users'</span>))
+
+<span class="cmt">// $fetch — 用於客戶端觸發（如按鈕送出）</span>
+<span class="kw">async function</span> <span class="fn">submit</span>() {
+  <span class="kw">await</span> $<span class="fn">fetch</span>(<span class="str">'/api/submit'</span>, { <span class="prop">method</span>: <span class="str">'POST'</span>, <span class="prop">body</span>: formData })
+}
+<span class="tag">&lt;/script&gt;</span>
+<span class="lang-tag">VUE</span></code></pre>
+
+  <h3>Server API Routes</h3>
+  <pre><code><span class="cmt">// server/api/users.get.ts</span>
+<span class="kw">export default</span> <span class="fn">defineEventHandler</span>(async (event) => {
+  <span class="kw">const</span> <span class="prop">db</span> = <span class="kw">await</span> useDB()
+  <span class="kw">return</span> <span class="prop">db</span>.<span class="fn">query</span>(<span class="str">'SELECT * FROM users'</span>)
+})
+
+<span class="cmt">// server/api/users.post.ts</span>
+<span class="kw">export default</span> <span class="fn">defineEventHandler</span>(async (event) => {
+  <span class="kw">const</span> <span class="prop">body</span> = <span class="kw">await</span> <span class="fn">readBody</span>(event)
+  <span class="cmt">// 處理資料...</span>
+})
+<span class="lang-tag">TS</span></code></pre>
+
+  <h3>Nuxt 渲染模式</h3>
+  <table>
+    <tr><th>模式</th><th>說明</th><th>適用場景</th></tr>
+    <tr><td>SSR</td><td>每次請求在伺服器渲染</td><td>SEO 重要、動態資料</td></tr>
+    <tr><td>SSG</td><td>建構時靜態生成</td><td>部落格、文件、landing page</td></tr>
+    <tr><td>SPA</td><td>純客戶端渲染</td><td>管理後台、不需 SEO</td></tr>
+    <tr><td>Hybrid</td><td>部分路由 SSR + 部分 SSG</td><td>混合需求</td></tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <strong>💡 給 Myverse 的提示</strong>
+    Nuxt 3 + Supabase 的搭配非常適合你的專案。useFetch 搭配 Supabase client 可以讓 API 呼叫 SSR 安全，server/api 可以保護 Supabase service key 不外洩到前端。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('pinia')">← Pinia</button>
+    <button class="btn btn-primary" onclick="showSection('overview')">🏠 回到首頁</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+const sectionMap = {
+  overview: 'sec-overview',
+  instance: 'sec-instance',
+  template: 'sec-template',
+  reactivity: 'sec-reactivity',
+  computed: 'sec-computed',
+  binding: 'sec-binding',
+  conditions: 'sec-conditions',
+  events: 'sec-events',
+  forms: 'sec-forms',
+  lifecycle: 'sec-lifecycle',
+  components: 'sec-components',
+  props: 'sec-props',
+  slots: 'sec-slots',
+  provide: 'sec-provide',
+  composables: 'sec-composables',
+  directives: 'sec-directives',
+  teleport: 'sec-teleport',
+  performance: 'sec-performance',
+  router: 'sec-router',
+  pinia: 'sec-pinia',
+  nuxt: 'sec-nuxt'
+};
+
+const visited = new Set(['overview']);
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const secEl = document.getElementById(sectionMap[id]);
+  if (secEl) secEl.classList.add('active');
+
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if (item.getAttribute('onclick')?.includes(`'${id}'`)) {
+      item.classList.add('active');
+    }
+  });
+
+  visited.add(id);
+  updateProgress();
+  document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const total = Object.keys(sectionMap).length;
+  const pct = Math.round((visited.size / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `學習進度 ${pct}%`;
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = (item.getAttribute('data-label') || item.textContent).toLowerCase();
+    item.style.display = label.includes(q) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-section-title').forEach(t => {
+    t.style.display = q ? 'none' : '';
+  });
+}
+
+updateProgress();
+</script>
+</body>
+</html>
