@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前端面試準備筆記 — Frontend Engineer Interview Prep</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --primary: #f97316;
+    --primary-dark: #c2410c;
+    --primary-light: #fdba74;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #eab308;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #58a6ff;
+    --code-bg: #0d1117;
+    --tag-bg: #2d1810;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .icon-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--danger));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  }
+
+  .sidebar-logo h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+  }
+
+  .sidebar-logo p {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav {
+    padding: 16px 0;
+    flex: 1;
+  }
+
+  .nav-section {
+    margin-bottom: 8px;
+  }
+
+  .nav-section-title {
+    padding: 12px 24px 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 8px 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .nav-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+    border-left-color: var(--primary);
+  }
+
+  .nav-link.active {
+    background: var(--surface2);
+    color: var(--primary);
+    border-left-color: var(--primary);
+  }
+
+  .nav-link.sub {
+    padding-left: 40px;
+    font-size: 12.5px;
+  }
+
+  /* ── MAIN ── */
+  #main {
+    flex: 1;
+    padding: 50px 70px;
+    max-width: calc(100% - 300px);
+  }
+
+  .content-wrapper {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--danger));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .page-header .lede {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .page-header .meta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 14px;
+    background: var(--tag-bg);
+    color: var(--primary-light);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  section {
+    margin-bottom: 60px;
+    scroll-margin-top: 20px;
+  }
+
+  h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2 .num {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--danger));
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 36px;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 21px;
+    font-weight: 600;
+    margin: 36px 0 16px;
+    color: var(--primary-light);
+  }
+
+  h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: var(--text);
+  }
+
+  p {
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  ul, ol {
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+
+  strong {
+    color: var(--primary-light);
+    font-weight: 600;
+  }
+
+  /* ── CODE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--tag-bg);
+    color: var(--primary-light);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+
+  pre code {
+    background: none;
+    color: var(--text);
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .keyword { color: #ff7b72; }
+  .string  { color: #a5d6ff; }
+  .comment { color: #8b949e; font-style: italic; }
+  .num     { color: #79c0ff; }
+  .func    { color: #d2a8ff; }
+  .type    { color: #ffa657; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-left: 4px solid;
+    padding: 16px 22px;
+    margin: 20px 0;
+    border-radius: 0 10px 10px 0;
+    background: var(--surface);
+  }
+
+  .callout.error {
+    border-color: var(--danger);
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), var(--surface));
+  }
+
+  .callout.warning {
+    border-color: var(--warning);
+    background: linear-gradient(90deg, rgba(234, 179, 8, 0.08), var(--surface));
+  }
+
+  .callout.success {
+    border-color: var(--success);
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.08), var(--surface));
+  }
+
+  .callout.info {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, rgba(88, 166, 255, 0.08), var(--surface));
+  }
+
+  .callout.tip {
+    border-color: var(--primary);
+    background: linear-gradient(90deg, rgba(249, 115, 22, 0.08), var(--surface));
+  }
+
+  .callout-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .callout.error .callout-title { color: #ff7b72; }
+  .callout.warning .callout-title { color: var(--warning); }
+  .callout.success .callout-title { color: var(--success); }
+  .callout.info .callout-title { color: var(--accent); }
+  .callout.tip .callout-title { color: var(--primary-light); }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary-light);
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover { background: var(--surface2); }
+
+  /* ── MISTAKE BOX ── */
+  .mistake-box {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), var(--surface));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .mistake-box::before {
+    content: '⚠ 我的錯題';
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--danger);
+    color: white;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .mistake-box .wrong {
+    color: #ff7b72;
+    margin-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .mistake-box .correct {
+    color: var(--success);
+    margin-top: 8px;
+  }
+
+  .mistake-box .label {
+    font-weight: 700;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  /* ── FAQ / INTERVIEW QUOTES ── */
+  .quote-box {
+    background: var(--surface);
+    border-left: 3px solid var(--primary);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .quote-box::before {
+    content: '"';
+    color: var(--primary);
+    font-size: 32px;
+    line-height: 0;
+    vertical-align: -10px;
+    margin-right: 4px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+  }
+
+  /* ── BADGE / TAG ── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+
+  .badge.golden { background: rgba(249, 115, 22, 0.2); color: var(--primary-light); }
+  .badge.must { background: rgba(239, 68, 68, 0.2); color: #ff7b72; }
+  .badge.tip { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 26px;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--text);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    body { flex-direction: column; }
+    #sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    #main { padding: 30px 24px; max-width: 100%; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon-row">
+      <div class="logo-mark">FE</div>
+      <div>
+        <h1>面試準備筆記</h1>
+        <p>Frontend Engineer Interview</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+
+    <div class="nav-section">
+      <div class="nav-section-title">📋 概覽</div>
+      <a href="#overview" class="nav-link">面試指南摘要</a>
+      <a href="#mistakes" class="nav-link">⚠ 錯題集中營</a>
+      <a href="#golden-quotes" class="nav-link">面試金句總表</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">🏗 主題 1 — 系統設計</div>
+      <a href="#t1-state" class="nav-link">State 三層架構</a>
+      <a href="#t1-multi" class="nav-link">Multi-view 同步</a>
+      <a href="#t1-ws" class="nav-link">WebSocket 韌性</a>
+      <a href="#t1-folder" class="nav-link">Folder 結構 + Splitting</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">⚛ 主題 2 — React 效能</div>
+      <a href="#t2-render" class="nav-link">渲染機制</a>
+      <a href="#t2-ref" class="nav-link">Reference 觀念</a>
+      <a href="#t2-hooks" class="nav-link">memo / useCallback / useMemo</a>
+      <a href="#t2-async" class="nav-link">Async Flow + Custom Hook</a>
+      <a href="#t2-debounce" class="nav-link">Debounce / Throttle / useRef</a>
+      <a href="#t2-virtual" class="nav-link">Virtualization</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">🤖 主題 3 — AI Agent</div>
+      <a href="#t3-where" class="nav-link">Where it lives</a>
+      <a href="#t3-interaction" class="nav-link">Interaction Model</a>
+      <a href="#t3-data" class="nav-link">Data + Pipeline</a>
+      <a href="#t3-latency" class="nav-link">Latency Handling</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">🎯 面試心法</div>
+      <a href="#prep-plan" class="nav-link">3 天備戰計畫</a>
+      <a href="#stage-tips" class="nav-link">現場注意事項</a>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<main id="main">
+<div class="content-wrapper">
+
+<div class="page-header">
+  <h1>前端面試準備筆記</h1>
+  <p class="lede">針對「Frontend System Design + Core React & Performance + AI Agent Integration」三大主題的完整準備。包含觀念解析、Myverse 對應實例、錯題復盤與面試金句。</p>
+  <span class="meta">Frontend Engineer · 系統推演 · 含 15 題錯題復盤</span>
+</div>
+
+<!-- ===================== OVERVIEW ===================== -->
+<section id="overview">
+  <h2><span class="num">📋</span>面試指南摘要</h2>
+
+  <p>這份筆記涵蓋公司寄來的面試指南三大主題。每個主題的本質與答題模式都不同，理解差異是答好的前提。</p>
+
+  <table>
+    <tr>
+      <th style="width: 22%">主題</th>
+      <th style="width: 26%">考的是</th>
+      <th>答題模式</th>
+    </tr>
+    <tr>
+      <td><strong>主題 1<br>System Design</strong></td>
+      <td>架構判斷力——大局裡做決策</td>
+      <td>講選型、講 trade-off、講「為什麼不選另一個」</td>
+    </tr>
+    <tr>
+      <td><strong>主題 2<br>React 效能</strong></td>
+      <td>知識——這個 API 怎麼運作</td>
+      <td>講原理、舉例、寫程式碼</td>
+    </tr>
+    <tr>
+      <td><strong>主題 3<br>AI Agent</strong></td>
+      <td>思考過程——你怎麼想這個問題</td>
+      <td>設計、權衡、講理由（沒標準答案）</td>
+    </tr>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-title">🎯 面試官真正想看的</div>
+    <p>題目原文：「<strong>how you think through the problem, not a polished solution</strong>」。展現「思考能力」比「記憶量」更重要——誠實處理不會的問題，比硬掰答案強 10 倍。</p>
+  </div>
+
+  <h3>三大關鍵心智模型（一張表記住）</h3>
+
+  <h4>主題 2：React 渲染的因果鏈</h4>
+  <div class="flow">觸發 → re-render（function 重新執行） → 新 Virtual DOM → 比對 → 更新真實 DOM
+        ↑                                                       ↑
+     有成本！                                                這才是 UI 更新</div>
+
+  <h4>主題 1：State 三層架構</h4>
+  <div class="flow">Server State    ← React Query / Vue Query     ← profile、商品、訊息
+Global Client   ← Pinia / Zustand / Redux     ← auth token、theme
+Local           ← useState / ref               ← 表單、彈窗</div>
+
+  <h4>主題 3：AI Agent 四個子問題</h4>
+  <div class="flow">Where      ← Ambient over proactive
+How        ← Inline + Side panel 雙模式
+What       ← 5 層資料 + Tool use 模式
+When       ← 4 層 latency 處理</div>
+
+</section>
+
+<!-- ===================== MISTAKES ===================== -->
+<section id="mistakes">
+  <h2><span class="num">⚠</span>錯題集中營</h2>
+
+  <p>這是這份筆記<strong>最重要的部分</strong>——15 個已暴露的觀念盲點，重點複習避免重複犯錯。</p>
+
+  <h3>主題 2 錯題（10 題）</h3>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 1：Re-render 的因果關係</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「UI 更新時就會 re-render」</p>
+    <p class="correct"><span class="label">校正：</span>因果反了。Re-render 是 function 重新執行，產生新 Virtual DOM，比對後<strong>才決定</strong>要不要更新真實 DOM。<strong>Re-render ≠ UI 更新</strong>。</p>
+    <p style="margin-top:8px;color:var(--text-muted);font-size:13px">💡 面試陷阱：被問到「re-render 會發生什麼？」要從「JS 執行 → Virtual DOM → reconciliation → DOM 更新」完整講出來。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 2：useState setter 一定會 re-render？</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「會」</p>
+    <p class="correct"><span class="label">校正：</span>不會。React 用 <code>Object.is</code> 比較新舊值，相同就 <strong>bail out</strong>。但物件 / 陣列要小心：<code>setUser({ name: 'Bo' })</code> 是新物件 reference，會 re-render。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 3：父 re-render，子不 re-render 的條件</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「父的 state 更新，子的 state 跟原本相同時」</p>
+    <p class="correct"><span class="label">校正：</span>子的 state 完全無關。需要兩個條件<strong>同時成立</strong>：<br>① 子元件被 React.memo 包起來<br>② 傳給子的 props 在淺比較下沒改變</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 4：React.memo 的作用</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「讓沒有用到 props 的 UI 不會跟著 re-render」</p>
+    <p class="correct"><span class="label">校正：</span>「讓元件在 <strong>props 沒有改變時</strong>跳過 re-render」。差別：元件可能有 props，只是這次沒變。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 5：count 改變時 React.memo 包住的 Dashboard 會不會 re-render？</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「會，因為 memo 包住的 props 是 config 而不是 count」</p>
+    <p class="correct"><span class="label">校正：</span>理由錯。memo 不會看 count（那不是 Dashboard 的 prop）。真正原因：父 re-render 時 <code>const config = { ... }</code> 重新建立新物件，<strong>config 的 reference 變了</strong>，淺比較失敗。修法：用 <code>useMemo</code> 穩定 config。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 6：分不清 useCallback / useMemo</h4>
+    <p class="wrong"><span class="label">我曾答：</span>把 <code>const title = useMemo(() =&gt; 'User Dashboard', [...])</code> 寫成 useCallback——被「箭頭函式」誤導。</p>
+    <p class="correct"><span class="label">校正判斷：</span>看<strong>等號左邊變數最後拿到什麼</strong>。函式 → useCallback；值（物件、陣列、字串、計算結果）→ useMemo。<br>第二個錯：簡單字串拼接根本不該用 useMemo（primitive 不需要穩定 reference）。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 7：Cleanup 執行的時機</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「依賴的值有變動時」</p>
+    <p class="correct"><span class="label">校正：</span>漏掉一個重要時機。完整<strong>兩個</strong>時機：<br>① 下次 effect 即將執行前（依賴變動）<br>② <strong>元件 unmount 時</strong> ← 我漏了<br>同一段 cleanup 同時解決 race condition（時機 1）和 memory leak（時機 2）。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 8：Custom hook 的好處</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「好維護」（太簡略）</p>
+    <p class="correct"><span class="label">校正：</span>完整四個好處——邏輯重用、關注點分離、可測試性、<strong>集中升級邏輯入口</strong>（最重要的價值）。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 9：Debounce / Throttle 判斷</h4>
+    <p class="wrong"><span class="label">我曾誤判 2 題：</span>地圖座標、字數顯示，都答 debounce。</p>
+    <p class="correct"><span class="label">校正關鍵字：</span>「動態 / 即時 / 過程中持續顯示」 = <strong>Throttle</strong>；「停下來才 / 等使用者完成」 = <strong>Debounce</strong>。<br>進階：字數顯示連 throttle 都不需要——<code>text.length</code> 是免費操作，硬包反而是反優化。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 10：Virtualization 的判斷</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「450 萬筆紀錄不用 virtualize，因為數量不影響效能」</p>
+    <p class="correct"><span class="label">校正：</span>450 萬筆直接渲染瀏覽器會 OOM。閾值：&lt;50 直接渲染、50-200 加 memo、200-2000 該 virtualize、2000-10000 必須 virtualize + 分頁、&gt;10000 必須 virtualize + 必須分頁。<br><strong>更深的層次：</strong>450 萬筆根本不該渲染列表，應該用聚合儀表板（圖表 + 統計）呈現。<strong>最厲害的設計是讓使用者根本不需要面對大資料</strong>。</p>
+  </div>
+
+  <h3>主題 1 錯題（2 題）</h3>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 11：Auth Token 是哪種 state？</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「Server State，需要從後端發出」</p>
+    <p class="correct"><span class="label">校正：</span>是 <strong>Global Client State</strong>。Token 雖然來自 server，但拿到後存在前端、不需要反覆 fetch、主控權在前端。<br>核心觀念：<strong>「資料來源」是粗糙標準，「同步模式」才是精確判斷</strong>。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 12：為什麼選 Pinia？</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「因為這是 Vue 的預設」</p>
+    <p class="correct"><span class="label">面試忌諱：</span>傳達「沒比較過、沒思考過」的訊號。<br><span class="label">校正答法：</span>「Pinia 是 Vue 3 官方推薦，TypeScript 友好、API 簡單、跟 Composition API 整合度高。對 Myverse 這種規模 boilerplate 比 Redux 少。但 server state 我會考慮 Vue Query——Pinia 自己實作 cache、retry 會增加維護成本。」</p>
+  </div>
+
+  <h3>主題 3 錯題（3 題）</h3>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 13：「每次編輯都會出現」AI 提示</h4>
+    <p class="wrong"><span class="label">我曾答：</span>每次編輯都跳</p>
+    <p class="correct"><span class="label">校正：</span>會變成狼來了——使用者開始無視所有提示。需要：降低觸發頻率、同時最多顯示 N 條、使用者忽略後變淡。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 14：AI 需要看的資料只列 3 層</h4>
+    <p class="wrong"><span class="label">我曾答：</span>UI State、Analytics、Audience</p>
+    <p class="correct"><span class="label">校正：</span>漏了 <strong>Creator Identity</strong>（沒它 AI 給不出針對性建議）和 <strong>User Intent Signals</strong>（隱性訊號：剛刪了什麼、在哪卡片停很久、對話歷史）。完整 5 層。</p>
+  </div>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題 15：AI 延遲只想到 1 個解法</h4>
+    <p class="wrong"><span class="label">我曾答：</span>「輸入中圖示」</p>
+    <p class="correct"><span class="label">校正：</span>那只是 loading indicator 一層。完整四層：<br>① Loading indicator<br>② Streaming（核心技巧）<br>③ Process transparency（進階）<br>④ Confidence indicator（最常被忽略）</p>
+  </div>
+
+</section>
+
+<!-- ===================== GOLDEN QUOTES ===================== -->
+<section id="golden-quotes">
+  <h2><span class="num">💎</span>面試金句總表</h2>
+
+  <p>這些是面試時可以直接拋出的「術語 + 原則」，會立刻拉開跟一般候選人的差距。</p>
+
+  <h3>主題 2 金句</h3>
+  <table>
+    <tr><th>術語</th><th>用法</th></tr>
+    <tr><td><strong>State bailout</strong></td><td>「React 用 Object.is 比較新舊值，相同就 bailout 不 re-render」</td></tr>
+    <tr><td><strong>Reference 穩定</strong></td><td>「useCallback / useMemo 解的是 reference 穩定，不是『記住值』」</td></tr>
+    <tr><td><strong>Stale closure</strong></td><td>「依賴陣列空但函式裡用了外部變數，會出現 stale closure」</td></tr>
+    <tr><td><strong>Race condition</strong></td><td>「fetch 一旦發出就失控,需要 AbortController 取消過時 request」</td></tr>
+    <tr><td><strong>Idempotency key</strong></td><td>「每個 mutation 帶 client 端 UUID 避免重複處理」</td></tr>
+    <tr><td><strong>TTFT</strong>(Time to First Token)</td><td>「Streaming 的核心價值是降低 TTFT」</td></tr>
+    <tr><td><strong>Thundering Herd</strong></td><td>「沒有 backoff 的重連會造成 thundering herd」</td></tr>
+  </table>
+
+  <h3>主題 1 金句</h3>
+  <table>
+    <tr><th>術語</th><th>用法</th></tr>
+    <tr><td><strong>Single source of truth</strong></td><td>「所有 view 訂閱同一份資料」</td></tr>
+    <tr><td><strong>Publish-subscribe</strong></td><td>「state 是 publisher,view 是 subscriber，自動通知更新」</td></tr>
+    <tr><td><strong>Optimistic update</strong></td><td>「先改 UI，失敗 rollback——適合輕量操作」</td></tr>
+    <tr><td><strong>Cache invalidation</strong></td><td>「mutation 後 invalidate 相關 query keys」</td></tr>
+    <tr><td><strong>Normalized cache</strong></td><td>「Apollo / RTK Query 的核心架構，省 fetch」</td></tr>
+    <tr><td><strong>Exponential backoff with jitter</strong></td><td>「重連策略：1s/2s/4s/8s 加隨機抖動」</td></tr>
+    <tr><td><strong>Outbox pattern</strong></td><td>「斷線時訊息進佇列，連線恢復後 flush」</td></tr>
+    <tr><td><strong>Rule of Three</strong></td><td>「重複第三次才抽出共用，避免過早抽象」</td></tr>
+  </table>
+
+  <h3>主題 3 金句</h3>
+  <table>
+    <tr><th>術語</th><th>用法</th></tr>
+    <tr><td><strong>Ambient over proactive</strong></td><td>「AI 在那裡但不搶戲」</td></tr>
+    <tr><td><strong>Progressive disclosure</strong></td><td>「一句話概要 + 展開鍵看詳情」</td></tr>
+    <tr><td><strong>Trust calibration</strong></td><td>「使用者邊看 AI 動作邊建立信任」</td></tr>
+    <tr><td><strong>See-while-you-do</strong></td><td>「Side panel 設計支援邊對話邊看版面變化」</td></tr>
+    <tr><td><strong>Tool use / Function calling</strong></td><td>「讓 AI 主動查詢需要的資料，避免 token 爆炸」</td></tr>
+    <tr><td><strong>Process transparency</strong></td><td>「把 AI 內部步驟揭露給使用者：『正在查詢數據』」</td></tr>
+    <tr><td><strong>Confidence indicator</strong></td><td>「標示建議的信心等級，幫助使用者判斷」</td></tr>
+  </table>
+</section>
+
+<!-- ===================== T1: STATE ===================== -->
+<section id="t1-state">
+  <h2><span class="num">1</span>State 三層架構（最核心）</h2>
+
+  <h3>核心觀念：Client State vs Server State</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾完全沒聽過這個區分</div>
+    <p>這是現代前端的核心觀念。不懂它，state 工具會一直選錯；懂了，很多選擇變得理所當然。</p>
+  </div>
+
+  <table>
+    <tr><th>特性</th><th>Client State</th><th>Server State</th></tr>
+    <tr><td>資料來源</td><td>由前端產生</td><td>來自伺服器</td></tr>
+    <tr><td>真實性</td><td>前端就是真相</td><td>前端只是「快取」，真相在 DB</td></tr>
+    <tr><td>同步性</td><td>同步、立即可用</td><td>非同步、要 fetch</td></tr>
+    <tr><td>失敗模式</td><td>幾乎不會失敗</td><td>網路錯誤、權限錯誤、過時</td></tr>
+    <tr><td>多人共用</td><td>沒這問題</td><td>別人也會改它</td></tr>
+    <tr><td>例子</td><td>theme、表單輸入、彈窗開關</td><td>使用者資料、商品列表</td></tr>
+  </table>
+
+  <h3>精確的判斷流程</h3>
+
+  <div class="flow">Q1：前端會反覆重新拉嗎？
+  ├─ 會（要保持最新）→ Server State
+  └─ 不會（拿到後一直用到失效）→ 進 Q2
+
+Q2：主控權在誰？
+  ├─ Server（會被別人改）→ Server State
+  └─ 前端（前端是唯一修改者）→ Client State
+
+Q3（已確定 Client State）：誰需要它？
+  ├─ 跨元件 → Global Client State
+  └─ 單一元件 → Local State</div>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 核心觀念</div>
+    <p>「<strong>資料來源</strong>」是粗糙訊號，「<strong>同步模式</strong>」才是真正的判斷標準。</p>
+  </div>
+
+  <h3>三層 State 架構（面試金句）</h3>
+
+  <div class="flow">┌─ Server State ──────────────────────────┐
+│ 工具：React Query / Vue Query / SWR     │
+│ 資料：使用者、商品、訊息、API 來的東西     │
+└─────────────────────────────────────────┘
+
+┌─ Global Client State ───────────────────┐
+│ 工具：Pinia / Zustand / Redux / Context │
+│ 資料：theme、auth token、UI 偏好         │
+└─────────────────────────────────────────┘
+
+┌─ Local State ───────────────────────────┐
+│ 工具：useState / ref                     │
+│ 資料：表單輸入、彈窗開關、hover           │
+└─────────────────────────────────────────┘</div>
+
+  <p><strong>最常見反模式</strong>：用 Redux / Pinia 管 server state——導致大量 boilerplate（loading、error、cache 都要手寫），且容易跟伺服器資料不同步。</p>
+
+  <h3>React Query / Vue Query 的價值</h3>
+
+  <table>
+    <tr><th>比較項</th><th>自寫 Pinia</th><th>Vue Query</th></tr>
+    <tr><td>程式碼</td><td>15+ 行</td><td>4 行</td></tr>
+    <tr><td>Loading 狀態</td><td>手動</td><td>自動</td></tr>
+    <tr><td>Error 狀態</td><td>手動</td><td>自動</td></tr>
+    <tr><td>同 endpoint 兩元件呼叫</td><td>發兩次</td><td>自動去重</tr></td>
+    <tr><td>過期重 fetch</td><td>自寫</td><td>內建（staleTime）</td></tr>
+    <tr><td>Focus 自動刷新</td><td>自寫</td><td>內建</td></tr>
+    <tr><td>失敗 retry</td><td>自寫</td><td>內建</td></tr>
+    <tr><td>樂觀更新</td><td>自寫 rollback</td><td>宣告式（mutate）</td></tr>
+  </table>
+
+  <h3>Context API 的效能陷阱</h3>
+
+  <p>Context 是<strong>「整包訂閱」</strong>——任何訂閱者在 value 變動時都會 re-render，不支援 selector 精細訂閱。</p>
+
+<pre><code><span class="comment">// Zustand 支援 selector</span>
+<span class="keyword">const</span> color = <span class="func">useThemeStore</span>(state =&gt; state.color)
+<span class="comment">// 只在 color 變動時 re-render，size 變動不影響</span></code></pre>
+
+  <p><strong>Context 適合放</strong>：「幾乎不變動」的東西（theme、locale）</p>
+  <p><strong>頻繁變動的全域 state</strong>：用 Zustand 或 Redux</p>
+
+  <h3>Context / Zustand / Redux 選擇</h3>
+
+  <div class="flow">你的 client state 多複雜？
+
+簡單（少數靜態資料：theme、locale）→ Context API
+中等（多模組、需精細效能、團隊小）→ Zustand
+複雜（大團隊、複雜變更邏輯、需 middleware）→ Redux Toolkit</div>
+
+  <p><strong>但前置問題永遠是</strong>：「這個 state 是 client 還是 server？」如果是 server，三個都不該用，應該用 React Query。</p>
+
+  <h3>Myverse 的 state 重新分類</h3>
+
+  <table>
+    <tr><th>分層</th><th>Myverse 的資料</th></tr>
+    <tr><td><strong>Server State</strong><br>(Vue Query)</td><td>profile、links、stats、訂閱方案</td></tr>
+    <tr><td><strong>Global Client State</strong><br>(Pinia)</td><td>auth token、登入使用者基本資訊（user.id）、編輯/預覽模式切換、全站 toast</td></tr>
+    <tr><td><strong>Local State</strong><br>(ref)</td><td>表單輸入暫存、彈窗開關、hover</td></tr>
+  </table>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠ 微妙區分</div>
+    <p><code>user.id</code> 是 Client State（拿到後不變），但 <code>profile.display_name</code> 是 Server State（隨時會被改）。</p>
+  </div>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    現代前端 state management 的核心是「<strong>分層</strong>」，根據 state 的本質選工具：<br><br>
+    <strong>Server State</strong> 是「前端只是快取，真相在後端」——profile、商品、訊息。需要 cache、retry、去重、樂觀更新。我會用 React Query / Vue Query。<br><br>
+    <strong>Global Client State</strong> 是「前端是唯一主控者，跨元件共享」——auth token、theme、全站 toast。簡單用 Context、中等用 Zustand、複雜用 Redux Toolkit。<br><br>
+    <strong>Local State</strong> 是「只關心單一元件」——表單輸入、彈窗開關。用 useState。<br><br>
+    最常見反模式是用 Redux 管 server state，會導致大量 boilerplate。Context 也有陷阱：整包訂閱，所有訂閱者在 value 變動時都 re-render，所以我用它放幾乎不變的東西，頻繁變動的全域 state 用 Zustand。<br><br>
+    判斷一個 state 屬於哪一層，<strong>看的是同步模式而不是資料來源</strong>——例如 auth token 雖來自 server，但拿到後幾乎不變、不需要 cache 機制，是 Global Client State。
+  </div>
+</section>
+
+<!-- ===================== T1: MULTI-VIEW ===================== -->
+<section id="t1-multi">
+  <h2><span class="num">2</span>Multi-view 資料同步</h2>
+
+  <p>題目原文："How you approach data synchronization across multiple views when the underlying data changes frequently"</p>
+
+  <h3>場景：Myverse 編輯頁的三個 view</h3>
+
+  <div class="flow">┌─────────────────────────────────────────────────┐
+│  [頂部導覽列]  🙂 Bo Kai                         │  ← View 3
+├─────────────────────────────────────────────────┤
+│  [編輯區]              │   [手機預覽]            │
+│  Display Name: ___     │   ┌──────────┐         │
+│  Bio: __________       │   │   🙂     │         │  ← View 2
+│  Avatar: [上傳]        │   │  Bo Kai  │         │
+│  ↑ View 1              │   └──────────┘         │
+└─────────────────────────────────────────────────┘</div>
+
+  <h3>核心原則 1：Single Source of Truth</h3>
+
+  <p>各 View 各自 fetch 會有三個問題：</p>
+  <ol>
+    <li><strong>浪費網路</strong>（同樣資料 fetch 三次）</li>
+    <li><strong>資料可能不一致</strong>（fetch 時間點不同）</li>
+    <li><strong>更新時要通知所有 View</strong>（指數級複雜度）</li>
+  </ol>
+
+  <p>正解：<strong>所有 View 訂閱同一份資料</strong>。</p>
+
+  <h3>核心原則 2：Publish-Subscribe</h3>
+
+  <ul>
+    <li>State 是 <strong>publisher</strong></li>
+    <li>所有 View 是 <strong>subscriber</strong></li>
+    <li>變動時 library 自動通知所有 subscriber</li>
+  </ul>
+
+  <p><strong>Vue 響應式</strong>：自動追蹤（用到就追蹤）<br>
+  <strong>React 響應式</strong>：手動訂閱（用 hook 選擇要訂閱什麼，更精細）</p>
+
+  <h3>三種更新策略</h3>
+
+  <h4>1. Pessimistic Update（悲觀更新）</h4>
+  <div class="flow">按儲存 → 顯示 loading → 等 server → 成功才更新 UI</div>
+  <ul>
+    <li>✅ 不會 UI / server 不一致</li>
+    <li>❌ 體驗慢</li>
+    <li><strong>適合</strong>：刪除、付款、權限變更</li>
+  </ul>
+
+  <h4>2. Optimistic Update（樂觀更新）</h4>
+  <div class="flow">按儲存 → 立刻更新 UI → 背景呼叫 server → 失敗 rollback</div>
+  <ul>
+    <li>✅ 反應極快</li>
+    <li>❌ rollback 邏輯複雜，失敗時 UI 跳回去使用者會困惑</li>
+    <li><strong>適合</strong>：按讚、加收藏、編輯文字</li>
+  </ul>
+
+  <h4>3. Pending State（待確認）</h4>
+  <div class="flow">按儲存 → 顯示新值 + 標示「儲存中」icon → 等 server → 成功移除標示，失敗 rollback</div>
+  <ul>
+    <li>✅ 兼顧速度感和狀態誠實</li>
+    <li>❌ UI 設計成本高</li>
+    <li><strong>適合</strong>：即時通訊、協作工具</li>
+  </ul>
+
+  <h3>Cache Invalidation（核心難題）</h3>
+
+<pre><code><span class="keyword">const</span> mutation = <span class="func">useMutation</span>({
+  mutationFn: updateProfile,
+  onSuccess: () =&gt; {
+    queryClient.<span class="func">invalidateQueries</span>({ queryKey: [<span class="string">'profile'</span>] })
+    <span class="comment">// 訂閱這個 query 的 view 自動重新 fetch</span>
+  }
+})</code></pre>
+
+  <h4>進階：cache 之間的依賴關係</h4>
+
+<pre><code><span class="comment">// Myverse：改 avatar 後</span>
+onSuccess: () =&gt; {
+  queryClient.<span class="func">invalidateQueries</span>({ queryKey: [<span class="string">'profile'</span>] })  <span class="comment">// 自己</span>
+  queryClient.<span class="func">invalidateQueries</span>({ queryKey: [<span class="string">'links'</span>] })    <span class="comment">// 連結列表也顯示縮圖</span>
+}</code></pre>
+
+  <p>忘了 invalidate <code>['links']</code> → 「個人區頭像變了，但連結列表小頭像還是舊的」← 典型 multi-view 不同步 bug。</p>
+
+  <h3>Normalized Cache（最高難度）</h3>
+
+  <p><strong>問題</strong>：每次 invalidate 都要重新 fetch，浪費頻寬。</p>
+
+  <div class="flow">傳統巢狀：
+['links'] = [
+  { id: 1, owner: { id: 'u1', avatar: 'old' } },
+  { id: 2, owner: { id: 'u1', avatar: 'old' } },  // 重複！
+]
+
+Normalized：
+{
+  users: { 'u1': { avatar: 'old' } },              // 只存一份
+  links: { '1': { owner_id: 'u1' }, '2': {...} }
+}
+// 改 user u1 的 avatar 一次，所有引用點自動更新</div>
+
+  <ul>
+    <li><strong>Apollo Client / RTK Query</strong>：內建 normalized cache</li>
+    <li><strong>React Query / Vue Query</strong>：簡單 key-value cache（更輕量）</li>
+  </ul>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    Multi-view 同步的核心是「<strong>single source of truth + publish-subscribe</strong>」——所有 view 訂閱同一份資料，資料變動時自動通知所有訂閱者。三層處理：<br><br>
+    <strong>基礎機制</strong>：用 state library 或 query library 作為共享資料源，所有 view 透過 hook 訂閱。<br><br>
+    <strong>更新策略</strong>：高風險用 pessimistic（等 server 確認），低風險用 optimistic（先更新 UI，失敗 rollback），即時應用可用 pending state。<br><br>
+    <strong>Cache 同步管理</strong>：用 invalidateQueries 通知所有相關 query 重新 fetch。關鍵是要識別 cache 之間的依賴——例如改 profile 後，連帶顯示 profile 縮圖的 links cache 也要失效。<br><br>
+    進階場景，當應用有大量關聯資料時，可以考慮 normalized cache（Apollo Client）——更新一次自動同步所有引用點。這是 React Query 跟 Apollo 的核心架構差異，也是工具選型的決策點。
+  </div>
+</section>
+
+<!-- ===================== T1: WEBSOCKET ===================== -->
+<section id="t1-ws">
+  <h2><span class="num">3</span>WebSocket 韌性設計</h2>
+
+  <p>題目原文："Designing for network failures and WebSocket resilience — how do you handle reconnection, message queuing, and UI state when a real-time connection drops?"</p>
+
+  <h3>連線會斷的真實原因（不是邊緣案例）</h3>
+  <ul>
+    <li>網路切換（Wi-Fi 切 4G、走進電梯）</li>
+    <li>背景分頁（手機切到背景自動斷）</li>
+    <li>電腦休眠</li>
+    <li>Server 重啟</li>
+    <li>負載平衡器超時（很多 LB 預設 60 秒沒活動就斷）</li>
+    <li>防火牆 / Proxy 切斷長連線</li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title">🎯 核心精神</div>
+    <p>「<strong>承認連線必然會斷，把斷線當作正常情況處理</strong>」</p>
+  </div>
+
+  <h3>子問題 1：Reconnection 策略</h3>
+
+  <h4>天真做法（會出大事）</h4>
+
+<pre><code>ws.onclose = () =&gt; <span class="func">connect</span>()  <span class="comment">// ❌ 立刻重連</span></code></pre>
+
+  <p><strong>Thundering Herd Problem</strong>：1 萬個 client 同時重連 → 把 server 再次打掛。</p>
+
+  <h4>正解：Exponential Backoff with Jitter</h4>
+
+<pre><code><span class="keyword">let</span> retryDelay = <span class="num">1000</span>
+<span class="keyword">const</span> MAX_DELAY = <span class="num">30000</span>
+
+ws.onclose = () =&gt; {
+  <span class="keyword">const</span> jitter = Math.<span class="func">random</span>() * <span class="num">1000</span>
+  <span class="func">setTimeout</span>(connect, retryDelay + jitter)
+  retryDelay = Math.<span class="func">min</span>(retryDelay * <span class="num">2</span>, MAX_DELAY)
+}
+
+ws.onopen = () =&gt; { retryDelay = <span class="num">1000</span> }</code></pre>
+
+  <p>時間軸：1s → 2s → 4s → 8s → 16s → 30s → 30s...<br>
+  加 jitter（隨機抖動）讓 1 萬個 client 重試時間自然錯開。</p>
+
+  <h4>進階：判斷值不值得重連</h4>
+
+<pre><code>ws.onclose = (event) =&gt; {
+  <span class="keyword">if</span> (event.code === <span class="num">1000</span>) <span class="keyword">return</span>         <span class="comment">// 正常關閉，不重連</span>
+  <span class="keyword">if</span> (event.code === <span class="num">1008</span>) {              <span class="comment">// 政策違反（被 ban）</span>
+    <span class="func">showError</span>(<span class="string">'連線被拒絕'</span>)
+    <span class="keyword">return</span>
+  }
+  <span class="keyword">if</span> (event.code === <span class="num">1011</span>) <span class="keyword">return</span>         <span class="comment">// server internal error</span>
+  <span class="func">scheduleReconnect</span>()                     <span class="comment">// 其他原因才重連</span>
+}</code></pre>
+
+  <h3>子問題 2：Message Queuing（Outbox）</h3>
+
+<pre><code><span class="keyword">const</span> outbox = []
+
+<span class="keyword">function</span> <span class="func">sendMessage</span>(text) {
+  <span class="keyword">const</span> message = { id: <span class="func">uuid</span>(), text, status: <span class="string">'pending'</span> }
+
+  <span class="keyword">if</span> (ws.readyState === WebSocket.OPEN) {
+    ws.<span class="func">send</span>(JSON.<span class="func">stringify</span>(message))
+  } <span class="keyword">else</span> {
+    outbox.<span class="func">push</span>(message)  <span class="comment">// 進佇列</span>
+  }
+  <span class="func">addMessageToUI</span>(message)  <span class="comment">// UI 立刻顯示「傳送中」</span>
+}
+
+ws.onopen = () =&gt; {
+  <span class="comment">// flush 佇列（按順序）</span>
+  <span class="keyword">while</span> (outbox.length &gt; <span class="num">0</span>) ws.<span class="func">send</span>(JSON.<span class="func">stringify</span>(outbox.<span class="func">shift</span>()))
+}</code></pre>
+
+  <h4>Idempotency（防重複）</h4>
+  <p>每條訊息帶 client 端產生的 UUID。Server 檢查 ID，已收過就回 ack 不重複處理——避免使用者重發造成重複訊息。</p>
+
+  <h3>子問題 3：UI 連線狀態的四個階段</h3>
+
+  <table>
+    <tr><th>狀態</th><th>UI 設計</th></tr>
+    <tr><td>CONNECTING</td><td>全頁 loading</td></tr>
+    <tr><td>CONNECTED</td><td>綠點 icon</td></tr>
+    <tr><td>RECONNECTING</td><td><strong>頂部非阻塞 banner</strong>：「連線中斷，正在重連...」</td></tr>
+    <tr><td>DISCONNECTED</td><td>更明顯 banner + [重試] 按鈕</td></tr>
+  </table>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠ UX 重點</div>
+    <p>不要用 modal 阻擋使用者。使用者可能還在打字、讀訊息——斷線<strong>不該打斷他們</strong>。</p>
+  </div>
+
+  <h3>訊息狀態的視覺呈現</h3>
+
+  <div class="flow">⏳ 傳送中    ← 在 outbox 還沒送
+↗️ 已送出    ← 送到 server，還沒 ack
+✓ 已送達     ← server 確認
+✓✓ 已讀      ← 對方已讀
+❌ 失敗      ← 重試多次仍失敗</div>
+
+  <p>LINE / Messenger 訊息旁邊那些小符號——<strong>揭露底層同步狀態</strong>讓使用者知道每條訊息的處境。</p>
+
+  <h3>跟 Server State 整合（進階）</h3>
+
+<pre><code>ws.onmessage = (event) =&gt; {
+  <span class="keyword">const</span> data = JSON.<span class="func">parse</span>(event.data)
+  <span class="keyword">if</span> (data.type === <span class="string">'profile_updated'</span>) {
+    queryClient.<span class="func">setQueryData</span>([<span class="string">'profile'</span>, data.userId], data.profile)
+    <span class="comment">// 不用重新 fetch，server 已經告訴我們新值</span>
+  }
+}</code></pre>
+
+  <p>WebSocket 成為「<strong>server 主動觸發的 cache 更新管道</strong>」。</p>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    WebSocket 韌性的核心是「承認連線必然會斷」。三層設計：<br><br>
+    <strong>Reconnection</strong>：exponential backoff with jitter，1s / 2s / 4s / 8s 上限 30s，加隨機抖動避免 thundering herd。根據 close code 判斷該不該重連。<br><br>
+    <strong>Message Queuing</strong>：client 端 outbox，斷線時訊息進佇列、UI 標示「傳送中」；連線恢復後 flush。每條訊息帶 idempotency key 避免重複處理。<br><br>
+    <strong>UI State</strong>：四個階段，reconnecting 用非阻塞 banner，不打斷使用者操作。每條訊息有自己的狀態（pending / sent / delivered / failed），用 icon 揭露給使用者。<br><br>
+    跟 server state 架構整合：WebSocket 推送可以透過 setQueryData 直接寫進 cache，不用重新 fetch。
+  </div>
+</section>
+
+<!-- ===================== T1: FOLDER ===================== -->
+<section id="t1-folder">
+  <h2><span class="num">4</span>Folder 結構 + Code Splitting</h2>
+
+  <h3>兩種主流組織方式</h3>
+
+  <h4>By Type（按類型）</h4>
+
+  <div class="flow">src/
+├── components/  (所有元件擠在這)
+├── hooks/
+├── utils/
+├── api/
+└── pages/</div>
+
+  <ul>
+    <li>✅ 新手友善（直覺）</li>
+    <li>❌ 大專案重構難（一個功能的檔案散在四處）</li>
+  </ul>
+
+  <h4>By Feature（按功能）</h4>
+
+  <div class="flow">src/
+├── features/
+│   ├── auth/         ← 自包含
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── api/
+│   ├── profile/
+│   └── links/
+├── shared/           ← 跨 feature 共用
+└── pages/</div>
+
+  <ul>
+    <li>✅ 結構反映業務邏輯</li>
+    <li>✅ 重構容易（刪一個 feature 就刪一個資料夾）</li>
+    <li>✅ 邊界清晰</li>
+  </ul>
+
+  <h3>實務做法：混合</h3>
+
+  <p>「<strong>By Feature 為骨架，By Type 為細節</strong>」</p>
+
+  <div class="flow">src/
+├── features/      # 業務邏輯
+├── shared/        # 跨 feature 共用
+├── lib/           # 第三方服務封裝（supabase、analytics）
+├── pages/         # 路由層
+└── app/           # 全域設定（router、providers）</div>
+
+  <p><strong>判斷東西該放哪</strong>：「這個被多少 feature 用？」</p>
+  <ul>
+    <li>1 個 → 進該 feature</li>
+    <li>2-3 個 → 暫時放最常用的 feature</li>
+    <li>4+ → 升級到 <code>shared/</code></li>
+  </ul>
+
+  <h3>Rule of Three（重要原則）</h3>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 Rule of Three</div>
+    <p><strong>第三次重複使用時才抽出共用</strong>。前兩次接受複製，避免<strong>過早抽象</strong>。</p>
+  </div>
+
+  <p>反模式：「我覺得這 button 將來會多處用，先放 shared」→ 半年後只一個地方用，shared 變垃圾場。</p>
+
+  <h3>Separation of Concerns（檔案層級）</h3>
+
+  <h4>反模式：所有東西塞一個元件</h4>
+
+<pre><code><span class="keyword">function</span> <span class="func">ProfilePage</span>() {
+  <span class="comment">// state 管理 + API 呼叫 + 業務邏輯 + UI 渲染 ← 身兼四職</span>
+}</code></pre>
+
+  <h4>正解：分離</h4>
+
+  <div class="flow">features/profile/
+├── api/profileApi.ts        # 純 fetch
+├── hooks/useProfile.ts       # 資料 + state
+├── hooks/useProfileStats.ts  # 業務邏輯
+├── components/
+│   ├── ProfileHeader.tsx     # 純 UI
+│   └── ProfileStats.tsx      # 純 UI
+└── pages/ProfilePage.tsx     # 組合層</div>
+
+  <p>每個檔案只做一件事——改 API 不影響 UI、改 UI 不影響業務邏輯。</p>
+
+  <h3>Code Splitting（三層切分）</h3>
+
+  <h4>1. Route-level（效益最大）</h4>
+
+<pre><code><span class="keyword">const</span> StatsPage = <span class="func">lazy</span>(() =&gt; <span class="func">import</span>(<span class="string">'./pages/StatsPage'</span>))
+
+&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+  &lt;Route path=<span class="string">"/stats"</span> element={&lt;StatsPage /&gt;} /&gt;
+&lt;/Suspense&gt;</code></pre>
+
+  <p>Next.js / Nuxt 自動做。</p>
+
+  <h4>2. Component-level</h4>
+
+<pre><code><span class="keyword">const</span> YouTubeEditor = <span class="func">lazy</span>(() =&gt; <span class="func">import</span>(<span class="string">'./YouTubeEditor'</span>))
+<span class="comment">// 只在使用者選 YouTube 類型才下載</span></code></pre>
+
+  <p>Myverse 適用：把不同卡片類型拆成獨立元件 + dynamic import。</p>
+
+  <h4>3. Library-level</h4>
+
+<pre><code><span class="keyword">const</span> Chart = <span class="func">lazy</span>(() =&gt; <span class="func">import</span>(<span class="string">'chart.js'</span>))         <span class="comment">// 重型 library</span>
+<span class="keyword">const</span> MarkdownEditor = <span class="func">lazy</span>(() =&gt; <span class="func">import</span>(<span class="string">'@uiw/react-md-editor'</span>))</code></pre>
+
+  <h3>Code Splitting 的成本與限制</h3>
+
+  <div class="callout error">
+    <div class="callout-title">❌ 反模式</div>
+    <p>把每個小元件都 lazy load——每個小檔案是一個 HTTP request → 瀑布式載入 → <strong>反而變慢</strong>。</p>
+  </div>
+
+  <p><strong>判斷標準</strong>：splitting 對象至少 <strong>50KB 以上</strong>才有意義。</p>
+
+  <h3>進階技巧：Preloading</h3>
+
+<pre><code>&lt;Link
+  to=<span class="string">"/stats"</span>
+  onMouseEnter={() =&gt; <span class="func">import</span>(<span class="string">'./pages/StatsPage'</span>)}  <span class="comment">// hover 時預載</span>
+&gt;</code></pre>
+
+  <p>Next.js 的 <code>&lt;Link&gt;</code> 自動做——連結進入 viewport 時開始下載。</p>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    By Feature 為骨架、By Type 為細節。每個 feature 自包含（components / hooks / api），跨 feature 的共用放 shared/，但堅持 <strong>Rule of Three</strong>——前兩次重複接受複製，第三次才抽。<br><br>
+    這比 By Type 強的地方在「程式碼結構反映業務結構」——刪一個功能就刪一個資料夾，新人看 features 就知道專案做什麼。<br><br>
+    Code splitting 我分三層：route level 用 lazy + Suspense（效益最大）、component level 切重型元件、library level 切重型第三方 library。但小於 50KB 不切——每個 chunk 是一個 HTTP request，過度切分反而慢。<br><br>
+    By Feature 跟 code splitting 是相輔相成的——每個 feature 天然是一個 splitting 單位。
+  </div>
+</section>
+
+<!-- ===================== T2: RENDER ===================== -->
+<section id="t2-render">
+  <h2><span class="num">5</span>React 渲染機制</h2>
+
+  <h3>Re-render 不等於 UI 更新</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤答</div>
+    <p>「UI 更新時就會 re-render」——<strong>因果反了</strong>。</p>
+  </div>
+
+  <h4>正確的因果鏈</h4>
+
+  <div class="flow">觸發條件發生
+  ↓
+React 決定元件要 re-render
+  ↓
+元件 function 重新執行（這就是 re-render）
+  ↓
+產生新的 Virtual DOM
+  ↓
+React 比對新舊 Virtual DOM（reconciliation）
+  ↓
+有差異 → 更新真實 DOM（這才是 UI 更新）</div>
+
+  <div class="callout tip">
+    <div class="callout-title">🔑 關鍵</div>
+    <p>Re-render 100 次，如果 Virtual DOM 都一樣，真實 DOM 一次都不會變。但 <strong>JS 重新執行 + Virtual DOM 計算 + 比對的 CPU 成本還是發生了</strong>。<br><br>
+    效能優化的目標 = <strong>減少不必要的 re-render</strong>。</p>
+  </div>
+
+  <h3>觸發 re-render 的三個原因</h3>
+
+  <ol>
+    <li>元件自己的 <strong>state 改變</strong>（且 <code>Object.is</code> 比對下新舊值不同）</li>
+    <li>元件的 <strong>props 改變</strong></li>
+    <li>元件訂閱的 <strong>Context 值改變</strong></li>
+  </ol>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤答</div>
+    <p>「<code>useState</code> 的 setter 被呼叫一定會 re-render」——錯。</p>
+  </div>
+
+<pre><code><span class="keyword">const</span> [count, setCount] = <span class="func">useState</span>(<span class="num">0</span>)
+<span class="func">setCount</span>(<span class="num">0</span>)  <span class="comment">// 不會 re-render（state bailout）</span>
+
+<span class="keyword">const</span> [user, setUser] = <span class="func">useState</span>({ name: <span class="string">'Bo'</span> })
+<span class="func">setUser</span>({ name: <span class="string">'Bo'</span> })  <span class="comment">// ❗ 會 re-render（新物件，新 reference）</span></code></pre>
+
+  <h3>父 re-render，子預設一定跟著 re-render</h3>
+
+  <p>預設情況下，<strong>父元件 re-render，所有子元件都 re-render</strong>——不管 props 有沒有變。</p>
+
+<pre><code><span class="keyword">function</span> <span class="func">Parent</span>() {
+  <span class="keyword">const</span> [count, setCount] = <span class="func">useState</span>(<span class="num">0</span>)
+  <span class="keyword">return</span> (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; <span class="func">setCount</span>(c =&gt; c + <span class="num">1</span>)}&gt;+1&lt;/button&gt;
+      &lt;Child name=<span class="string">"Bo"</span> /&gt;  <span class="comment">{/* count 變動時，Child 也會 re-render */}</span>
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+  <h4>讓子元件「props 沒變就不 re-render」的兩個條件</h4>
+
+  <ol>
+    <li>✅ 子元件被 <strong>React.memo</strong> 包起來</li>
+    <li>✅ 傳給子的 props 在<strong>淺比較</strong>下沒改變</li>
+  </ol>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤答</div>
+    <p>以為跟「子元件的 state」有關——其實完全無關。</p>
+  </div>
+
+</section>
+
+<!-- ===================== T2: REFERENCE ===================== -->
+<section id="t2-ref">
+  <h2><span class="num">6</span>Reference（引用）—— React 效能的核心前提</h2>
+
+  <h3>JavaScript 的兩種比較規則</h3>
+
+  <h4>Primitive（number、string、boolean、null、undefined）：比值</h4>
+
+<pre><code><span class="num">5</span> === <span class="num">5</span>         <span class="comment">// true</span>
+<span class="string">'abc'</span> === <span class="string">'abc'</span> <span class="comment">// true</span></code></pre>
+
+  <h4>Object 型別（object、array、function）：比 reference</h4>
+
+<pre><code><span class="keyword">const</span> a = { name: <span class="string">'Bo'</span> }
+<span class="keyword">const</span> b = { name: <span class="string">'Bo'</span> }
+a === b   <span class="comment">// false ← 看起來一樣，但是不同物件</span>
+
+<span class="keyword">const</span> c = a
+a === c   <span class="comment">// true ← 同一個 reference</span></code></pre>
+
+  <h4>函式也是物件</h4>
+
+<pre><code><span class="keyword">const</span> fn1 = () =&gt; <span class="func">console</span>.log(<span class="string">'hi'</span>)
+<span class="keyword">const</span> fn2 = () =&gt; <span class="func">console</span>.log(<span class="string">'hi'</span>)
+fn1 === fn2  <span class="comment">// false</span></code></pre>
+
+  <h3>串連到 React：為什麼這個觀念是核心</h3>
+
+  <p>每次元件 re-render，function 重新執行，<strong>裡面定義的物件、函式、陣列都是新建立的 reference</strong>：</p>
+
+<pre><code><span class="keyword">function</span> <span class="func">TodoList</span>({ todos }) {
+  <span class="keyword">const</span> handleDelete = (id) =&gt; { ... }  <span class="comment">// 每次 render 都是新函式 reference</span>
+}</code></pre>
+
+  <p><code>React.memo</code> 做淺比較時，發現 reference 變了 → 認為 props 變了 → 子元件還是 re-render。</p>
+</section>
+
+<!-- ===================== T2: HOOKS ===================== -->
+<section id="t2-hooks">
+  <h2><span class="num">7</span>React.memo / useCallback / useMemo</h2>
+
+  <h3>React.memo：在子元件加檢查點</h3>
+
+  <p><strong>作用</strong>：淺比較 props 後決定要不要 re-render。</p>
+
+<pre><code><span class="keyword">const</span> Child = React.<span class="func">memo</span>(<span class="keyword">function</span> <span class="func">Child</span>({ name }) {
+  <span class="keyword">return</span> &lt;div&gt;{name}&lt;/div&gt;
+})</code></pre>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤答</div>
+    <p>「React.memo 讓沒有用到 props 的 UI 不會跟著 re-render」<br><br>
+    <strong>正確</strong>：「React.memo 讓元件在 <strong>props 沒有改變時</strong>跳過 re-render」（差別：元件可能有 props，只是這次沒變）</p>
+  </div>
+
+  <h3>useCallback：記住函式 reference</h3>
+
+<pre><code><span class="keyword">const</span> handleClick = <span class="func">useCallback</span>(() =&gt; {
+  <span class="func">console</span>.log(<span class="string">'clicked'</span>)
+}, [])  <span class="comment">// 空依賴陣列 → reference 永遠不變</span></code></pre>
+
+  <h3>useMemo：記住值 reference 或計算結果</h3>
+
+  <h4>作用 1：穩定物件 / 陣列 reference</h4>
+
+<pre><code><span class="keyword">const</span> config = <span class="func">useMemo</span>(() =&gt; ({ theme: <span class="string">'dark'</span> }), [])</code></pre>
+
+  <h4>作用 2：避免昂貴計算（這是 useCallback 沒有的用途）</h4>
+
+<pre><code><span class="keyword">const</span> stats = <span class="func">useMemo</span>(() =&gt; {
+  <span class="keyword">return</span> rawData.<span class="func">reduce</span>((acc, item) =&gt; <span class="func">computeHeavyStats</span>(acc, item), initial)
+}, [rawData])</code></pre>
+
+  <h3>兩者的差別</h3>
+
+  <table>
+    <tr><th>工具</th><th>穩定 reference</th><th>避免重算</th></tr>
+    <tr><td>useCallback</td><td>✅ 函式</td><td>❌（建立函式幾乎免費）</td></tr>
+    <tr><td>useMemo</td><td>✅ 物件 / 陣列 / 計算結果</td><td>✅ 昂貴計算</td></tr>
+  </table>
+
+  <h4>判斷標準</h4>
+
+  <p><strong>等號左邊的變數最後拿到的是什麼</strong>？</p>
+  <ul>
+    <li>拿到函式 → useCallback</li>
+    <li>拿到值（物件、陣列、字串、數字、計算結果） → useMemo</li>
+  </ul>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤答</div>
+    <p>把 <code>const title = useMemo(() =&gt; 'User Dashboard', [...])</code> 寫成 useCallback——被「箭頭函式」誤導。<br><br>
+    <strong>第二個錯</strong>：簡單字串拼接根本不用 useMemo——字串是 primitive，不需要穩定 reference。</p>
+  </div>
+
+  <h3>何時該用 useCallback / useMemo（重要！）</h3>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠ 反模式警告</div>
+    <p>很多新手到處包，這是<strong>反優化</strong>。它們本身有記憶 + 比較成本。</p>
+  </div>
+
+  <h4>只有以下三種情境才該用</h4>
+
+  <ol>
+    <li><strong>下游元件用了 React.memo</strong>，需要穩定 reference 才能讓 memo 生效</li>
+    <li><strong>這個值是其他 hook 的依賴</strong>（例如 <code>useEffect</code> 的 dependency array）</li>
+    <li><strong>計算成本真的很高</strong>（只用於 useMemo）</li>
+  </ol>
+
+  <h4>判斷流程</h4>
+
+  <div class="flow">這個東西會被當作 prop 傳給用了 React.memo 的子元件嗎？ → 是 → 可能需要包
+這個東西會被放在其他 hook 的依賴陣列裡嗎？ → 是 → 可能需要包
+這個計算本身是不是很慢（毫秒等級以上）？ → 是 → useMemo 包
+
+三個都不是 → 不要包，直接寫</div>
+
+  <h3>三個工具是組合拳</h3>
+
+  <div class="flow">React.memo（在子元件）
+    ↓ 需要搭配
+useCallback / useMemo（在父元件，讓傳下去的 props reference 穩定）</div>
+
+  <ul>
+    <li>只用 React.memo 不用 useCallback / useMemo → memo 失效（TodoList 經典陷阱）</li>
+    <li>只用 useCallback / useMemo 不用 React.memo → 完全沒意義</li>
+  </ul>
+
+  <h3>經典陷阱：TodoList memo 失效</h3>
+
+<pre><code><span class="keyword">function</span> <span class="func">TodoList</span>({ todos }) {
+  <span class="keyword">const</span> handleDelete = (id) =&gt; { ... }  <span class="comment">// ❌ 每次 render 新函式</span>
+  <span class="keyword">return</span> todos.<span class="func">map</span>(todo =&gt;
+    &lt;TodoItem key={todo.id} todo={todo} onDelete={handleDelete} /&gt;
+  )
+}
+
+<span class="keyword">const</span> TodoItem = React.<span class="func">memo</span>(<span class="keyword">function</span> <span class="func">TodoItem</span>({ todo, onDelete }) { ... })</code></pre>
+
+  <p><strong>問題</strong>：TodoItem 雖然 memo，但 <code>onDelete</code> reference 每次都變 → memo 失效，全部 re-render。</p>
+
+  <h4>修法 1：handleDelete 用 useCallback 包</h4>
+
+  <h4>修法 2（容易忘）：更新 todos 陣列時，保留沒變的 todo 的 reference</h4>
+
+<pre><code><span class="comment">// ✅ 正確：只替換改動的那個</span>
+<span class="func">setTodos</span>(todos.<span class="func">map</span>(t =&gt; t.id === <span class="num">1</span> ? { ...t, text: <span class="string">'new'</span> } : t))
+
+<span class="comment">// ❌ 錯誤：每個 todo 都建立新物件</span>
+<span class="func">setTodos</span>(todos.<span class="func">map</span>(t =&gt; ({ ...t })))</code></pre>
+
+  <p>這就是「<strong>state 要 immutable</strong>」更深的原因——保持 reference 穩定讓下游 memo 生效。</p>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    useCallback 跟 useMemo 不是免費的——它們本身有記帳和比較的成本。所以不是「隨時可以加來優化」，而是要有具體的目的：<br><br>
+    1. 配合下游的 React.memo 使用，讓 props 的 reference 穩定<br>
+    2. 避免在 useEffect 等 hook 的依賴陣列裡造成不必要的觸發<br>
+    3. 包住真正昂貴的計算（這只有 useMemo 適用）<br><br>
+    沒有這三種情境的話，包這兩個 hook 反而是反優化。我看過很多專案到處包 useCallback，結果效能反而比沒包還差，就是這個原因。
+  </div>
+</section>
+
+<!-- ===================== T2: ASYNC ===================== -->
+<section id="t2-async">
+  <h2><span class="num">8</span>Async Flow + Custom Hook</h2>
+
+  <h3>「天真寫法」會踩到的三個 bug</h3>
+
+<pre><code><span class="func">useEffect</span>(() =&gt; {
+  <span class="func">setLoading</span>(<span class="keyword">true</span>)
+  <span class="func">fetch</span>(<span class="string">`/api/users/${userId}`</span>)
+    .<span class="func">then</span>(res =&gt; res.<span class="func">json</span>())
+    .<span class="func">then</span>(setUser)
+}, [userId])</code></pre>
+
+  <h4>Bug 1：Race Condition</h4>
+  <ul>
+    <li>使用者快速切換 user 1 → user 2</li>
+    <li>request 1 比 request 2 晚回來 → 蓋掉 user 2 的資料</li>
+  </ul>
+
+  <h4>Bug 2：Memory Leak</h4>
+  <ul>
+    <li>元件 unmount 後，fetch 還在路上</li>
+    <li>回應後執行 setState → React 警告「Can't perform state update on unmounted component」</li>
+  </ul>
+
+  <h4>Bug 3：UI 閃爍</h4>
+  <ul>
+    <li>userId 1 → 2 → 3 快速變動</li>
+    <li>request 1 先回來：loading 變 false，顯示 user 1</li>
+    <li>後面 request 陸續回來：畫面在閃</li>
+  </ul>
+
+  <p><strong>根源</strong>：fetch 一旦發出就「失控」，無法取消。</p>
+
+  <h3>解法：AbortController + cleanup</h3>
+
+<pre><code><span class="func">useEffect</span>(() =&gt; {
+  <span class="keyword">const</span> controller = <span class="keyword">new</span> <span class="type">AbortController</span>()
+
+  <span class="func">setLoading</span>(<span class="keyword">true</span>)
+  <span class="func">fetch</span>(url, { signal: controller.signal })
+    .<span class="func">then</span>(res =&gt; res.<span class="func">json</span>())
+    .<span class="func">then</span>(data =&gt; {
+      <span class="func">setUser</span>(data)
+      <span class="func">setLoading</span>(<span class="keyword">false</span>)
+    })
+    .<span class="func">catch</span>(err =&gt; {
+      <span class="keyword">if</span> (err.name === <span class="string">'AbortError'</span>) <span class="keyword">return</span>  <span class="comment">// 不當錯誤處理</span>
+      <span class="func">setError</span>(err)
+    })
+
+  <span class="keyword">return</span> () =&gt; controller.<span class="func">abort</span>()  <span class="comment">// ✨ cleanup</span>
+}, [userId])</code></pre>
+
+  <h3>Cleanup 執行的兩個時機（重要！）</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾漏答一個時機</div>
+    <p>只說「依賴值有變動時」</p>
+  </div>
+
+  <p><strong>完整的兩個時機</strong>：</p>
+  <ol>
+    <li><strong>下次 effect 即將執行前</strong>（依賴變動 → 先 cleanup → 再執行新 effect）</li>
+    <li><strong>元件 unmount 時</strong>（最後一次 cleanup）</li>
+  </ol>
+
+  <p>同一段 cleanup 程式碼，<strong>同時解決 race condition（時機 1）和 memory leak（時機 2）</strong>——這就是 useEffect 設計的精巧之處。</p>
+
+  <h3>Custom Hook 的四大好處</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾答得太簡略</div>
+    <p>「好維護」</p>
+  </div>
+
+  <p><strong>完整四個原因</strong>：</p>
+  <ol>
+    <li><strong>邏輯重用（DRY）</strong>：多個元件要 fetch 不用每個都寫一遍</li>
+    <li><strong>關注點分離</strong>：元件只關心 UI，fetch / race condition / cleanup 細節藏在 hook 裡</li>
+    <li><strong>可測試性</strong>：用 <code>renderHook</code> 獨立測試</li>
+    <li><strong>集中升級邏輯入口</strong>：未來要加 retry、cache、token 都改一個檔案全站升級 ← <strong>最重要的價值</strong></li>
+  </ol>
+</section>
+
+<!-- ===================== T2: DEBOUNCE ===================== -->
+<section id="t2-debounce">
+  <h2><span class="num">9</span>Debounce / Throttle / useRef</h2>
+
+  <h3>核心差別</h3>
+
+  <table>
+    <tr><th>特性</th><th>Debounce</th><th>Throttle</th></tr>
+    <tr><td>觸發時機</td><td>等事件停止後一段時間</td><td>固定間隔執行一次</td></tr>
+    <tr><td>最後一次觸發</td><td><strong>保證會執行</strong></td><td>不一定執行</td></tr>
+    <tr><td>適合場景</td><td>結果取最後一次</td><td>過程中要回應</td></tr>
+    <tr><td>比喻</td><td>電梯等人關門</td><td>電梯定時開</td></tr>
+  </table>
+
+  <h3>判斷標準</h3>
+
+  <div class="callout tip">
+    <div class="callout-title">🔑 一句話記憶</div>
+    <p>「<strong>結果取最後一次 → Debounce；過程中要回應 → Throttle</strong>」</p>
+  </div>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾誤判</div>
+    <p>把「動態 / 即時更新」當成 debounce 的關鍵字。<br><br>
+    <strong>正確</strong>：「動態 / 即時 / 過程中持續顯示」 = <strong>throttle</strong>。「停下來才 / 等使用者完成」 = <strong>debounce</strong>。</p>
+  </div>
+
+  <h3>場景對照</h3>
+
+  <h4>Debounce 場景</h4>
+  <ul>
+    <li>搜尋框 autocomplete</li>
+    <li>表單 input 即時驗證</li>
+    <li>自動儲存草稿</li>
+    <li>視窗 resize 後重新計算 layout</li>
+  </ul>
+
+  <h4>Throttle 場景</h4>
+  <ul>
+    <li>Scroll 事件監聽（無限滾動觸發）</li>
+    <li>Mouse move 追蹤</li>
+    <li>防止連點按鈕（API rate limiting）</li>
+    <li>拖拉地圖時即時顯示座標 ← <strong>我曾誤答 debounce</strong></li>
+    <li>字數即時顯示 ← 但其實連 throttle 都不需要（純前端零成本）</li>
+  </ul>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠ 重要的進階檢查</div>
+    <p>Debounce / throttle 是用來<strong>節流昂貴操作</strong>：API request、複雜計算、大量 DOM 更新。<br><br>
+    對 <code>text.length</code> 這種<strong>便宜到不能再便宜</strong>的操作，每次 onChange 都直接更新 UI 是 OK 的。硬包 throttle 反而是<strong>反優化</strong>。</p>
+  </div>
+
+  <h3>React 裡實作 debounce：useRef</h3>
+
+  <h4>錯誤做法：直接定義在元件裡</h4>
+
+<pre><code><span class="keyword">function</span> <span class="func">SearchBar</span>() {
+  <span class="comment">// ❌ 每次 re-render 都建立新 debounced 函式，計時器 timerId 也是新的</span>
+  <span class="keyword">const</span> debouncedSearch = <span class="func">debounce</span>((kw) =&gt; {...}, <span class="num">500</span>)
+}</code></pre>
+
+  <h4>正確做法：useRef</h4>
+
+<pre><code><span class="keyword">const</span> debouncedSearchRef = <span class="func">useRef</span>(
+  <span class="func">debounce</span>((kw) =&gt; <span class="func">fetch</span>(<span class="string">`/api/search?q=${kw}`</span>), <span class="num">500</span>)
+)
+<span class="comment">// 使用：debouncedSearchRef.current(kw)</span></code></pre>
+
+  <h3>Leading vs Trailing Edge（加分題）</h3>
+
+  <ul>
+    <li><strong>Trailing edge debounce</strong>（預設）：「停下來才執行」——適合搜尋</li>
+    <li><strong>Leading edge debounce</strong>：「第一次立刻執行，之後一段時間忽略」——適合防止重複提交</li>
+  </ul>
+
+  <h3>useRef 的真面目</h3>
+
+  <div class="callout warning">
+    <div class="callout-title">⚠ 常見誤解</div>
+    <p>「useRef 只能綁 DOM 元素」</p>
+  </div>
+
+  <p><strong>真正的本質</strong>：跨 re-render 持久存在、修改不會觸發 re-render 的容器。</p>
+
+  <h4>Use Case 1：綁定 DOM</h4>
+
+<pre><code><span class="keyword">const</span> inputRef = <span class="func">useRef</span>(<span class="keyword">null</span>)
+<span class="func">useEffect</span>(() =&gt; inputRef.current.<span class="func">focus</span>(), [])
+<span class="keyword">return</span> &lt;input ref={inputRef} /&gt;</code></pre>
+
+  <h4>Use Case 2：存任何「不該觸發 re-render 的值」</h4>
+
+  <ul>
+    <li>計時器 ID</li>
+    <li>上一次的 props 值</li>
+    <li>debounced 函式</li>
+    <li>內部計數器</li>
+  </ul>
+
+  <h3>useRef vs useState</h3>
+
+  <table>
+    <tr><th>特性</th><th>useState</th><th>useRef</th></tr>
+    <tr><td>修改後觸發 re-render</td><td>✅</td><td>❌</td></tr>
+    <tr><td>適用</td><td>需要顯示在 UI 的資料</td><td>純內部資料</td></tr>
+  </table>
+
+  <p><strong>判斷</strong>：這個值改變時，畫面要不要更新？要 → useState；不要 → useRef。</p>
+</section>
+
+<!-- ===================== T2: VIRTUAL ===================== -->
+<section id="t2-virtual">
+  <h2><span class="num">10</span>Virtualization（虛擬化）</h2>
+
+  <h3>解決的問題</h3>
+
+  <p>大列表（10000 筆訊息）直接渲染 → 建立 10000 個 DOM → 慢、記憶體爆炸、滾動卡頓。但使用者一次只看到 10-20 筆。<strong>剩下 9980 筆是浪費</strong>。</p>
+
+  <h3>核心思想</h3>
+
+  <p>「<strong>只渲染使用者實際看得到的，其他不要建立 DOM</strong>」</p>
+
+  <h4>實作要點</h4>
+  <ul>
+    <li>用「假高度容器」騙瀏覽器，讓滾動條長度看起來正常</li>
+    <li>用絕對定位把實際渲染的元素放在正確位置</li>
+    <li>滾動時動態替換哪些元素該渲染</li>
+  </ul>
+
+  <h3>工具</h3>
+  <ul>
+    <li><strong>react-window</strong>：輕量、簡單，固定高度容易</li>
+    <li><strong>@tanstack/react-virtual</strong>：現代、支援動態高度</li>
+  </ul>
+
+  <h3>限制與權衡（面試考點）</h3>
+
+  <div class="callout warning">
+    <div class="callout-title">❗ Virtualization 不是免費的</div>
+    <ol>
+      <li><strong>Ctrl+F 搜尋失效</strong>：瀏覽器搜尋只能搜 DOM 裡的元素</li>
+      <li><strong>SEO 不友善</strong>：爬蟲只看 DOM</li>
+      <li><strong>Accessibility 要額外處理</strong>：螢幕閱讀器可能會迷路</li>
+      <li><strong>動態高度很難</strong>：要先測量，會 layout shift</li>
+    </ol>
+  </div>
+
+  <h3>我曾誤判：450 萬筆紀錄該不該 virtualize？</h3>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題復盤</h4>
+    <p class="wrong"><span class="label">我答：</span>「不用，數量不影響效能」</p>
+    <p class="correct"><span class="label">正確判斷：</span></p>
+  </div>
+
+  <table>
+    <tr><th>資料量</th><th>策略</th></tr>
+    <tr><td>&lt; 50 筆</td><td>直接渲染</td></tr>
+    <tr><td>50-200</td><td>直接渲染 + React.memo</td></tr>
+    <tr><td>200-2000</td><td>應該 virtualize</td></tr>
+    <tr><td>2000-10000</td><td>必須 virtualize + 思考分頁</td></tr>
+    <tr><td>&gt; 10000</td><td>必須 virtualize + 必須分頁 / 篩選</td></tr>
+  </table>
+
+  <h3>更深的層次：質疑前提</h3>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 senior 思維</div>
+    <p>對 450 萬筆瀏覽紀錄，<strong>最厲害的設計是讓使用者根本不需要面對大資料</strong>。</p>
+  </div>
+
+  <div class="flow">Step 1: 使用者真的需要看到「所有」紀錄嗎？
+  → 不需要，用聚合 / 統計 / 圖表呈現（資料量降到幾十個數字）
+
+Step 2: 能不能用篩選 / 分頁縮小資料量？
+  → server-side pagination + 普通列表（每頁 50 筆）
+
+Step 3: 真的要快速瀏覽全部時才用 virtualization</div>
+
+  <p><strong>核心觀念</strong>：UI 應該回答使用者的問題，<strong>不是把資料庫倒出來</strong>。資料 ≠ 資訊。450 萬筆紀錄是「資料」，「你的母親節活動瀏覽量比上週高 230%」是「資訊」。</p>
+
+  <h3>綜合應用：高頻更新大列表</h3>
+
+  <p>「每秒 100 筆新訂單，列表已 5000 筆」這類場景需要 <strong>5 個工具一起用</strong>：</p>
+
+  <ol>
+    <li><strong>Virtualization</strong>：DOM 只保留 20 個元素</li>
+    <li><strong>React.memo</strong>：訂單沒變就不 re-render</li>
+    <li><strong>useCallback / useMemo</strong>：保持 props reference 穩定</li>
+    <li><strong>throttle</strong>：每秒最多更新 10 次，不是每筆都 setState</li>
+    <li><strong>immutable update</strong>：保留沒變的訂單 reference，讓 memo 跳過</li>
+  </ol>
+</section>
+
+<!-- ===================== T3: WHERE ===================== -->
+<section id="t3-where">
+  <h2><span class="num">11</span>AI Agent — Where it lives</h2>
+
+  <p>題目原文："How would you introduce an AI agent as a UX element inside a complex dashboard — where does it live, and how does it surface suggestions without being intrusive?"</p>
+
+  <h3>設定情境：Myverse + AI Agent</h3>
+
+  <p>假設 Myverse 加 AI agent 來幫創作者優化首頁：</p>
+  <ul>
+    <li>根據過去 30 天 stats，建議排版調整</li>
+    <li>看到新增 Shopee 連結，建議「要不要加限時優惠？」</li>
+    <li>創作者輸入「我要做母親節活動」，agent 幫忙生成卡片組合</li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 面試開場句</div>
+    <p>「我用我自己正在做的 Myverse 當例子來思考這題」← 題目明確鼓勵這樣做。</p>
+  </div>
+
+  <h3>我的設計</h3>
+
+  <ul>
+    <li><strong>位置</strong>：每張卡片下方</li>
+    <li><strong>形式</strong>：一句話 AI 提示</li>
+    <li><strong>互動</strong>：旁邊有展開鍵看詳情</li>
+    <li><strong>持久性</strong>：留著不主動消失</li>
+    <li><strong>數量限制</strong>：同時間最多顯示 3 條最高優先級的，其他收進側邊建議列表</li>
+  </ul>
+
+  <h3>對應的設計原則（面試金句）</h3>
+
+  <table>
+    <tr><th>設計選擇</th><th>對應原則</th></tr>
+    <tr><td>卡片下方</td><td><strong>Proximity</strong>——建議跟對應物件放一起</td></tr>
+    <tr><td>一句話</td><td><strong>降低認知負擔</strong>，掃一眼能決定</td></tr>
+    <tr><td>展開鍵</td><td><strong>Progressive Disclosure</strong>（漸進揭露）</td></tr>
+    <tr><td>留著不消失</td><td>尊重使用者節奏</td></tr>
+    <tr><td>同時最多 3 條</td><td>避免視覺雜亂 + 強迫 AI 排優先級</td></tr>
+  </table>
+
+  <h3>核心原則：Ambient over Proactive</h3>
+
+  <ul>
+    <li><strong>Proactive</strong>：AI 主動跳出，搶使用者注意力 ❌</li>
+    <li><strong>Ambient</strong>：AI 在那裡但不搶戲，使用者用自己節奏決定看不看 ✅</li>
+  </ul>
+
+  <h3>排序的依據（面試官會追問）</h3>
+
+  <p>「最重要的 3 條」怎麼決定？</p>
+  <ul>
+    <li><strong>預期影響力</strong>（預估點擊率提升幅度）</li>
+    <li><strong>執行成本</strong>（使用者要花多少時間）</li>
+    <li><strong>時效性</strong>（限時優惠快過期 &gt; 一般排版建議）</li>
+    <li><strong>使用者過去的行為</strong>（他常採納哪類建議）</li>
+  </ul>
+
+  <div class="mistake-box">
+    <h4 style="margin-top:0">錯題：「每次編輯都會出現」AI 提示</h4>
+    <p class="wrong"><span class="label">我曾答：</span>每次編輯都跳</p>
+    <p class="correct"><span class="label">校正：</span>會變成狼來了，使用者會無視所有提示。需要降低觸發頻率、限制同時數量、忽略後變淡等機制。</p>
+  </div>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    我把 AI 建議放在卡片下方，一句話呈現重點配展開鍵。建議留著不消失，但同時間最多顯示 3 條最高優先級，其他收進側邊建議列表。<br><br>
+    核心是 <strong>ambient over proactive</strong>——AI 在那裡但不搶戲，使用者用自己的節奏決定要不要看。排序依據可以是預期影響力、時效性、使用者過去的採納行為。
+  </div>
+</section>
+
+<!-- ===================== T3: INTERACTION ===================== -->
+<section id="t3-interaction">
+  <h2><span class="num">12</span>AI Agent — Interaction Model</h2>
+
+  <p>題目原文："How would you design the interaction model? (e.g., proactive suggestions vs. on-demand triggers, inline vs. side panel)"</p>
+
+  <h3>雙模式架構</h3>
+
+  <table>
+    <tr><th>模式</th><th>適合情境</th><th>形式</th></tr>
+    <tr><td><strong>Inline 建議</strong><br>（卡片下方一句話）</td><td>微調個別元素</td><td>被動、ambient</td></tr>
+    <tr><td><strong>對話式 agent</strong><br>（side panel）</td><td>有明確目標、需多步驟</td><td>主動、goal-oriented</td></tr>
+  </table>
+
+  <p>對應使用者的兩種心智狀態：</p>
+  <ul>
+    <li><strong>Tweaking mode</strong>（隨便編輯一下）→ inline</li>
+    <li><strong>Task-driven mode</strong>（我要做母親節活動）→ side panel</li>
+  </ul>
+
+  <h3>對話式 agent 三個位置選擇</h3>
+
+  <table>
+    <tr><th>選項</th><th>優點</th><th>缺點</th></tr>
+    <tr><td>浮動按鈕 + 彈出對話框</td><td>不佔版面</td><td>對話時看不到後台</td></tr>
+    <tr><td><strong>Side panel</strong><br>（從右側滑出）</td><td><strong>可邊對話邊看版面變化</strong> ✅</td><td>佔螢幕空間</td></tr>
+    <tr><td>全螢幕對話</td><td>對話體驗最好</td><td>完全脫離後台情境</td></tr>
+  </table>
+
+  <h3>為什麼選 Side Panel：See-while-you-do</h3>
+
+  <p>使用者跟 AI 對話的同時，可以即時看到後台版面變化。對「AI 幫我動手做」特別重要——使用者需要<strong>驗證 AI 做的事符不符合預期</strong>。</p>
+
+  <h3>進階觀念：Trust Calibration（面試金句）</h3>
+
+  <p>使用者不會一開始就完全信任 AI。需要：</p>
+  <ol>
+    <li>看著 AI 做事</li>
+    <li>確認結果合理</li>
+    <li>慢慢放手讓 AI 做更多</li>
+  </ol>
+
+  <p>Side panel 設計剛好支援這個漸進信任過程。</p>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    我會設計成雙模式：<br><br>
+    <strong>Inline ambient 建議</strong>——卡片下方一句話 + 展開鍵，最多顯示 3 條。適合使用者在微調時，AI 提供被動的針對性建議。<br><br>
+    <strong>Side panel 對話式 agent</strong>——從右側滑出的固定面板，使用者用自然語言描述目標，AI 動手建立卡片、調整排版，使用者在左邊即時看到變化。適合有明確目標、需多步驟的任務。<br><br>
+    兩個模式對應 tweaking mode 和 task-driven mode。Side panel 的設計也支援 <strong>trust calibration</strong>——使用者邊對話邊驗證 AI 的動作，建立漸進的信任。
+  </div>
+</section>
+
+<!-- ===================== T3: DATA ===================== -->
+<section id="t3-data">
+  <h2><span class="num">13</span>AI Agent — Data + Pipeline</h2>
+
+  <p>題目原文："What data would the agent need to 'see' from the UI state, and how would you architect that pipeline?"</p>
+
+  <h3>五層資料</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我曾漏列 2 層</div>
+    <p>原本只想到 UI State、Analytics、Audience，漏了 Creator Identity 和 User Intent Signals。</p>
+  </div>
+
+  <table>
+    <tr><th>資料層</th><th>內容</th><th>在回答什麼</th></tr>
+    <tr><td><strong>UI State</strong></td><td>目前頁面卡片、版型、設定</td><td>「現在長什麼樣？」</td></tr>
+    <tr><td><strong>Analytics Data</strong></td><td>過去 30/60/90 天的點擊、瀏覽、轉換</td><td>「過去表現如何？」</td></tr>
+    <tr><td><strong>Audience Context</strong></td><td>受眾人口統計、興趣、訪問時段</td><td>「給誰看的？」</td></tr>
+    <tr><td><strong>Creator Identity</strong></td><td>創作者領域、風格、品牌調性</td><td>「這個創作者是誰？」</td></tr>
+    <tr><td><strong>User Intent Signals</strong></td><td>當下行為、對話歷史、近期操作</td><td>「使用者現在想幹嘛？」</td></tr>
+  </table>
+
+  <h3>為什麼 Creator Identity 重要</h3>
+
+  <div class="callout info">
+    <div class="callout-title">舉例</div>
+    <p>同樣一句「幫我做母親節活動」，AI 要根據創作者的領域給完全不同的建議——美妝部落客建議口紅，親子部落客建議家庭活動，美食創作者建議餐廳。</p>
+  </div>
+
+  <h3>為什麼 User Intent Signals 重要</h3>
+
+  <p>「使用者沒有直接說，但 AI 應該感知到」的訊號：</p>
+  <ul>
+    <li>停在哪張卡片很久（暗示煩惱）</li>
+    <li>最近一次編輯什麼（暗示方向）</li>
+    <li>剛剛刪掉什麼（暗示不喜歡）</li>
+    <li>對話歷史說過什麼（「我不喜歡紅色」）</li>
+  </ul>
+
+  <h3>靜態 vs 動態資料</h3>
+
+  <table>
+    <tr><th>資料</th><th>性質</th><th>傳送策略</th></tr>
+    <tr><td>Creator Identity</td><td>靜態</td><td>Session 開始送一次，放 system prompt</td></tr>
+    <tr><td>Audience Context</td><td>靜態</td><td>Session 開始送一次</td></tr>
+    <tr><td>UI State</td><td>動態</td><td>每輪都送最新的</td></tr>
+    <tr><td>Analytics Data</td><td><strong>看情況</strong></td><td>不是每輪送全部，要按需查詢 ← 重點</td></tr>
+    <tr><td>User Intent Signals</td><td>動態</td><td>每輪都送（對話歷史累積）</td></tr>
+  </table>
+
+  <p>工程術語：<strong>static context vs dynamic context</strong>，或 <strong>system prompt vs runtime context</strong>。</p>
+
+  <h3>Tool Use 模式（核心架構）</h3>
+
+  <p><strong>問題</strong>：每次都把 5 層全部塞進 prompt 會 token 爆炸。</p>
+
+  <h4>傳統做法（被動接收）</h4>
+  <div class="flow">使用者問題 → 前端塞所有資料 → AI 回應</div>
+
+  <h4>Tool Use 做法（主動查詢）</h4>
+  <div class="flow">使用者問題 → 前端只送基本 context
+  ↓
+AI：「我需要知道過去節日活動的表現」→ 呼叫 get_analytics(filter: "holiday")
+  ↓
+前端執行查詢 → 回傳結果
+  ↓
+AI 基於 tool 結果產生最終回應</div>
+
+  <p>AI 變成<strong>主動去拿它需要的資料</strong>。Anthropic 叫 <strong>tool use</strong>，OpenAI 叫 <strong>function calling</strong>。</p>
+
+  <h3>Myverse Pipeline 完整架構</h3>
+
+  <div class="flow">[Session 開始]
+  ↓
+Frontend 收集 static context:
+  - Creator Identity（從 Supabase user profile）
+  - Audience Context（從 analytics 摘要）
+  ↓
+塞進 system prompt → 初始化對話
+
+[每輪對話]
+  ↓
+使用者輸入訊息
+  ↓
+Frontend 加上動態 context：
+  - 當下 UI State（Pinia / Vue state）
+  - 對話歷史
+  ↓
+送給 AI
+  ↓
+AI 判斷：需要更多資料嗎？
+  ├─ 不需要 → 直接回應
+  └─ 需要 → 呼叫 tool（get_card_analytics）
+        ↓
+      Frontend 執行 → 回傳
+        ↓
+      AI 基於 tool 結果產生回應
+  ↓
+回應顯示在 side panel
+  ↓
+若 AI 要修改卡片 → 呼叫 update_card / reorder_cards tool
+  → 前端執行 → UI 即時更新</div>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    Pipeline 我會分三層處理：<br><br>
+    <strong>靜態層</strong>（creator identity、audience）在 session 開始時收集一次，放進 system prompt。<br><br>
+    <strong>動態層</strong>（UI state、對話歷史）每輪對話都更新，附加在 user message。<br><br>
+    <strong>按需查詢層</strong>（analytics 等大量資料）我不會預先塞，而是用 <strong>tool use 模式</strong>讓 AI 主動呼叫前端的查詢工具。避免 token 爆炸，也讓 AI 能精準取得需要的資料。<br><br>
+    同樣地，AI 修改 UI 也是透過 tool use——呼叫 update_card、reorder_cards 這類前端工具，前端執行後 UI 即時更新，使用者邊對話邊看到後台變化。
+  </div>
+</section>
+
+<!-- ===================== T3: LATENCY ===================== -->
+<section id="t3-latency">
+  <h2><span class="num">14</span>AI Agent — Latency Handling</h2>
+
+  <p>題目原文："How would you handle AI response latency in a real-time UI — skeleton states, streaming text, confidence indicators?"</p>
+
+  <h3>AI 延遲的三個痛點</h3>
+
+  <div class="callout error">
+    <div class="callout-title">⚠ 我原本只想到 1 個解法（輸入中圖示）</div>
+    <p>實際上要四層。</p>
+  </div>
+
+  <table>
+    <tr><th>痛點</th><th>使用者 OS</th><th>解法</th></tr>
+    <tr><td>不知道系統有沒有在動</td><td>「是不是當機了？」</td><td>Loading indicator</td></tr>
+    <tr><td>等待時間感覺很長</td><td>「怎麼這麼慢...」</td><td>Streaming</td></tr>
+    <tr><td>不知道會給什麼答案</td><td>「等了半天會白等？」</td><td>Process transparency</td></tr>
+    <tr><td>不知道答案是否可信</td><td>「這 AI 講的我可以信嗎？」</td><td>Confidence indicator</td></tr>
+  </table>
+
+  <h3>第 1 層：Loading Indicator</h3>
+
+  <p>最基本——「輸入中」圖示，告訴使用者系統有在動。</p>
+
+  <h3>第 2 層：Streaming（核心技巧）</h3>
+
+  <p>ChatGPT 之所以「感覺很快」的秘密。</p>
+
+  <ul>
+    <li><strong>沒 streaming</strong>：等 8 秒 → 一次看到完整回應</li>
+    <li><strong>有 streaming</strong>：等 0.5 秒 → 文字一個字一個字跳出 → 8 秒後跳完</li>
+  </ul>
+
+  <p><strong>總時間一樣，體感差很多</strong>。為什麼？</p>
+  <ol>
+    <li><strong>Time to First Token（TTFT）變短</strong>——0.5 秒看到動靜</li>
+    <li><strong>使用者邊讀邊等</strong></li>
+    <li><strong>方向錯了可以提早打斷</strong></li>
+  </ol>
+
+  <p>技術：Anthropic / OpenAI API 都支援 streaming（Server-Sent Events）。</p>
+
+  <h3>第 3 層：Process Transparency（進階技巧）</h3>
+
+  <p>不只佔位，<strong>預告 AI 正在做什麼</strong>：</p>
+
+  <div class="flow">🤔 正在分析你的受眾資料...
+⏳ 正在查詢過去節日活動的表現...
+✏️ 正在生成卡片建議...</div>
+
+  <p>對應到 AI 內部呼叫的 tool use 步驟。每呼叫一個 tool 就更新一行狀態。</p>
+
+  <h4>價值</h4>
+  <ol>
+    <li>使用者知道 AI 不是在轉圈圈，是真的在做事</li>
+    <li><strong>預期到 AI 會給什麼方向的答案</strong></li>
+    <li>某步特別久時也能理解原因</li>
+  </ol>
+
+  <h3>第 4 層：Confidence Indicator</h3>
+
+  <p>AI 給的建議<strong>不是每條都一樣可靠</strong>：</p>
+
+  <div class="flow">✓ 數據顯示（高信心）：你的限時優惠卡片過去點擊率最高
+💡 建議（中信心）：可以新增一張母親節主題卡片
+🔮 推測（低信心）：粉紅色可能更符合節日氛圍</div>
+
+  <p><strong>回到 trust calibration</strong>——讓使用者學會在哪裡信任 AI、在哪裡保留自己的判斷。</p>
+
+  <h3>完整時間軸</h3>
+
+  <div class="flow">0 秒：使用者送出
+0.1 秒：「輸入中」圖示
+0.5 秒：Process transparency「🤔 正在分析受眾資料...」
+2 秒：tool 完成，更新「⏳ 正在查詢節日活動表現...」
+4 秒：開始 streaming 文字
+8 秒：完整回應，每條建議標 confidence indicator</div>
+
+  <h3>面試版回答</h3>
+
+  <div class="quote-box">
+    AI 延遲不是用單一策略解決，我會用四層方法組合：<br><br>
+    <strong>第一層 Loading indicator</strong>：基本「輸入中」圖示，告訴使用者系統有在動。<br><br>
+    <strong>第二層 Streaming</strong>：用 SSE 串流逐字顯示，把 TTFT 降到 1 秒內。使用者可以邊讀邊等，必要時提早中斷重問。<br><br>
+    <strong>第三層 Process transparency</strong>：因為我們用 tool use 模式，可以把每個 tool 呼叫的狀態顯示給使用者——「正在查詢數據」、「正在生成建議」。讓等待時間從黑盒子變成可見的工作流程。<br><br>
+    <strong>第四層 Confidence indicator</strong>：每條建議標示信心等級——數據支撐、主觀建議、推測——用不同視覺標示。幫助使用者做 trust calibration。<br><br>
+    整體目標是讓 AI 從「慢」變成「可預期且透明」——使用者不會因為等 8 秒就覺得卡，反而會覺得 AI 在認真做事。
+  </div>
+</section>
+
+<!-- ===================== PREP PLAN ===================== -->
+<section id="prep-plan">
+  <h2><span class="num">📅</span>3 天備戰計畫</h2>
+
+  <h3>Day 1：吸收 + 自我口述</h3>
+  <ul>
+    <li>重讀三個主題（每個 30 分鐘）</li>
+    <li>對手機錄音，<strong>用自己的話</strong>把每個主題講一次</li>
+    <li>聽錄音找出卡的地方 → 那是還沒消化的觀念</li>
+  </ul>
+
+  <h3>Day 2：強化錯題 + 練追問</h3>
+  <ul>
+    <li>重點複習錯題清單（這份筆記最上面）</li>
+    <li>對著鏡子練「面試版回答」（不要背，用自己句子）</li>
+    <li>針對每題想 3 個面試官可能的追問，準備答案</li>
+  </ul>
+
+  <h3>Day 3：模擬面試 + 心態調整</h3>
+  <ul>
+    <li>找朋友或自己錄影模擬整個 3 主題流程</li>
+    <li>確認自我介紹、Myverse 介紹（2 分鐘版）</li>
+    <li>早睡，面試前 1 小時不要再學新東西</li>
+  </ul>
+
+  <h3>「How to Prepare」對照清單</h3>
+
+  <p>題目最後給的 4 個準備建議：</p>
+
+  <h4>✅ 「Review your past projects and explain WHY you made specific architectural decisions」</h4>
+
+  <p><strong>Myverse 的設計決策反思</strong>：</p>
+
+  <table>
+    <tr><th>我做的事</th><th>為什麼這樣做</th><th>如果重來會怎樣</th></tr>
+    <tr><td>用 Pinia</td><td>Vue 官方推薦、boilerplate 少</td><td>加上 Vue Query 處理 server state</td></tr>
+    <tr><td>抽出 LinkCard、StatCard、CountdownBadge</td><td>三種卡片類型有 70% 重複邏輯</td><td>進一步用 dynamic component 模式</td></tr>
+    <tr><td>預設 SVG 字典放 LinkCard 內</td><td>快速開發</td><td>抽到獨立 utils（每個 LinkCard 不再重複建立）</td></tr>
+    <tr><td>v-for 渲染卡片，無 lazy load</td><td>卡片數少</td><td>加上 <code>loading="lazy"</code> 圖片屬性</td></tr>
+    <tr><td>編輯後台 + 即時預覽用同一份 reactive 資料</td><td>Single source of truth</td><td>一樣（這個決策是對的）</td></tr>
+  </table>
+
+  <h4>✅ 「Think through at least one real scenario for each topic」</h4>
+
+  <table>
+    <tr><th>主題</th><th>我的真實場景</th></tr>
+    <tr><td>主題 1（System Design）</td><td>Myverse 的 profile 資料在編輯區、預覽、導覽列三處同步</td></tr>
+    <tr><td>主題 2（Performance）</td><td>Myverse 手機預覽載入慢的 profiling 經驗（瓶頸在圖片不在渲染）</td></tr>
+    <tr><td>主題 3（AI Agent）</td><td>Myverse 加 AI 幫創作者規劃節日活動</td></tr>
+  </table>
+</section>
+
+<!-- ===================== STAGE TIPS ===================== -->
+<section id="stage-tips">
+  <h2><span class="num">🎤</span>面試現場注意事項</h2>
+
+  <h3>講答案的節奏</h3>
+
+  <p>每題答案目標時間：</p>
+  <ul>
+    <li>簡單概念解釋：30 秒</li>
+    <li>設計題闡述：1-2 分鐘</li>
+    <li>完整架構講述：3-5 分鐘</li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 重點</div>
+    <p><strong>不要一口氣講太多</strong>——讓面試官有機會追問，他想看的是對話，不是演講。</p>
+  </div>
+
+  <h3>講「為什麼」而不是「做了什麼」</h3>
+
+  <div class="callout error">
+    <div class="callout-title">❌ 不好</div>
+    <p>「我抽了一個 LinkCard component」</p>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">✅ 好</div>
+    <p>「我抽 LinkCard 是因為 Shopee/LINE/Pressplay 三種有 70% 重複邏輯但 30% 差異，所以用 props + slot 模式而不是繼承——主要考量是未來加新類型時最少改動」</p>
+  </div>
+
+  <h3>預想追問</h3>
+
+  <p>每個你打算講的決策，自問：</p>
+  <ul>
+    <li>「如果規模放大 100 倍，會壞在哪裡？」</li>
+    <li>「為什麼不選另一個常見方案？」</li>
+    <li>「如果今天重新設計，你會怎麼做？」</li>
+  </ul>
+
+  <h3>思考題沒答案時的標準回應</h3>
+
+  <div class="quote-box">
+    這個情境我沒遇過，但讓我想一下會怎麼拆解...<br>
+    我會先想 [X] 和 [Y] 兩個角度，<br>
+    從 [X] 角度，可能的方向是...<br>
+    我不確定這是不是最佳解，但這是我目前的思考方向。
+  </div>
+
+  <p>這個結構展現「<strong>結構化思考能力</strong>」——比硬掰一個答案強 10 倍。</p>
+
+  <h3>最後的提醒</h3>
+
+  <div class="callout tip">
+    <div class="callout-title">🌟 心態建設</div>
+    <p>面試官期待的不是「<strong>你沒有不會的</strong>」，而是「<strong>你能誠實處理你不會的問題</strong>」。<br><br>
+    今天系統性地推演整套面試題已經是多數候選人不會做的事——這份準備已經遠超平均水準。<br><br>
+    保持這個誠實態度進面試，比死背答案的候選人更受青睞。<br><br>
+    <strong>祝你面試順利！</strong></p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<script>
+  // 點擊側邊欄 highlight active link
+  const links = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('section[id]');
+
+  function setActive() {
+    let current = '';
+    sections.forEach(section => {
+      const top = section.getBoundingClientRect().top;
+      if (top < 100) current = section.id;
+    });
+    links.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', setActive);
+  setActive();
+
+  // 平滑捲動
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>
