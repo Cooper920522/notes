@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL 完整筆記 — 入門到精通</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --orange: #f97316;
+    --dark-orange: #c2410c;
+    --light-orange: #fed7aa;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #f97316;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --purple: #d2a8ff;
+    --code-bg: #0d1117;
+    --tag-bg: #2d1f0f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  #sidebar {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+
+  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo .sql-icon { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .sql-cylinder {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--orange), var(--dark-orange));
+    border-radius: 50% / 30%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .sidebar-logo h1 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800; color: var(--orange); letter-spacing: 0.5px; }
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); }
+
+  .search-box { margin: 12px 16px; position: relative; }
+  .search-box input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px 8px 32px; color: var(--text); font-size: 13px; outline: none; font-family: 'Noto Sans TC', sans-serif; }
+  .search-box input:focus { border-color: var(--orange); }
+  .search-box::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; }
+
+  .nav-section { padding: 8px 0; }
+  .nav-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); padding: 10px 20px 4px; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--orange); border-left-color: var(--orange); background: rgba(249,115,22,0.06); }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .progress-bar { margin: auto 16px 16px; background: var(--surface2); border-radius: 4px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--purple)); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
+
+  #main { flex: 1; overflow-y: auto; max-width: 900px; padding: 48px 56px; }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .section-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.8px; text-transform: uppercase; }
+  .badge-beginner { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .badge-intermediate { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .badge-advanced { background: rgba(210,168,255,0.15); color: var(--purple); }
+
+  h2.section-title { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .section-desc { color: var(--text-muted); font-size: 14px; }
+
+  h3 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600; color: var(--text); margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
+  h3::before { content: ''; display: inline-block; width: 3px; height: 18px; background: var(--orange); border-radius: 2px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--blue); margin: 18px 0 8px; }
+  p { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.8; }
+
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; margin: 12px 0 20px; position: relative; }
+  pre .lang-tag { position: absolute; top: 10px; right: 14px; font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e6edf3; }
+  :not(pre) > code { background: var(--tag-bg); padding: 2px 7px; border-radius: 5px; font-size: 12.5px; color: var(--light-orange); }
+
+  /* SQL syntax colors */
+  .kw  { color: #ff7b72; }         /* keywords: SELECT, FROM, WHERE */
+  .fn  { color: #d2a8ff; }         /* functions: COUNT, SUM */
+  .str { color: #a5d6ff; }         /* strings */
+  .num { color: #79c0ff; }         /* numbers */
+  .cmt { color: #6e7681; font-style: italic; } /* comments */
+  .tbl { color: #f0883e; }         /* table names */
+  .col { color: #e3b341; }         /* column names */
+  .op  { color: #7ee787; }         /* operators */
+
+  .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 13.5px; }
+  .callout-tip  { background: rgba(63,185,80,0.08);  border-color: var(--green); }
+  .callout-info { background: rgba(88,166,255,0.08); border-color: var(--blue); }
+  .callout-warn { background: rgba(249,115,22,0.08); border-color: var(--orange); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .callout-tip  strong { color: var(--green); }
+  .callout-info strong { color: var(--blue); }
+  .callout-warn strong { color: var(--orange); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card-icon { font-size: 22px; margin-bottom: 8px; }
+  .card h4 { color: var(--orange); margin: 0 0 6px; font-size: 13.5px; }
+  .card p { color: var(--text-muted); margin: 0; font-size: 12.5px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* demo table */
+  .demo-table { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 12px 0; }
+  .demo-table table { margin: 0; }
+  .demo-table th { background: rgba(249,115,22,0.12); color: var(--orange); }
+  .demo-table td { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; font-family: 'Noto Sans TC', sans-serif; }
+  .btn:hover { border-color: var(--orange); color: var(--orange); }
+  .btn-primary { background: var(--orange); color: #0d1117; border-color: var(--orange); font-weight: 700; }
+  .btn-primary:hover { background: #fb923c; color: #0d1117; }
+  .btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  .hero { background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(32,35,42,0.3) 100%); border: 1px solid rgba(249,115,22,0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px; text-align: center; }
+  .hero .big-icon { font-size: 56px; margin-bottom: 12px; }
+  .hero h2 { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--orange); margin-bottom: 8px; }
+  .hero p { font-size: 14px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tag { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); }
+
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0 4px 20px; font-size: 13.5px; position: relative; color: var(--text); }
+  ul li::before { content: '›'; position: absolute; left: 6px; color: var(--orange); font-weight: 700; }
+
+  /* JOIN diagram */
+  .join-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+  .join-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+  .join-box .venn { font-size: 28px; margin-bottom: 6px; }
+  .join-box h4 { font-size: 13px; color: var(--orange); margin: 0 0 4px; }
+  .join-box p { font-size: 12px; color: var(--text-muted); margin: 0; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { padding: 24px 20px; }
+    .join-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sql-icon">
+      <div class="sql-cylinder">🗄️</div>
+      <h1>SQL 完整筆記</h1>
+    </div>
+    <p>入門 → 精通 · 系統化整理</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋概念..." oninput="filterNav(this.value)">
+  </div>
+
+  <div class="nav-section" id="navList">
+    <div class="nav-section-title">基礎入門</div>
+    <div class="nav-item active" onclick="showSection('overview')" data-label="SQL 概覽 資料庫 介紹">
+      <span class="icon">🏠</span> 概覽與介紹
+    </div>
+    <div class="nav-item" onclick="showSection('ddl')" data-label="DDL 建表 CREATE ALTER DROP">
+      <span class="icon">🏗️</span> DDL 建立結構
+    </div>
+    <div class="nav-item" onclick="showSection('select')" data-label="SELECT 查詢 基本語法">
+      <span class="icon">🔍</span> SELECT 查詢
+    </div>
+    <div class="nav-item" onclick="showSection('filter')" data-label="WHERE 過濾 條件 AND OR">
+      <span class="icon">🎯</span> WHERE 過濾
+    </div>
+    <div class="nav-item" onclick="showSection('dml')" data-label="DML INSERT UPDATE DELETE 新增修改刪除">
+      <span class="icon">✏️</span> DML 資料操作
+    </div>
+
+    <div class="nav-section-title">核心查詢</div>
+    <div class="nav-item" onclick="showSection('joins')" data-label="JOIN 連接 INNER LEFT RIGHT">
+      <span class="icon">🔗</span> JOIN 連接
+    </div>
+    <div class="nav-item" onclick="showSection('aggregate')" data-label="聚合 GROUP BY COUNT SUM AVG">
+      <span class="icon">📊</span> 聚合 & GROUP BY
+    </div>
+    <div class="nav-item" onclick="showSection('subquery')" data-label="子查詢 subquery EXISTS IN">
+      <span class="icon">🪆</span> 子查詢
+    </div>
+    <div class="nav-item" onclick="showSection('sort')" data-label="ORDER BY LIMIT OFFSET 排序 分頁">
+      <span class="icon">📑</span> 排序 & 分頁
+    </div>
+
+    <div class="nav-section-title">進階特性</div>
+    <div class="nav-item" onclick="showSection('functions')" data-label="函數 字串 數字 日期 CASE">
+      <span class="icon">⚙️</span> 內建函數
+    </div>
+    <div class="nav-item" onclick="showSection('window')" data-label="視窗函數 OVER PARTITION ROW_NUMBER RANK">
+      <span class="icon">🪟</span> 視窗函數
+    </div>
+    <div class="nav-item" onclick="showSection('cte')" data-label="CTE WITH 遞迴 公用資料表運算式">
+      <span class="icon">🔄</span> CTE & 遞迴查詢
+    </div>
+    <div class="nav-item" onclick="showSection('index')" data-label="索引 index 效能 EXPLAIN">
+      <span class="icon">⚡</span> 索引 & 效能
+    </div>
+    <div class="nav-item" onclick="showSection('transaction')" data-label="交易 transaction ACID 鎖定">
+      <span class="icon">🔒</span> 交易 & ACID
+    </div>
+    <div class="nav-item" onclick="showSection('design')" data-label="資料庫設計 正規化 關聯">
+      <span class="icon">🗂️</span> 資料庫設計
+    </div>
+  </div>
+
+  <div style="padding: 0 16px 4px;">
+    <div class="progress-label" id="progressLabel">學習進度 0%</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ══ 0. OVERVIEW ══ -->
+<section class="section active" id="sec-overview">
+  <div class="hero">
+    <div class="big-icon">🗄️</div>
+    <h2>SQL 完整學習筆記</h2>
+    <p>從零開始，系統化掌握 SQL 核心語法與資料庫設計概念</p>
+  </div>
+
+  <h3>什麼是 SQL？</h3>
+  <p><strong>SQL（Structured Query Language）</strong>是用來與關聯式資料庫溝通的語言。透過 SQL 你可以建立表格、查詢資料、新增修改刪除記錄，幾乎所有系統的後端都會用到。</p>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🔍</div><h4>查詢</h4><p>SELECT 取出你需要的資料</p></div>
+    <div class="card"><div class="card-icon">✏️</div><h4>操作</h4><p>INSERT / UPDATE / DELETE 管理資料</p></div>
+    <div class="card"><div class="card-icon">🏗️</div><h4>定義</h4><p>CREATE / ALTER / DROP 建立結構</p></div>
+    <div class="card"><div class="card-icon">🔒</div><h4>控制</h4><p>GRANT / REVOKE 管理權限</p></div>
+  </div>
+
+  <h3>常見資料庫比較</h3>
+  <table>
+    <tr><th>資料庫</th><th>特色</th><th>常見用途</th></tr>
+    <tr><td>PostgreSQL</td><td>功能最完整、支援 JSON、開源</td><td>後端主流選擇（Myverse 用 Supabase 即 Postgres）</td></tr>
+    <tr><td>MySQL</td><td>速度快、生態豐富</td><td>Web 應用、WordPress</td></tr>
+    <tr><td>SQLite</td><td>輕量、不需伺服器</td><td>本機開發、行動裝置</td></tr>
+    <tr><td>SQL Server</td><td>微軟生態</td><td>企業系統</td></tr>
+  </table>
+
+  <h3>SQL 語句分類</h3>
+  <table>
+    <tr><th>類別</th><th>全名</th><th>指令</th></tr>
+    <tr><td>DDL</td><td>資料定義語言</td><td>CREATE, ALTER, DROP, TRUNCATE</td></tr>
+    <tr><td>DML</td><td>資料操作語言</td><td>SELECT, INSERT, UPDATE, DELETE</td></tr>
+    <tr><td>DCL</td><td>資料控制語言</td><td>GRANT, REVOKE</td></tr>
+    <tr><td>TCL</td><td>交易控制語言</td><td>BEGIN, COMMIT, ROLLBACK</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" disabled>← 上一節</button>
+    <button class="btn btn-primary" onclick="showSection('ddl')">DDL 建立結構 →</button>
+  </div>
+</section>
+
+<!-- ══ 1. DDL ══ -->
+<section class="section" id="sec-ddl">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">DDL 建立結構</h2>
+    <p class="section-desc">CREATE、ALTER、DROP — 定義資料庫的骨架</p>
+  </div>
+
+  <h3>資料型別</h3>
+  <table>
+    <tr><th>類別</th><th>型別</th><th>說明</th></tr>
+    <tr><td>整數</td><td>INT, BIGINT, SMALLINT</td><td>整數，BIGINT 適合大量資料的 ID</td></tr>
+    <tr><td>浮點數</td><td>DECIMAL(p,s), FLOAT</td><td>DECIMAL 精確（金額用），FLOAT 近似</td></tr>
+    <tr><td>字串</td><td>VARCHAR(n), TEXT, CHAR(n)</td><td>VARCHAR 可變長度，TEXT 無限長</td></tr>
+    <tr><td>日期時間</td><td>DATE, TIME, TIMESTAMP</td><td>TIMESTAMP 含時區資訊</td></tr>
+    <tr><td>布林</td><td>BOOLEAN</td><td>true / false</td></tr>
+    <tr><td>JSON</td><td>JSON, JSONB</td><td>PostgreSQL 特有，JSONB 可索引</td></tr>
+    <tr><td>UUID</td><td>UUID</td><td>唯一識別碼，Supabase 預設主鍵型別</td></tr>
+  </table>
+
+  <h3>CREATE TABLE</h3>
+  <pre><code><span class="kw">CREATE TABLE</span> <span class="tbl">users</span> (
+  <span class="col">id</span>         <span class="kw">BIGSERIAL</span>    <span class="kw">PRIMARY KEY</span>,          <span class="cmt">-- 自動遞增主鍵</span>
+  <span class="col">username</span>   <span class="kw">VARCHAR</span>(<span class="num">50</span>)  <span class="kw">NOT NULL UNIQUE</span>,       <span class="cmt">-- 不可空、唯一</span>
+  <span class="col">email</span>      <span class="kw">VARCHAR</span>(<span class="num">255</span>) <span class="kw">NOT NULL UNIQUE</span>,
+  <span class="col">age</span>        <span class="kw">INT</span>          <span class="kw">CHECK</span> (<span class="col">age</span> <span class="op">>=</span> <span class="num">0</span>),       <span class="cmt">-- 約束條件</span>
+  <span class="col">role</span>       <span class="kw">VARCHAR</span>(<span class="num">20</span>)  <span class="kw">DEFAULT</span> <span class="str">'user'</span>,        <span class="cmt">-- 預設值</span>
+  <span class="col">created_at</span> <span class="kw">TIMESTAMP</span>    <span class="kw">DEFAULT NOW</span>()          <span class="cmt">-- 自動記錄建立時間</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">posts</span> (
+  <span class="col">id</span>         <span class="kw">BIGSERIAL PRIMARY KEY</span>,
+  <span class="col">user_id</span>    <span class="kw">BIGINT NOT NULL</span>,
+  <span class="col">title</span>      <span class="kw">VARCHAR</span>(<span class="num">200</span>) <span class="kw">NOT NULL</span>,
+  <span class="col">content</span>    <span class="kw">TEXT</span>,
+  <span class="col">created_at</span> <span class="kw">TIMESTAMP DEFAULT NOW</span>(),
+
+  <span class="cmt">-- 外鍵：posts.user_id 連結到 users.id</span>
+  <span class="kw">FOREIGN KEY</span> (<span class="col">user_id</span>) <span class="kw">REFERENCES</span> <span class="tbl">users</span>(<span class="col">id</span>) <span class="kw">ON DELETE CASCADE</span>
+);
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 ON DELETE 選項</strong>
+    CASCADE — 刪除父記錄時，子記錄一起刪除<br>
+    SET NULL — 子記錄的外鍵欄位設為 NULL<br>
+    RESTRICT — 有子記錄時禁止刪除父記錄（預設）
+  </div>
+
+  <h3>ALTER TABLE — 修改表格</h3>
+  <pre><code><span class="cmt">-- 新增欄位</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">users</span> <span class="kw">ADD COLUMN</span> <span class="col">avatar_url</span> <span class="kw">TEXT</span>;
+
+<span class="cmt">-- 修改欄位型別</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">users</span> <span class="kw">ALTER COLUMN</span> <span class="col">age</span> <span class="kw">TYPE SMALLINT</span>;
+
+<span class="cmt">-- 重新命名欄位</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">users</span> <span class="kw">RENAME COLUMN</span> <span class="col">username</span> <span class="kw">TO</span> <span class="col">name</span>;
+
+<span class="cmt">-- 刪除欄位</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">users</span> <span class="kw">DROP COLUMN</span> <span class="col">age</span>;
+
+<span class="cmt">-- 新增約束</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">users</span> <span class="kw">ADD CONSTRAINT</span> chk_age <span class="kw">CHECK</span> (<span class="col">age</span> <span class="op">>=</span> <span class="num">18</span>);
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>DROP & TRUNCATE</h3>
+  <pre><code><span class="cmt">-- 刪除整張表（結構也刪掉）</span>
+<span class="kw">DROP TABLE</span> <span class="tbl">users</span>;
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">users</span>;  <span class="cmt">-- 安全寫法，不存在也不報錯</span>
+
+<span class="cmt">-- 清空所有資料（保留結構，比 DELETE 快）</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">users</span>;
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">users</span> <span class="kw">RESTART IDENTITY</span>;  <span class="cmt">-- 同時重置自動遞增 ID</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('overview')">← 概覽</button>
+    <button class="btn btn-primary" onclick="showSection('select')">SELECT 查詢 →</button>
+  </div>
+</section>
+
+<!-- ══ 2. SELECT ══ -->
+<section class="section" id="sec-select">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">SELECT 查詢</h2>
+    <p class="section-desc">SQL 最核心的語句，取出你需要的資料</p>
+  </div>
+
+  <h3>基本語法</h3>
+  <pre><code><span class="cmt">-- 取所有欄位（* 在正式環境不建議用）</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>;
+
+<span class="cmt">-- 指定欄位</span>
+<span class="kw">SELECT</span> <span class="col">id</span>, <span class="col">username</span>, <span class="col">email</span> <span class="kw">FROM</span> <span class="tbl">users</span>;
+
+<span class="cmt">-- 欄位別名（AS）</span>
+<span class="kw">SELECT</span>
+  <span class="col">username</span>   <span class="kw">AS</span> <span class="col">name</span>,
+  <span class="col">email</span>      <span class="kw">AS</span> <span class="col">mail</span>,
+  <span class="col">created_at</span> <span class="kw">AS</span> <span class="col">joined</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>;
+
+<span class="cmt">-- 計算欄位</span>
+<span class="kw">SELECT</span>
+  <span class="col">name</span>,
+  <span class="col">price</span>,
+  <span class="col">quantity</span>,
+  <span class="col">price</span> <span class="op">*</span> <span class="col">quantity</span> <span class="kw">AS</span> <span class="col">total</span>
+<span class="kw">FROM</span> <span class="tbl">order_items</span>;
+
+<span class="cmt">-- 去除重複（DISTINCT）</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">country</span> <span class="kw">FROM</span> <span class="tbl">users</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>SELECT 執行順序</h3>
+  <p>SQL 語句的<strong>撰寫順序</strong>和<strong>執行順序</strong>不一樣，這是很多人搞混的地方：</p>
+  <table>
+    <tr><th>執行順序</th><th>語句</th><th>說明</th></tr>
+    <tr><td>1</td><td>FROM / JOIN</td><td>先確定資料來源</td></tr>
+    <tr><td>2</td><td>WHERE</td><td>過濾原始資料列</td></tr>
+    <tr><td>3</td><td>GROUP BY</td><td>分組</td></tr>
+    <tr><td>4</td><td>HAVING</td><td>過濾分組後結果</td></tr>
+    <tr><td>5</td><td>SELECT</td><td>選取欄位、計算</td></tr>
+    <tr><td>6</td><td>DISTINCT</td><td>去重</td></tr>
+    <tr><td>7</td><td>ORDER BY</td><td>排序</td></tr>
+    <tr><td>8</td><td>LIMIT / OFFSET</td><td>分頁</td></tr>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ 常見錯誤</strong>
+    WHERE 比 SELECT 先執行，所以 WHERE 裡不能用 SELECT 定義的別名！<br>
+    <code>SELECT price * qty AS total FROM orders WHERE total &gt; 100</code> ← 錯誤<br>
+    改用 <code>WHERE price * qty &gt; 100</code> 或用子查詢包起來。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('ddl')">← DDL</button>
+    <button class="btn btn-primary" onclick="showSection('filter')">WHERE 過濾 →</button>
+  </div>
+</section>
+
+<!-- ══ 3. FILTER ══ -->
+<section class="section" id="sec-filter">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">WHERE 過濾</h2>
+    <p class="section-desc">條件篩選：比較、邏輯、模糊搜尋、NULL 判斷</p>
+  </div>
+
+  <h3>比較與邏輯運算子</h3>
+  <pre><code><span class="cmt">-- 比較運算子</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">age</span> <span class="op">=</span>  <span class="num">25</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">age</span> <span class="op">!=</span> <span class="num">25</span>;   <span class="cmt">-- 或 &lt;&gt;</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">age</span> <span class="op">></span>  <span class="num">18</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">age</span> <span class="op">>=</span> <span class="num">18</span>;
+
+<span class="cmt">-- 邏輯運算子</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span> <span class="col">age</span> <span class="op">>=</span> <span class="num">18</span> <span class="kw">AND</span> <span class="col">role</span> <span class="op">=</span> <span class="str">'admin'</span>;
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span> <span class="col">role</span> <span class="op">=</span> <span class="str">'admin'</span> <span class="kw">OR</span> <span class="col">role</span> <span class="op">=</span> <span class="str">'editor'</span>;
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE NOT</span> <span class="col">is_banned</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>IN、BETWEEN、LIKE、IS NULL</h3>
+  <pre><code><span class="cmt">-- IN：符合清單中的任一值</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span> <span class="col">role</span> <span class="kw">IN</span> (<span class="str">'admin'</span>, <span class="str">'editor'</span>, <span class="str">'moderator'</span>);
+
+<span class="cmt">-- BETWEEN：範圍（含兩端）</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">orders</span>
+<span class="kw">WHERE</span> <span class="col">created_at</span> <span class="kw">BETWEEN</span> <span class="str">'2024-01-01'</span> <span class="kw">AND</span> <span class="str">'2024-12-31'</span>;
+
+<span class="cmt">-- LIKE：模糊搜尋</span>
+<span class="cmt">-- % 代表任意長度字串，_ 代表單一字元</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">email</span> <span class="kw">LIKE</span> <span class="str">'%@gmail.com'</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">username</span> <span class="kw">LIKE</span> <span class="str">'A%'</span>;      <span class="cmt">-- 以 A 開頭</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">username</span> <span class="kw">LIKE</span> <span class="str">'A___'</span>;    <span class="cmt">-- A 開頭共 4 字元</span>
+
+<span class="cmt">-- IS NULL / IS NOT NULL</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">avatar_url</span> <span class="kw">IS NULL</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">avatar_url</span> <span class="kw">IS NOT NULL</span>;
+
+<span class="cmt">-- ⚠️ NULL 不能用 = 判斷！</span>
+<span class="cmt">-- WHERE avatar_url = NULL  ← 永遠不成立</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('select')">← SELECT</button>
+    <button class="btn btn-primary" onclick="showSection('dml')">DML 資料操作 →</button>
+  </div>
+</section>
+
+<!-- ══ 4. DML ══ -->
+<section class="section" id="sec-dml">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">DML 資料操作</h2>
+    <p class="section-desc">INSERT、UPDATE、DELETE — 新增、修改、刪除資料</p>
+  </div>
+
+  <h3>INSERT — 新增資料</h3>
+  <pre><code><span class="cmt">-- 新增單筆</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">users</span> (<span class="col">username</span>, <span class="col">email</span>, <span class="col">role</span>)
+<span class="kw">VALUES</span> (<span class="str">'alice'</span>, <span class="str">'alice@example.com'</span>, <span class="str">'admin'</span>);
+
+<span class="cmt">-- 新增多筆</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">users</span> (<span class="col">username</span>, <span class="col">email</span>)
+<span class="kw">VALUES</span>
+  (<span class="str">'bob'</span>,   <span class="str">'bob@example.com'</span>),
+  (<span class="str">'carol'</span>, <span class="str">'carol@example.com'</span>),
+  (<span class="str">'dave'</span>,  <span class="str">'dave@example.com'</span>);
+
+<span class="cmt">-- INSERT ... RETURNING（PostgreSQL）— 取得新增後的資料</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">users</span> (<span class="col">username</span>, <span class="col">email</span>)
+<span class="kw">VALUES</span> (<span class="str">'eve'</span>, <span class="str">'eve@example.com'</span>)
+<span class="kw">RETURNING</span> <span class="col">id</span>, <span class="col">created_at</span>;
+
+<span class="cmt">-- UPSERT — 存在就更新，不存在就新增</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">users</span> (<span class="col">email</span>, <span class="col">username</span>)
+<span class="kw">VALUES</span> (<span class="str">'alice@example.com'</span>, <span class="str">'alice_new'</span>)
+<span class="kw">ON CONFLICT</span> (<span class="col">email</span>)
+<span class="kw">DO UPDATE SET</span> <span class="col">username</span> <span class="op">=</span> <span class="kw">EXCLUDED</span>.<span class="col">username</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>UPDATE — 更新資料</h3>
+  <pre><code><span class="cmt">-- 更新單一欄位</span>
+<span class="kw">UPDATE</span> <span class="tbl">users</span>
+<span class="kw">SET</span> <span class="col">role</span> <span class="op">=</span> <span class="str">'admin'</span>
+<span class="kw">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">1</span>;
+
+<span class="cmt">-- 更新多個欄位</span>
+<span class="kw">UPDATE</span> <span class="tbl">users</span>
+<span class="kw">SET</span>
+  <span class="col">username</span>   <span class="op">=</span> <span class="str">'alice_updated'</span>,
+  <span class="col">updated_at</span> <span class="op">=</span> <span class="fn">NOW</span>()
+<span class="kw">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">1</span>;
+
+<span class="cmt">-- ⚠️ 沒有 WHERE 會更新全部！永遠記得加 WHERE</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>DELETE — 刪除資料</h3>
+  <pre><code><span class="cmt">-- 刪除指定條件</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">1</span>;
+
+<span class="cmt">-- 刪除多筆</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span> <span class="col">created_at</span> <span class="op"><</span> <span class="str">'2020-01-01'</span>;
+
+<span class="cmt">-- ⚠️ 沒有 WHERE = 刪除全部資料！</span>
+<span class="cmt">-- 建議先用 SELECT 確認要刪的資料再執行</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('filter')">← WHERE</button>
+    <button class="btn btn-primary" onclick="showSection('joins')">JOIN 連接 →</button>
+  </div>
+</section>
+
+<!-- ══ 5. JOINS ══ -->
+<section class="section" id="sec-joins">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">JOIN 連接</h2>
+    <p class="section-desc">合併多張表的資料，是 SQL 最核心的技能之一</p>
+  </div>
+
+  <h3>示範資料</h3>
+  <div class="demo-table">
+    <table>
+      <tr><th colspan="3">users</th></tr>
+      <tr><th>id</th><th>name</th><th>dept_id</th></tr>
+      <tr><td>1</td><td>Alice</td><td>1</td></tr>
+      <tr><td>2</td><td>Bob</td><td>2</td></tr>
+      <tr><td>3</td><td>Carol</td><td>NULL</td></tr>
+    </table>
+  </div>
+  <div class="demo-table">
+    <table>
+      <tr><th colspan="2">departments</th></tr>
+      <tr><th>id</th><th>name</th></tr>
+      <tr><td>1</td><td>工程部</td></tr>
+      <tr><td>2</td><td>設計部</td></tr>
+      <tr><td>3</td><td>行銷部</td></tr>
+    </table>
+  </div>
+
+  <div class="join-grid">
+    <div class="join-box">
+      <div class="venn">🔵🟡</div>
+      <h4>INNER JOIN</h4>
+      <p>只回傳兩表都有對應的資料（交集）</p>
+    </div>
+    <div class="join-box">
+      <div class="venn">🔵⬜</div>
+      <h4>LEFT JOIN</h4>
+      <p>保留左表所有資料，右表沒有就 NULL</p>
+    </div>
+    <div class="join-box">
+      <div class="venn">⬜🟡</div>
+      <h4>RIGHT JOIN</h4>
+      <p>保留右表所有資料，左表沒有就 NULL</p>
+    </div>
+    <div class="join-box">
+      <div class="venn">🔵🟡🟣</div>
+      <h4>FULL OUTER JOIN</h4>
+      <p>保留兩表所有資料（聯集）</p>
+    </div>
+  </div>
+
+  <h3>JOIN 語法與結果</h3>
+  <pre><code><span class="cmt">-- INNER JOIN：只有 Alice、Bob（Carol 沒有 dept_id）</span>
+<span class="kw">SELECT</span> <span class="tbl">u</span>.<span class="col">name</span>, <span class="tbl">d</span>.<span class="col">name</span> <span class="kw">AS</span> <span class="col">dept</span>
+<span class="kw">FROM</span> <span class="tbl">users</span> <span class="tbl">u</span>
+<span class="kw">INNER JOIN</span> <span class="tbl">departments</span> <span class="tbl">d</span> <span class="kw">ON</span> <span class="tbl">u</span>.<span class="col">dept_id</span> <span class="op">=</span> <span class="tbl">d</span>.<span class="col">id</span>;
+<span class="cmt">-- 結果：Alice/工程部、Bob/設計部</span>
+
+<span class="cmt">-- LEFT JOIN：三人都出現，Carol 的 dept 是 NULL</span>
+<span class="kw">SELECT</span> <span class="tbl">u</span>.<span class="col">name</span>, <span class="tbl">d</span>.<span class="col">name</span> <span class="kw">AS</span> <span class="col">dept</span>
+<span class="kw">FROM</span> <span class="tbl">users</span> <span class="tbl">u</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">departments</span> <span class="tbl">d</span> <span class="kw">ON</span> <span class="tbl">u</span>.<span class="col">dept_id</span> <span class="op">=</span> <span class="tbl">d</span>.<span class="col">id</span>;
+<span class="cmt">-- 結果：Alice/工程部、Bob/設計部、Carol/NULL</span>
+
+<span class="cmt">-- 三張表連接</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">u</span>.<span class="col">name</span>        <span class="kw">AS</span> <span class="col">user_name</span>,
+  <span class="tbl">d</span>.<span class="col">name</span>        <span class="kw">AS</span> <span class="col">dept_name</span>,
+  <span class="tbl">p</span>.<span class="col">title</span>       <span class="kw">AS</span> <span class="col">post_title</span>
+<span class="kw">FROM</span>       <span class="tbl">users</span>       <span class="tbl">u</span>
+<span class="kw">LEFT JOIN</span>  <span class="tbl">departments</span> <span class="tbl">d</span> <span class="kw">ON</span> <span class="tbl">u</span>.<span class="col">dept_id</span> <span class="op">=</span> <span class="tbl">d</span>.<span class="col">id</span>
+<span class="kw">LEFT JOIN</span>  <span class="tbl">posts</span>       <span class="tbl">p</span> <span class="kw">ON</span> <span class="tbl">p</span>.<span class="col">user_id</span> <span class="op">=</span> <span class="tbl">u</span>.<span class="col">id</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 實務建議</strong>
+    90% 的情況用 LEFT JOIN 就夠了。INNER JOIN 用在「沒有對應就不需要顯示」的情況，例如只顯示有部門的員工。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('dml')">← DML</button>
+    <button class="btn btn-primary" onclick="showSection('aggregate')">聚合 & GROUP BY →</button>
+  </div>
+</section>
+
+<!-- ══ 6. AGGREGATE ══ -->
+<section class="section" id="sec-aggregate">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">聚合 & GROUP BY</h2>
+    <p class="section-desc">統計分析的核心：計數、加總、平均、分組</p>
+  </div>
+
+  <h3>聚合函數</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(<span class="op">*</span>)           <span class="kw">AS</span> <span class="col">total_users</span>,     <span class="cmt">-- 總筆數（含 NULL）</span>
+  <span class="fn">COUNT</span>(<span class="col">avatar_url</span>) <span class="kw">AS</span> <span class="col">has_avatar</span>,      <span class="cmt">-- 非 NULL 的筆數</span>
+  <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">country</span>) <span class="kw">AS</span> <span class="col">countries</span>, <span class="cmt">-- 不重複的國家數</span>
+  <span class="fn">SUM</span>(<span class="col">balance</span>)       <span class="kw">AS</span> <span class="col">total_balance</span>,  <span class="cmt">-- 加總</span>
+  <span class="fn">AVG</span>(<span class="col">age</span>)           <span class="kw">AS</span> <span class="col">avg_age</span>,         <span class="cmt">-- 平均</span>
+  <span class="fn">MAX</span>(<span class="col">age</span>)           <span class="kw">AS</span> <span class="col">oldest</span>,          <span class="cmt">-- 最大值</span>
+  <span class="fn">MIN</span>(<span class="col">age</span>)           <span class="kw">AS</span> <span class="col">youngest</span>         <span class="cmt">-- 最小值</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>GROUP BY — 分組統計</h3>
+  <pre><code><span class="cmt">-- 每個部門有幾個人</span>
+<span class="kw">SELECT</span>
+  <span class="col">dept_id</span>,
+  <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">member_count</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">GROUP BY</span> <span class="col">dept_id</span>;
+
+<span class="cmt">-- 結合 JOIN，顯示部門名稱</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">d</span>.<span class="col">name</span>        <span class="kw">AS</span> <span class="col">dept</span>,
+  <span class="fn">COUNT</span>(<span class="tbl">u</span>.<span class="col">id</span>) <span class="kw">AS</span> <span class="col">count</span>,
+  <span class="fn">AVG</span>(<span class="tbl">u</span>.<span class="col">salary</span>)  <span class="kw">AS</span> <span class="col">avg_salary</span>
+<span class="kw">FROM</span>       <span class="tbl">departments</span> <span class="tbl">d</span>
+<span class="kw">LEFT JOIN</span>  <span class="tbl">users</span>       <span class="tbl">u</span> <span class="kw">ON</span> <span class="tbl">u</span>.<span class="col">dept_id</span> <span class="op">=</span> <span class="tbl">d</span>.<span class="col">id</span>
+<span class="kw">GROUP BY</span>   <span class="tbl">d</span>.<span class="col">id</span>, <span class="tbl">d</span>.<span class="col">name</span>
+<span class="kw">ORDER BY</span>   <span class="col">avg_salary</span> <span class="kw">DESC</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>HAVING — 過濾分組結果</h3>
+  <pre><code><span class="cmt">-- 只顯示人數超過 3 人的部門</span>
+<span class="kw">SELECT</span>
+  <span class="col">dept_id</span>,
+  <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">count</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">GROUP BY</span> <span class="col">dept_id</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">3</span>;
+
+<span class="cmt">-- WHERE vs HAVING</span>
+<span class="cmt">-- WHERE  = 分組前過濾（作用在原始資料列）</span>
+<span class="cmt">-- HAVING = 分組後過濾（作用在聚合結果）</span>
+<span class="kw">SELECT</span> <span class="col">dept_id</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">count</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span>  <span class="col">role</span> <span class="op">!=</span> <span class="str">'guest'</span>      <span class="cmt">-- 先過濾掉 guest</span>
+<span class="kw">GROUP BY</span> <span class="col">dept_id</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">2</span>;        <span class="cmt">-- 再過濾人數</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('joins')">← JOIN</button>
+    <button class="btn btn-primary" onclick="showSection('subquery')">子查詢 →</button>
+  </div>
+</section>
+
+<!-- ══ 7. SUBQUERY ══ -->
+<section class="section" id="sec-subquery">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">子查詢</h2>
+    <p class="section-desc">查詢中的查詢，用來解決複雜的多步驟問題</p>
+  </div>
+
+  <h3>WHERE 中的子查詢</h3>
+  <pre><code><span class="cmt">-- 找出薪資高於平均的員工</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">salary</span>
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> <span class="col">salary</span> <span class="op">></span> (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">salary</span>) <span class="kw">FROM</span> <span class="tbl">employees</span>
+);
+
+<span class="cmt">-- IN 子查詢</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">WHERE</span> <span class="col">id</span> <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> <span class="col">user_id</span> <span class="kw">FROM</span> <span class="tbl">posts</span>
+  <span class="kw">WHERE</span> <span class="col">created_at</span> <span class="op">></span> <span class="str">'2024-01-01'</span>
+);
+
+<span class="cmt">-- EXISTS：有沒有符合的記錄（效能通常比 IN 好）</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="tbl">u</span>
+<span class="kw">WHERE EXISTS</span> (
+  <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tbl">posts</span> <span class="tbl">p</span>
+  <span class="kw">WHERE</span> <span class="tbl">p</span>.<span class="col">user_id</span> <span class="op">=</span> <span class="tbl">u</span>.<span class="col">id</span>
+);
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>FROM 中的子查詢（衍生表）</h3>
+  <pre><code><span class="cmt">-- 先統計再過濾（解決 WHERE 不能用別名的問題）</span>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span>
+    <span class="col">dept_id</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)        <span class="kw">AS</span> <span class="col">count</span>,
+    <span class="fn">AVG</span>(<span class="col">salary</span>)   <span class="kw">AS</span> <span class="col">avg_sal</span>
+  <span class="kw">FROM</span> <span class="tbl">employees</span>
+  <span class="kw">GROUP BY</span> <span class="col">dept_id</span>
+) <span class="kw">AS</span> <span class="tbl">dept_stats</span>
+<span class="kw">WHERE</span> <span class="col">avg_sal</span> <span class="op">></span> <span class="num">50000</span>;  <span class="cmt">-- 這裡可以用別名了！</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>SELECT 中的子查詢（相關子查詢）</h3>
+  <pre><code><span class="cmt">-- 每個用戶的文章數（相關子查詢，每行都執行一次，效能較差）</span>
+<span class="kw">SELECT</span>
+  <span class="col">name</span>,
+  (<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> <span class="tbl">posts</span> <span class="kw">WHERE</span> <span class="col">user_id</span> <span class="op">=</span> <span class="tbl">u</span>.<span class="col">id</span>) <span class="kw">AS</span> <span class="col">post_count</span>
+<span class="kw">FROM</span> <span class="tbl">users</span> <span class="tbl">u</span>;
+
+<span class="cmt">-- 建議改用 LEFT JOIN + COUNT（效能更好）</span>
+<span class="kw">SELECT</span> <span class="tbl">u</span>.<span class="col">name</span>, <span class="fn">COUNT</span>(<span class="tbl">p</span>.<span class="col">id</span>) <span class="kw">AS</span> <span class="col">post_count</span>
+<span class="kw">FROM</span> <span class="tbl">users</span> <span class="tbl">u</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">posts</span> <span class="tbl">p</span> <span class="kw">ON</span> <span class="tbl">p</span>.<span class="col">user_id</span> <span class="op">=</span> <span class="tbl">u</span>.<span class="col">id</span>
+<span class="kw">GROUP BY</span> <span class="tbl">u</span>.<span class="col">id</span>, <span class="tbl">u</span>.<span class="col">name</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('aggregate')">← 聚合</button>
+    <button class="btn btn-primary" onclick="showSection('sort')">排序 & 分頁 →</button>
+  </div>
+</section>
+
+<!-- ══ 8. SORT ══ -->
+<section class="section" id="sec-sort">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">排序 & 分頁</h2>
+    <p class="section-desc">ORDER BY、LIMIT、OFFSET — 控制結果順序與數量</p>
+  </div>
+
+  <h3>ORDER BY</h3>
+  <pre><code><span class="cmt">-- 單一欄位排序</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">ORDER BY</span> <span class="col">created_at</span> <span class="kw">DESC</span>;  <span class="cmt">-- 新到舊</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">ORDER BY</span> <span class="col">name</span> <span class="kw">ASC</span>;          <span class="cmt">-- A-Z（預設）</span>
+
+<span class="cmt">-- 多欄位排序</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+<span class="kw">ORDER BY</span> <span class="col">dept_id</span> <span class="kw">ASC</span>, <span class="col">salary</span> <span class="kw">DESC</span>;  <span class="cmt">-- 先按部門升序，同部門再按薪資降序</span>
+
+<span class="cmt">-- NULL 排序（PostgreSQL）</span>
+<span class="kw">ORDER BY</span> <span class="col">score</span> <span class="kw">DESC NULLS LAST</span>;   <span class="cmt">-- NULL 排在最後</span>
+<span class="kw">ORDER BY</span> <span class="col">score</span> <span class="kw">ASC  NULLS FIRST</span>;  <span class="cmt">-- NULL 排在最前</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>LIMIT & OFFSET — 分頁</h3>
+  <pre><code><span class="cmt">-- 取前 10 筆</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">posts</span>
+<span class="kw">ORDER BY</span> <span class="col">created_at</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;
+
+<span class="cmt">-- 分頁查詢（第 N 頁，每頁 10 筆）</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">posts</span>
+<span class="kw">ORDER BY</span> <span class="col">created_at</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>  <span class="num">10</span>                    <span class="cmt">-- 每頁筆數</span>
+<span class="kw">OFFSET</span> (<span class="col">page</span> <span class="op">-</span> <span class="num">1</span>) <span class="op">*</span> <span class="num">10</span>;     <span class="cmt">-- 跳過前幾筆</span>
+
+<span class="cmt">-- 第 1 頁：OFFSET 0</span>
+<span class="cmt">-- 第 2 頁：OFFSET 10</span>
+<span class="cmt">-- 第 3 頁：OFFSET 20</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ OFFSET 分頁的效能問題</strong>
+    資料量大時（百萬筆以上），OFFSET 越大效能越差，因為資料庫仍需掃描跳過的資料。大型應用建議改用 <strong>Cursor-based 分頁</strong>，用 <code>WHERE id &gt; last_id LIMIT 10</code> 取代 OFFSET。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('subquery')">← 子查詢</button>
+    <button class="btn btn-primary" onclick="showSection('functions')">內建函數 →</button>
+  </div>
+</section>
+
+<!-- ══ 9. FUNCTIONS ══ -->
+<section class="section" id="sec-functions">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">內建函數</h2>
+    <p class="section-desc">字串、數字、日期、條件函數</p>
+  </div>
+
+  <h3>字串函數</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="fn">LENGTH</span>(<span class="col">name</span>),                         <span class="cmt">-- 字串長度</span>
+  <span class="fn">UPPER</span>(<span class="col">name</span>),                          <span class="cmt">-- 轉大寫</span>
+  <span class="fn">LOWER</span>(<span class="col">email</span>),                         <span class="cmt">-- 轉小寫</span>
+  <span class="fn">TRIM</span>(<span class="col">name</span>),                           <span class="cmt">-- 去掉首尾空白</span>
+  <span class="fn">SUBSTRING</span>(<span class="col">name</span>, <span class="num">1</span>, <span class="num">3</span>),              <span class="cmt">-- 取前 3 個字元</span>
+  <span class="fn">CONCAT</span>(<span class="col">first_name</span>, <span class="str">' '</span>, <span class="col">last_name</span>),  <span class="cmt">-- 字串串接</span>
+  <span class="col">first_name</span> <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> <span class="col">last_name</span>,      <span class="cmt">-- 串接（PostgreSQL 縮寫）</span>
+  <span class="fn">REPLACE</span>(<span class="col">bio</span>, <span class="str">'舊詞'</span>, <span class="str">'新詞'</span>),         <span class="cmt">-- 取代字串</span>
+  <span class="fn">SPLIT_PART</span>(<span class="col">email</span>, <span class="str">'@'</span>, <span class="num">1</span>)            <span class="cmt">-- 以 @ 分割取第 1 部分</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>數字函數</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="fn">ROUND</span>(<span class="col">price</span>, <span class="num">2</span>),    <span class="cmt">-- 四捨五入到小數點後 2 位</span>
+  <span class="fn">CEIL</span>(<span class="col">price</span>),        <span class="cmt">-- 無條件進位</span>
+  <span class="fn">FLOOR</span>(<span class="col">price</span>),       <span class="cmt">-- 無條件捨去</span>
+  <span class="fn">ABS</span>(<span class="col">balance</span>),       <span class="cmt">-- 絕對值</span>
+  <span class="fn">MOD</span>(<span class="col">id</span>, <span class="num">2</span>),         <span class="cmt">-- 取餘數（奇偶判斷）</span>
+  <span class="fn">POWER</span>(<span class="col">x</span>, <span class="num">2</span>)         <span class="cmt">-- 次方</span>
+<span class="kw">FROM</span> <span class="tbl">products</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>日期函數</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="fn">NOW</span>(),                               <span class="cmt">-- 當前時間（含時區）</span>
+  <span class="fn">CURRENT_DATE</span>,                        <span class="cmt">-- 今天日期</span>
+  <span class="fn">DATE_PART</span>(<span class="str">'year'</span>,  <span class="col">created_at</span>),    <span class="cmt">-- 取年份</span>
+  <span class="fn">DATE_PART</span>(<span class="str">'month'</span>, <span class="col">created_at</span>),    <span class="cmt">-- 取月份</span>
+  <span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, <span class="col">created_at</span>),   <span class="cmt">-- 截斷到月份開始</span>
+  <span class="fn">AGE</span>(<span class="col">birth_date</span>),                    <span class="cmt">-- 計算年齡</span>
+  <span class="col">created_at</span> <span class="op">+</span> <span class="kw">INTERVAL</span> <span class="str">'7 days'</span>,   <span class="cmt">-- 加 7 天</span>
+  <span class="col">created_at</span> <span class="op">-</span> <span class="kw">INTERVAL</span> <span class="str">'1 month'</span>   <span class="cmt">-- 減 1 個月</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>CASE WHEN — 條件邏輯</h3>
+  <pre><code><span class="cmt">-- 類似程式語言的 if/else</span>
+<span class="kw">SELECT</span>
+  <span class="col">name</span>,
+  <span class="col">score</span>,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> <span class="col">score</span> <span class="op">>=</span> <span class="num">90</span> <span class="kw">THEN</span> <span class="str">'A'</span>
+    <span class="kw">WHEN</span> <span class="col">score</span> <span class="op">>=</span> <span class="num">80</span> <span class="kw">THEN</span> <span class="str">'B'</span>
+    <span class="kw">WHEN</span> <span class="col">score</span> <span class="op">>=</span> <span class="num">70</span> <span class="kw">THEN</span> <span class="str">'C'</span>
+    <span class="kw">ELSE</span> <span class="str">'F'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> <span class="col">grade</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- COALESCE：取第一個非 NULL 的值</span>
+<span class="kw">SELECT</span> <span class="fn">COALESCE</span>(<span class="col">nickname</span>, <span class="col">username</span>, <span class="str">'匿名'</span>) <span class="kw">AS</span> <span class="col">display_name</span>
+<span class="kw">FROM</span> <span class="tbl">users</span>;
+
+<span class="cmt">-- NULLIF：兩值相等時回傳 NULL（避免除以零）</span>
+<span class="kw">SELECT</span> <span class="col">total</span> <span class="op">/</span> <span class="fn">NULLIF</span>(<span class="col">count</span>, <span class="num">0</span>) <span class="kw">AS</span> <span class="col">average</span>
+<span class="kw">FROM</span> <span class="tbl">stats</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('sort')">← 排序分頁</button>
+    <button class="btn btn-primary" onclick="showSection('window')">視窗函數 →</button>
+  </div>
+</section>
+
+<!-- ══ 10. WINDOW ══ -->
+<section class="section" id="sec-window">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">視窗函數</h2>
+    <p class="section-desc">在保留所有列的同時進行聚合計算，是 SQL 最強大的特性之一</p>
+  </div>
+
+  <p>視窗函數與 GROUP BY 的最大差異：GROUP BY 會將多列合併成一列，<strong>視窗函數保留每一列，同時附加計算結果</strong>。</p>
+
+  <h3>基本語法</h3>
+  <pre><code><span class="fn">函數名稱</span>() <span class="kw">OVER</span> (
+  <span class="kw">PARTITION BY</span> <span class="col">分組欄位</span>   <span class="cmt">-- 可選：按哪個欄位分組</span>
+  <span class="kw">ORDER BY</span>     <span class="col">排序欄位</span>   <span class="cmt">-- 可選：視窗內的排序</span>
+)
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>排名函數</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="col">name</span>,
+  <span class="col">dept_id</span>,
+  <span class="col">salary</span>,
+
+  <span class="cmt">-- ROW_NUMBER：每列唯一序號</span>
+  <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="col">dept_id</span> <span class="kw">ORDER BY</span> <span class="col">salary</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">row_num</span>,
+
+  <span class="cmt">-- RANK：同分同名次，下一名跳號（1,1,3）</span>
+  <span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="col">dept_id</span> <span class="kw">ORDER BY</span> <span class="col">salary</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">rank</span>,
+
+  <span class="cmt">-- DENSE_RANK：同分同名次，不跳號（1,1,2）</span>
+  <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="col">dept_id</span> <span class="kw">ORDER BY</span> <span class="col">salary</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">dense_rank</span>
+
+<span class="kw">FROM</span> <span class="tbl">employees</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>實用範例 — 取每個部門薪資最高的員工</h3>
+  <pre><code><span class="cmt">-- 先用視窗函數加上排名</span>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span>
+    <span class="col">name</span>, <span class="col">dept_id</span>, <span class="col">salary</span>,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="col">dept_id</span> <span class="kw">ORDER BY</span> <span class="col">salary</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">rn</span>
+  <span class="kw">FROM</span> <span class="tbl">employees</span>
+) <span class="kw">AS</span> <span class="tbl">ranked</span>
+<span class="kw">WHERE</span> <span class="col">rn</span> <span class="op">=</span> <span class="num">1</span>;  <span class="cmt">-- 只取每部門第一名</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>累計與移動計算</h3>
+  <pre><code><span class="kw">SELECT</span>
+  <span class="col">date</span>,
+  <span class="col">revenue</span>,
+
+  <span class="cmt">-- 累計加總</span>
+  <span class="fn">SUM</span>(<span class="col">revenue</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">date</span>) <span class="kw">AS</span> <span class="col">running_total</span>,
+
+  <span class="cmt">-- 移動平均（前後各 2 筆）</span>
+  <span class="fn">AVG</span>(<span class="col">revenue</span>) <span class="kw">OVER</span> (
+    <span class="kw">ORDER BY</span> <span class="col">date</span>
+    <span class="kw">ROWS BETWEEN</span> <span class="num">2</span> <span class="kw">PRECEDING AND</span> <span class="num">2</span> <span class="kw">FOLLOWING</span>
+  ) <span class="kw">AS</span> <span class="col">moving_avg</span>,
+
+  <span class="cmt">-- 前一列的值（LAG）</span>
+  <span class="fn">LAG</span>(<span class="col">revenue</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">date</span>) <span class="kw">AS</span> <span class="col">prev_revenue</span>,
+
+  <span class="cmt">-- 後一列的值（LEAD）</span>
+  <span class="fn">LEAD</span>(<span class="col">revenue</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">date</span>) <span class="kw">AS</span> <span class="col">next_revenue</span>
+
+<span class="kw">FROM</span> <span class="tbl">daily_sales</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('functions')">← 內建函數</button>
+    <button class="btn btn-primary" onclick="showSection('cte')">CTE →</button>
+  </div>
+</section>
+
+<!-- ══ 11. CTE ══ -->
+<section class="section" id="sec-cte">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">CTE & 遞迴查詢</h2>
+    <p class="section-desc">WITH 語句讓複雜查詢變成可讀的積木組合</p>
+  </div>
+
+  <h3>CTE（Common Table Expression）</h3>
+  <pre><code><span class="cmt">-- 基本 CTE：先定義「暫時命名的查詢」，再使用</span>
+<span class="kw">WITH</span> <span class="tbl">active_users</span> <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span>
+  <span class="kw">WHERE</span> <span class="col">last_login</span> <span class="op">></span> <span class="fn">NOW</span>() <span class="op">-</span> <span class="kw">INTERVAL</span> <span class="str">'30 days'</span>
+),
+<span class="tbl">user_post_counts</span> <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="col">user_id</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">post_count</span>
+  <span class="kw">FROM</span> <span class="tbl">posts</span>
+  <span class="kw">GROUP BY</span> <span class="col">user_id</span>
+)
+
+<span class="cmt">-- 主查詢使用上面定義的 CTE</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">u</span>.<span class="col">name</span>,
+  <span class="tbl">u</span>.<span class="col">email</span>,
+  <span class="fn">COALESCE</span>(<span class="tbl">c</span>.<span class="col">post_count</span>, <span class="num">0</span>) <span class="kw">AS</span> <span class="col">posts</span>
+<span class="kw">FROM</span>      <span class="tbl">active_users</span>     <span class="tbl">u</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">user_post_counts</span> <span class="tbl">c</span> <span class="kw">ON</span> <span class="tbl">c</span>.<span class="col">user_id</span> <span class="op">=</span> <span class="tbl">u</span>.<span class="col">id</span>
+<span class="kw">ORDER BY</span> <span class="col">posts</span> <span class="kw">DESC</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>遞迴 CTE — 處理樹狀結構</h3>
+  <pre><code><span class="cmt">-- 組織架構樹（每個員工有 manager_id 指向上司）</span>
+<span class="kw">WITH RECURSIVE</span> <span class="tbl">org_tree</span> <span class="kw">AS</span> (
+  <span class="cmt">-- 基礎案例：從最高層開始（沒有上司的人）</span>
+  <span class="kw">SELECT</span> <span class="col">id</span>, <span class="col">name</span>, <span class="col">manager_id</span>, <span class="num">0</span> <span class="kw">AS</span> <span class="col">level</span>
+  <span class="kw">FROM</span> <span class="tbl">employees</span>
+  <span class="kw">WHERE</span> <span class="col">manager_id</span> <span class="kw">IS NULL</span>
+
+  <span class="kw">UNION ALL</span>
+
+  <span class="cmt">-- 遞迴案例：找每層的下屬</span>
+  <span class="kw">SELECT</span> <span class="tbl">e</span>.<span class="col">id</span>, <span class="tbl">e</span>.<span class="col">name</span>, <span class="tbl">e</span>.<span class="col">manager_id</span>, <span class="tbl">t</span>.<span class="col">level</span> <span class="op">+</span> <span class="num">1</span>
+  <span class="kw">FROM</span> <span class="tbl">employees</span> <span class="tbl">e</span>
+  <span class="kw">INNER JOIN</span> <span class="tbl">org_tree</span> <span class="tbl">t</span> <span class="kw">ON</span> <span class="tbl">e</span>.<span class="col">manager_id</span> <span class="op">=</span> <span class="tbl">t</span>.<span class="col">id</span>
+)
+
+<span class="kw">SELECT</span>
+  <span class="fn">REPEAT</span>(<span class="str">'  '</span>, <span class="col">level</span>) <span class="op">||</span> <span class="col">name</span> <span class="kw">AS</span> <span class="col">hierarchy</span>,
+  <span class="col">level</span>
+<span class="kw">FROM</span> <span class="tbl">org_tree</span>
+<span class="kw">ORDER BY</span> <span class="col">level</span>, <span class="col">name</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 CTE vs 子查詢</strong>
+    功能上大多可以互換，但 CTE 可讀性更高，可以重複使用，適合拆解複雜查詢。子查詢在某些資料庫中效能更好，但可讀性差。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('window')">← 視窗函數</button>
+    <button class="btn btn-primary" onclick="showSection('index')">索引 & 效能 →</button>
+  </div>
+</section>
+
+<!-- ══ 12. INDEX ══ -->
+<section class="section" id="sec-index">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">索引 & 效能</h2>
+    <p class="section-desc">建對索引，查詢從秒級降到毫秒級</p>
+  </div>
+
+  <h3>索引是什麼？</h3>
+  <p>索引就像書本的目錄，讓資料庫不用掃描全表就能快速找到資料。代價是<strong>寫入變慢、佔用儲存空間</strong>。</p>
+
+  <h3>建立索引</h3>
+  <pre><code><span class="cmt">-- 基本索引</span>
+<span class="kw">CREATE INDEX</span> idx_users_email <span class="kw">ON</span> <span class="tbl">users</span>(<span class="col">email</span>);
+
+<span class="cmt">-- 唯一索引（同時保證唯一性）</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_users_username <span class="kw">ON</span> <span class="tbl">users</span>(<span class="col">username</span>);
+
+<span class="cmt">-- 複合索引（順序很重要！）</span>
+<span class="kw">CREATE INDEX</span> idx_posts_user_date <span class="kw">ON</span> <span class="tbl">posts</span>(<span class="col">user_id</span>, <span class="col">created_at</span> <span class="kw">DESC</span>);
+
+<span class="cmt">-- 部分索引（只索引符合條件的資料）</span>
+<span class="kw">CREATE INDEX</span> idx_active_users <span class="kw">ON</span> <span class="tbl">users</span>(<span class="col">email</span>)
+<span class="kw">WHERE</span> <span class="col">is_active</span> <span class="op">=</span> <span class="kw">TRUE</span>;
+
+<span class="cmt">-- 刪除索引</span>
+<span class="kw">DROP INDEX</span> idx_users_email;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>EXPLAIN — 查看查詢計畫</h3>
+  <pre><code><span class="cmt">-- 看查詢計畫（不實際執行）</span>
+<span class="kw">EXPLAIN</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">email</span> <span class="op">=</span> <span class="str">'alice@example.com'</span>;
+
+<span class="cmt">-- 實際執行並顯示時間（ANALYZE）</span>
+<span class="kw">EXPLAIN ANALYZE</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">users</span> <span class="kw">WHERE</span> <span class="col">email</span> <span class="op">=</span> <span class="str">'alice@example.com'</span>;
+
+<span class="cmt">-- 看到 Seq Scan = 全表掃描 = 可能需要索引</span>
+<span class="cmt">-- 看到 Index Scan = 有用到索引 = 效能好</span>
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>索引使用原則</h3>
+  <table>
+    <tr><th>適合建索引</th><th>不適合建索引</th></tr>
+    <tr><td>常出現在 WHERE 的欄位</td><td>很少用於查詢的欄位</td></tr>
+    <tr><td>JOIN 的連接欄位（外鍵）</td><td>資料量少的表</td></tr>
+    <tr><td>ORDER BY 的欄位</td><td>欄位值重複率高（如 boolean）</td></tr>
+    <tr><td>唯一性欄位（email、username）</td><td>頻繁 INSERT/UPDATE 的表</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('cte')">← CTE</button>
+    <button class="btn btn-primary" onclick="showSection('transaction')">交易 & ACID →</button>
+  </div>
+</section>
+
+<!-- ══ 13. TRANSACTION ══ -->
+<section class="section" id="sec-transaction">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">交易 & ACID</h2>
+    <p class="section-desc">確保多個操作「全部成功」或「全部失敗」，資料一致性的保障</p>
+  </div>
+
+  <h3>ACID 特性</h3>
+  <table>
+    <tr><th>特性</th><th>說明</th><th>例子</th></tr>
+    <tr><td><strong>A</strong>tomicity 原子性</td><td>全部成功 or 全部失敗</td><td>轉帳：扣款和入款要一起成功</td></tr>
+    <tr><td><strong>C</strong>onsistency 一致性</td><td>交易前後資料必須合法</td><td>帳戶餘額不能是負數</td></tr>
+    <tr><td><strong>I</strong>solation 隔離性</td><td>交易互不干擾</td><td>兩人同時轉帳，結果正確</td></tr>
+    <tr><td><strong>D</strong>urability 持久性</td><td>提交後永久保存</td><td>斷電也不遺失</td></tr>
+  </table>
+
+  <h3>交易語法</h3>
+  <pre><code><span class="cmt">-- 轉帳範例：A 轉 1000 給 B</span>
+<span class="kw">BEGIN</span>;  <span class="cmt">-- 開始交易</span>
+
+<span class="kw">UPDATE</span> <span class="tbl">accounts</span>
+<span class="kw">SET</span> <span class="col">balance</span> <span class="op">=</span> <span class="col">balance</span> <span class="op">-</span> <span class="num">1000</span>
+<span class="kw">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">1</span>;  <span class="cmt">-- A 扣款</span>
+
+<span class="kw">UPDATE</span> <span class="tbl">accounts</span>
+<span class="kw">SET</span> <span class="col">balance</span> <span class="op">=</span> <span class="col">balance</span> <span class="op">+</span> <span class="num">1000</span>
+<span class="kw">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">2</span>;  <span class="cmt">-- B 入款</span>
+
+<span class="kw">COMMIT</span>;  <span class="cmt">-- 確認提交（兩個操作都成功才到這）</span>
+
+<span class="cmt">-- 如果中間發生錯誤，回滾所有操作</span>
+<span class="kw">ROLLBACK</span>;
+
+<span class="cmt">-- SAVEPOINT — 部分回滾</span>
+<span class="kw">BEGIN</span>;
+<span class="kw">UPDATE</span> ... ;
+<span class="kw">SAVEPOINT</span> step1;
+<span class="kw">UPDATE</span> ... ;
+<span class="kw">ROLLBACK TO</span> step1;  <span class="cmt">-- 只回滾到 step1</span>
+<span class="kw">COMMIT</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 在 Supabase / ORM 中</strong>
+    使用 Supabase 的 rpc 或 Prisma 的 <code>$transaction()</code> 時，底層就是在幫你自動處理 BEGIN / COMMIT / ROLLBACK。理解交易概念有助於排查資料不一致的問題。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('index')">← 索引</button>
+    <button class="btn btn-primary" onclick="showSection('design')">資料庫設計 →</button>
+  </div>
+</section>
+
+<!-- ══ 14. DESIGN ══ -->
+<section class="section" id="sec-design">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">資料庫設計</h2>
+    <p class="section-desc">正規化、關聯設計、常見模式</p>
+  </div>
+
+  <h3>資料表關聯類型</h3>
+  <table>
+    <tr><th>關聯</th><th>說明</th><th>實作方式</th></tr>
+    <tr><td>一對一 (1:1)</td><td>一個用戶有一個設定檔</td><td>外鍵 + UNIQUE 約束</td></tr>
+    <tr><td>一對多 (1:N)</td><td>一個用戶有多篇文章</td><td>文章表加 user_id 外鍵</td></tr>
+    <tr><td>多對多 (M:N)</td><td>文章有多個標籤，標籤有多篇文章</td><td>中間關聯表（junction table）</td></tr>
+  </table>
+
+  <h3>多對多關聯設計</h3>
+  <pre><code><span class="cmt">-- 文章與標籤的多對多關聯</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">posts</span> (
+  <span class="col">id</span>    <span class="kw">BIGSERIAL PRIMARY KEY</span>,
+  <span class="col">title</span> <span class="kw">VARCHAR</span>(<span class="num">200</span>) <span class="kw">NOT NULL</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">tags</span> (
+  <span class="col">id</span>   <span class="kw">BIGSERIAL PRIMARY KEY</span>,
+  <span class="col">name</span> <span class="kw">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL UNIQUE</span>
+);
+
+<span class="cmt">-- 中間關聯表</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">post_tags</span> (
+  <span class="col">post_id</span> <span class="kw">BIGINT REFERENCES</span> <span class="tbl">posts</span>(<span class="col">id</span>) <span class="kw">ON DELETE CASCADE</span>,
+  <span class="col">tag_id</span>  <span class="kw">BIGINT REFERENCES</span> <span class="tbl">tags</span>(<span class="col">id</span>)  <span class="kw">ON DELETE CASCADE</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">post_id</span>, <span class="col">tag_id</span>)  <span class="cmt">-- 複合主鍵，防止重複</span>
+);
+
+<span class="cmt">-- 查詢某篇文章的所有標籤</span>
+<span class="kw">SELECT</span> <span class="tbl">t</span>.<span class="col">name</span>
+<span class="kw">FROM</span>       <span class="tbl">tags</span>      <span class="tbl">t</span>
+<span class="kw">INNER JOIN</span> <span class="tbl">post_tags</span> <span class="tbl">pt</span> <span class="kw">ON</span> <span class="tbl">pt</span>.<span class="col">tag_id</span>  <span class="op">=</span> <span class="tbl">t</span>.<span class="col">id</span>
+<span class="kw">WHERE</span> <span class="tbl">pt</span>.<span class="col">post_id</span> <span class="op">=</span> <span class="num">1</span>;
+<span class="lang-tag">SQL</span></code></pre>
+
+  <h3>正規化原則（簡化版）</h3>
+  <table>
+    <tr><th>正規化</th><th>規則</th></tr>
+    <tr><td>1NF</td><td>每個欄位只存一個值（不存陣列）</td></tr>
+    <tr><td>2NF</td><td>非主鍵欄位完全依賴主鍵</td></tr>
+    <tr><td>3NF</td><td>非主鍵欄位不依賴其他非主鍵欄位</td></tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <strong>💡 實務上不需要過度正規化</strong>
+    正規化減少資料重複，但太多 JOIN 會影響效能。現代應用常用「適度反正規化」：把常一起查詢的資料放在同一張表，犧牲部分一致性換取查詢效能，例如把 username 存在 posts 表裡避免 JOIN。
+  </div>
+
+  <h3>常用設計 Checklist</h3>
+  <ul>
+    <li>每張表都有主鍵（id）</li>
+    <li>使用 created_at / updated_at 記錄時間戳</li>
+    <li>外鍵欄位建立索引</li>
+    <li>常查詢的欄位建立索引</li>
+    <li>VARCHAR 長度設合理上限（不要全部 TEXT）</li>
+    <li>NOT NULL 約束能加就加，確保資料完整性</li>
+    <li>用軟刪除（is_deleted / deleted_at）而非直接 DELETE</li>
+  </ul>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('transaction')">← 交易</button>
+    <button class="btn btn-primary" onclick="showSection('overview')">🏠 回到首頁</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+const sectionMap = {
+  overview: 'sec-overview',
+  ddl: 'sec-ddl',
+  select: 'sec-select',
+  filter: 'sec-filter',
+  dml: 'sec-dml',
+  joins: 'sec-joins',
+  aggregate: 'sec-aggregate',
+  subquery: 'sec-subquery',
+  sort: 'sec-sort',
+  functions: 'sec-functions',
+  window: 'sec-window',
+  cte: 'sec-cte',
+  index: 'sec-index',
+  transaction: 'sec-transaction',
+  design: 'sec-design'
+}
+
+const visited = new Set(['overview'])
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  const secEl = document.getElementById(sectionMap[id])
+  if (secEl) secEl.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick')?.includes(`'${id}'`)) item.classList.add('active')
+  })
+  visited.add(id)
+  updateProgress()
+  document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function updateProgress() {
+  const total = Object.keys(sectionMap).length
+  const pct = Math.round((visited.size / total) * 100)
+  document.getElementById('progressFill').style.width = pct + '%'
+  document.getElementById('progressLabel').textContent = `學習進度 ${pct}%`
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase()
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = (item.getAttribute('data-label') || item.textContent).toLowerCase()
+    item.style.display = label.includes(q) ? 'flex' : 'none'
+  })
+  document.querySelectorAll('.nav-section-title').forEach(t => {
+    t.style.display = q ? 'none' : ''
+  })
+}
+
+updateProgress()
+</script>
+</body>
+</html>
