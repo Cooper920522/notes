@@ -1,1527 +1,1967 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C# 學習筆記 · 從 JS 到 C#</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<title>C# 完整筆記 — 給 JS 開發者</title>
 <style>
-:root {
-  --bg: #fdfcf8;
-  --bg-soft: #f5f2e9;
-  --bg-code: #f7f5ee;
-  --ink: #1a1814;
-  --ink-soft: #4a463d;
-  --ink-mute: #807a6e;
-  --rule: #e6e1d3;
-  --accent: #8b4513;
-  --accent-soft: #c4a373;
-  --warn-bg: #fdf4e7;
-  --warn-bd: #e6c89a;
-  --why-bg: #eef4ee;
-  --why-bd: #b8d4b8;
-  --js-tag: #d4a517;
-  --cs-tag: #6b3aa0;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  font-family: 'Noto Sans TC', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  line-height: 1.75;
-  font-size: 16px;
-}
-.layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  max-width: 1280px;
-  margin: 0 auto;
-}
-aside.toc {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 32px 24px;
-  border-right: 1px solid var(--rule);
-  background: var(--bg-soft);
-  font-size: 14px;
-}
-aside.toc h2 {
-  font-family: 'Newsreader', serif;
-  font-size: 22px;
-  font-weight: 500;
-  margin: 0 0 6px;
-  color: var(--ink);
-}
-aside.toc .subtitle {
-  color: var(--ink-mute);
-  font-size: 13px;
-  margin-bottom: 24px;
-  font-style: italic;
-}
-aside.toc ol {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  counter-reset: section;
-}
-aside.toc li {
-  counter-increment: section;
-  margin: 6px 0;
-}
-aside.toc li::before {
-  content: counter(section, decimal-leading-zero) "  ";
-  color: var(--ink-mute);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-}
-aside.toc a {
-  color: var(--ink-soft);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-aside.toc a:hover { color: var(--accent); }
-main {
-  padding: 56px 64px 120px;
-  max-width: 880px;
-}
-header.intro {
-  margin-bottom: 64px;
-  padding-bottom: 32px;
-  border-bottom: 2px solid var(--ink);
-}
-header.intro h1 {
-  font-family: 'Newsreader', serif;
-  font-size: 52px;
-  font-weight: 500;
-  line-height: 1.1;
-  margin: 0 0 12px;
-  letter-spacing: -0.02em;
-}
-header.intro .lede {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-size: 19px;
-  color: var(--ink-soft);
-  margin: 0;
-}
-header.intro .meta {
-  margin-top: 24px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--ink-mute);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-section {
-  margin-bottom: 72px;
-  scroll-margin-top: 24px;
-}
-section > h2 {
-  font-family: 'Newsreader', serif;
-  font-size: 36px;
-  font-weight: 500;
-  margin: 0 0 8px;
-  letter-spacing: -0.01em;
-}
-section > h2 .num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--ink-mute);
-  letter-spacing: 0.05em;
-  display: block;
-  margin-bottom: 4px;
-}
-section > .section-lede {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-size: 17px;
-  color: var(--ink-soft);
-  margin: 0 0 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--rule);
-}
-h3 {
-  font-family: 'Newsreader', serif;
-  font-size: 24px;
-  font-weight: 600;
-  margin: 40px 0 12px;
-  color: var(--ink);
-}
-h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 24px 0 8px;
-  color: var(--ink);
-}
-p { margin: 12px 0; }
-p code, li code, td code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.88em;
-  background: var(--bg-code);
-  padding: 1px 6px;
-  border-radius: 3px;
-  color: var(--accent);
-}
-pre {
-  background: var(--bg-code);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 16px 20px;
-  overflow-x: auto;
-  font-size: 13.5px;
-  line-height: 1.65;
-  margin: 16px 0;
-}
-pre code {
-  font-family: 'JetBrains Mono', monospace;
-  background: transparent;
-  padding: 0;
-  color: inherit;
-}
-.code-label {
-  display: inline-block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 3px;
-  margin-bottom: -4px;
-  text-transform: uppercase;
-}
-.code-label.js { background: var(--js-tag); color: white; }
-.code-label.cs { background: var(--cs-tag); color: white; }
-.callout {
-  border-left: 3px solid;
-  padding: 14px 20px;
-  margin: 20px 0;
-  border-radius: 0 6px 6px 0;
-  font-size: 15px;
-}
-.callout .label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  font-weight: 500;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  display: block;
-}
-.callout.why {
-  background: var(--why-bg);
-  border-color: var(--why-bd);
-}
-.callout.why .label { color: #4a7c4a; }
-.callout.warn {
-  background: var(--warn-bg);
-  border-color: var(--warn-bd);
-}
-.callout.warn .label { color: #a85d00; }
-.callout p { margin: 4px 0; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 14.5px;
-}
-th, td {
-  text-align: left;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-}
-th {
-  background: var(--bg-soft);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-}
-td code { font-size: 12.5px; }
-ul, ol { padding-left: 24px; }
-li { margin: 6px 0; }
-strong { font-weight: 600; color: var(--ink); }
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 16px 0;
-}
-.compare-grid > div { display: flex; flex-direction: column; }
-.compare-grid pre { margin-top: 4px; flex: 1; }
-@media (max-width: 980px) {
-  .layout { grid-template-columns: 1fr; }
-  aside.toc {
-    position: static;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--rule);
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --cs: #9b59b6;
+    --cs-light: #c39bd3;
+    --cs-dark: #6c3483;
+    --js: #f7df1e;
+    --js-dark: #b8a800;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --red: #f14e32;
+    --orange: #f0883e;
+    --code-bg: #0d1117;
   }
-  main { padding: 40px 24px 80px; }
-  header.intro h1 { font-size: 38px; }
-  section > h2 { font-size: 28px; }
-  .compare-grid { grid-template-columns: 1fr; }
-}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+
+  .sidebar-logo { padding: 24px 20px 18px; border-bottom: 1px solid var(--border); }
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .cs-badge {
+    background: linear-gradient(135deg, var(--cs), var(--cs-dark));
+    color: white; font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 800;
+    padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px;
+  }
+  .sidebar-logo h1 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; color: var(--cs-light); }
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); }
+
+  .search-box { margin: 12px 16px; position: relative; }
+  .search-box input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px 8px 32px; color: var(--text); font-size: 13px; outline: none; font-family: 'Noto Sans TC', sans-serif; }
+  .search-box input:focus { border-color: var(--cs); }
+  .search-box::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; }
+
+  .nav-section { padding: 6px 0; }
+  .nav-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); padding: 10px 20px 4px; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--cs-light); border-left-color: var(--cs); background: rgba(155,89,182,0.07); }
+  .nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+
+  .progress-bar { margin: auto 16px 16px; background: var(--surface2); border-radius: 4px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cs), var(--blue)); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
+
+  /* ── MAIN ── */
+  #main { flex: 1; overflow-y: auto; max-width: 920px; padding: 44px 52px; }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .section-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; letter-spacing: 0.8px; text-transform: uppercase; }
+  .badge-beginner { background: rgba(155,89,182,0.15); color: var(--cs-light); }
+  .badge-intermediate { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .badge-advanced { background: rgba(240,136,62,0.15); color: var(--orange); }
+
+  h2.section-title { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .section-desc { color: var(--text-muted); font-size: 14px; }
+
+  h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin: 26px 0 10px; display: flex; align-items: center; gap: 8px; }
+  h3::before { content: ''; display: inline-block; width: 3px; height: 17px; background: var(--cs); border-radius: 2px; }
+  h4 { font-size: 13px; font-weight: 700; color: var(--orange); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  p { font-size: 14px; color: var(--text); margin-bottom: 10px; line-height: 1.85; }
+
+  /* ── CODE COMPARE ── */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin: 14px 0 20px;
+  }
+  /* min-width:0 讓 grid item 可以縮小，overflow-x:auto 才能生效 */
+  .compare-box { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); min-width: 0; }
+  .compare-header {
+    padding: 8px 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .cs-header { background: rgba(155,89,182,0.2); color: var(--cs-light); }
+  .js-header { background: rgba(247,223,30,0.12); color: var(--js); }
+
+  /* 關鍵修正：compare-body 負責橫向捲動 */
+  .compare-body {
+    background: var(--code-bg);
+    padding: 14px 16px;
+    overflow-x: auto;          /* 長行可以橫向捲動，不被裁掉 */
+  }
+  .compare-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #e6edf3;
+    display: block;
+    white-space: pre;          /* 保留格式 */
+    min-width: max-content;    /* 確保內容不被壓縮換行 */
+  }
+
+  /* ── SINGLE CODE BLOCK ── */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; overflow-x: auto; margin: 12px 0 18px;
+    padding: 16px 18px;
+  }
+  pre code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #e6edf3;
+    display: block;
+    white-space: pre;
+    min-width: max-content;
+  }
+
+  /* Syntax */
+  .kw  { color: #ff7b72; }
+  .tp  { color: #79c0ff; }   /* type */
+  .fn  { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .num { color: #79c0ff; }
+  .cmt { color: #6e7681; font-style: italic; }
+  .prop{ color: #e3b341; }
+  .cls { color: #f0883e; }   /* class name */
+  .ok  { color: #3fb950; }
+  .err { color: #f14e32; }
+
+  /* ── CALLOUT ── */
+  .callout { border-radius: 8px; padding: 13px 16px; margin: 12px 0; border-left: 3px solid; font-size: 13.5px; }
+  .callout-tip  { background: rgba(63,185,80,0.08);   border-color: var(--green); }
+  .callout-info { background: rgba(155,89,182,0.08);  border-color: var(--cs); }
+  .callout-warn { background: rgba(240,136,62,0.08);  border-color: var(--orange); }
+  .callout-js   { background: rgba(247,223,30,0.06);  border-color: var(--js-dark); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; }
+  .callout-tip  strong { color: var(--green); }
+  .callout-info strong { color: var(--cs-light); }
+  .callout-warn strong { color: var(--orange); }
+  .callout-js   strong { color: var(--js); }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 18px; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 9px 13px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 9px 13px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: top; }
+  td:first-child { color: var(--cs-light); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, rgba(155,89,182,0.1) 0%, rgba(32,35,42,0.4) 100%); border: 1px solid rgba(155,89,182,0.25); border-radius: 16px; padding: 30px; margin-bottom: 28px; text-align: center; }
+  .hero-badges { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+  .hero-badge { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .hero-badge.cs { background: rgba(155,89,182,0.3); color: var(--cs-light); }
+  .hero-badge.js { background: rgba(247,223,30,0.15); color: var(--js); }
+  .hero h2 { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .hero p { font-size: 13.5px; color: var(--text-muted); max-width: 520px; margin: 0 auto; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .tag { background: rgba(155,89,182,0.1); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3px 12px; font-size: 12px; color: var(--cs-light); }
+
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0 4px 20px; font-size: 13.5px; position: relative; color: var(--text); }
+  ul li::before { content: '›'; position: absolute; left: 6px; color: var(--cs); font-weight: 700; }
+
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; font-family: 'Noto Sans TC', sans-serif; }
+  .btn:hover { border-color: var(--cs); color: var(--cs-light); }
+  .btn-primary { background: var(--cs); color: white; border-color: var(--cs); font-weight: 700; }
+  .btn-primary:hover { background: #a569bd; }
+  .btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 800px) {
+    #sidebar { display: none; }
+    #main { padding: 24px 18px; }
+    .compare { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<div class="layout">
-<aside class="toc">
-  <h2>C# Notes</h2>
-  <p class="subtitle">From a JS developer's perspective</p>
-  <ol>
-    <li><a href="#s1">心智模型：C# vs JS</a></li>
-    <li><a href="#s2">第一個 C# 程式</a></li>
-    <li><a href="#s3">型別系統</a></li>
-    <li><a href="#s4">變數、運算、字串</a></li>
-    <li><a href="#s5">流程控制</a></li>
-    <li><a href="#s6">方法 Methods</a></li>
-    <li><a href="#s7">類別與物件導向</a></li>
-    <li><a href="#s8">進階 OO：繼承、多型、介面</a></li>
-    <li><a href="#s9">記憶體模型：值型別 vs 參考型別</a></li>
-    <li><a href="#s10">集合與泛型</a></li>
-    <li><a href="#s11">LINQ：資料處理利器</a></li>
-    <li><a href="#s12">例外處理</a></li>
-    <li><a href="#s13">委派、Lambda、事件</a></li>
-    <li><a href="#s14">非同步 async/await</a></li>
-    <li><a href="#s15">命名空間與檔案組織</a></li>
-    <li><a href="#s16">入職前的最後叮嚀</a></li>
-  </ol>
-</aside>
 
-<main>
-<header class="intro">
-  <h1>C# 學習筆記</h1>
-  <p class="lede">從 JavaScript 出發，理解 C# 的型別、記憶體與設計哲學。</p>
-  <p class="meta">For ERP 開發 · 基礎篇</p>
-</header>
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-row">
+      <div class="cs-badge">C#</div>
+      <h1>給 JS 開發者的筆記</h1>
+    </div>
+    <p>從 JS 視角學 C#，入門到精通</p>
+  </div>
 
-<!-- ============================================ -->
-<section id="s1">
-<h2><span class="num">Chapter 01</span>心智模型：C# vs JS</h2>
-<p class="section-lede">先建立正確的心智模型，再學語法。C# 跟 JS 表面像，骨子裡是兩種哲學。</p>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋概念..." oninput="filterNav(this.value)">
+  </div>
 
-<h3>1.1 C# 是什麼？</h3>
-<p>C# 是微軟在 2000 年推出的程式語言，運行在 <strong>.NET 平台</strong>上。它是<strong>編譯型、強型別、靜態型別、物件導向</strong>的語言。可以這樣理解：</p>
-<ul>
-  <li><strong>編譯型</strong>：你寫的 C# 程式碼要先被「編譯器」翻譯成中介語言（IL），再由 CLR 執行。JS 是直譯型（V8 邊讀邊執行）。</li>
-  <li><strong>強型別</strong>：型別檢查嚴格，不能隨便把字串當數字加（JS 你寫 <code>"5" + 3</code> 會變成 <code>"53"</code>，C# 直接編譯錯誤）。</li>
-  <li><strong>靜態型別</strong>：型別在編譯時就決定，宣告之後不能變（JS 是動態的，一個變數可以從 number 變成 string）。</li>
-  <li><strong>物件導向為本</strong>：所有程式碼都必須寫在類別裡（沒有 JS 那種「全域函式滿天飛」的寫法）。</li>
-</ul>
+  <div class="nav-section" id="navList">
+    <div class="nav-section-title">起步</div>
+    <div class="nav-item active" onclick="showSection('overview')" data-label="C# 概覽 介紹 vs JS">
+      <span class="icon">🏠</span> 概覽 & 差異
+    </div>
+    <div class="nav-item" onclick="showSection('types')" data-label="型別 type 強型別 靜態 int string bool">
+      <span class="icon">🔷</span> 型別系統
+    </div>
+    <div class="nav-item" onclick="showSection('variables')" data-label="變數 var let const 宣告">
+      <span class="icon">📦</span> 變數宣告
+    </div>
+    <div class="nav-item" onclick="showSection('operators')" data-label="運算子 operator 比較 邏輯">
+      <span class="icon">➕</span> 運算子
+    </div>
+    <div class="nav-item" onclick="showSection('control')" data-label="流程控制 if switch for while foreach">
+      <span class="icon">🔀</span> 流程控制
+    </div>
 
-<h3>1.2 .NET 平台：CLR 是什麼</h3>
-<p>JS 跑在瀏覽器引擎（如 V8）上；C# 跑在 <strong>CLR（Common Language Runtime）</strong>上。CLR 負責：</p>
-<ul>
-  <li>把 IL（中介語言）執行起來（JIT 編譯成機器碼）</li>
-  <li>管理記憶體（垃圾回收 GC，跟 JS 引擎類似的概念）</li>
-  <li>提供型別系統、例外處理、執行緒、安全性</li>
-</ul>
-<p>你以後會看到兩個版本名詞：</p>
-<table>
-  <tr><th>名稱</th><th>說明</th></tr>
-  <tr><td><strong>.NET Framework</strong></td><td>舊版（4.x 系列），只能在 Windows 上跑。很多 ERP、企業內部系統還在用。語法 C# 7.x 為主。</td></tr>
-  <tr><td><strong>.NET（.NET Core 之後）</strong></td><td>新版（.NET 5/6/7/8…），跨平台（Windows/Linux/Mac），效能更好。新專案多用這個。</td></tr>
-</table>
-<p>語法上 90% 以上共通，差別在於可用的函式庫和某些新特性。你進公司後問清楚用哪個版本就好。</p>
+    <div class="nav-section-title">函數 & 類別</div>
+    <div class="nav-item" onclick="showSection('functions')" data-label="函數 方法 method 參數 回傳">
+      <span class="icon">⚙️</span> 方法 (Method)
+    </div>
+    <div class="nav-item" onclick="showSection('classes')" data-label="類別 class 物件 OOP 建構子">
+      <span class="icon">🏗️</span> 類別 & 物件
+    </div>
+    <div class="nav-item" onclick="showSection('oop')" data-label="繼承 介面 多型 封裝 OOP">
+      <span class="icon">🧬</span> OOP 三大特性
+    </div>
+    <div class="nav-item" onclick="showSection('collections')" data-label="陣列 List Dictionary 集合">
+      <span class="icon">📋</span> 集合 & 陣列
+    </div>
 
-<h3>1.3 跟 JS 的核心差異一覽</h3>
-<table>
-<tr><th>面向</th><th>JavaScript</th><th>C#</th></tr>
-<tr><td>型別系統</td><td>動態、弱型別</td><td>靜態、強型別</td></tr>
-<tr><td>執行方式</td><td>直譯（JIT 加速）</td><td>編譯成 IL，再由 CLR JIT 執行</td></tr>
-<tr><td>變數宣告</td><td><code>let x = 5</code></td><td><code>int x = 5;</code>（要寫型別、要分號）</td></tr>
-<tr><td>程式碼組織</td><td>函式可以是頂層</td><td>所有程式碼都在類別裡</td></tr>
-<tr><td>記憶體</td><td>都在 heap，GC 管理</td><td>值型別在 stack、參考型別在 heap，GC 管 heap</td></tr>
-<tr><td>null</td><td>有 null 和 undefined</td><td>只有 null，且預設值型別不能為 null</td></tr>
-<tr><td>this 綁定</td><td>動態，依呼叫方式變</td><td>固定，指當前實例</td></tr>
-<tr><td>繼承</td><td>原型鏈（prototype）</td><td>類別繼承（單一繼承）+ 介面</td></tr>
-</table>
+    <div class="nav-section-title">進階特性</div>
+    <div class="nav-item" onclick="showSection('linq')" data-label="LINQ 查詢 Where Select 函數式">
+      <span class="icon">🔍</span> LINQ
+    </div>
+    <div class="nav-item" onclick="showSection('async')" data-label="非同步 async await Task">
+      <span class="icon">⚡</span> Async & Await
+    </div>
+    <div class="nav-item" onclick="showSection('generics')" data-label="泛型 Generic T 型別參數">
+      <span class="icon">🧩</span> 泛型
+    </div>
+    <div class="nav-item" onclick="showSection('exceptions')" data-label="例外 exception try catch 錯誤處理">
+      <span class="icon">🚨</span> 例外處理
+    </div>
+    <div class="nav-item" onclick="showSection('modern')" data-label="現代語法 record pattern null 新功能">
+      <span class="icon">✨</span> 現代 C# 語法
+    </div>
+    <div class="nav-item" onclick="showSection('dotnet')" data-label=".NET ASP.NET Entity Framework 生態系">
+      <span class="icon">🌐</span> .NET 生態系
+    </div>
+  </div>
 
-<div class="callout why">
-<span class="label">Why · 為什麼這些差異重要</span>
-<p>JS 為了讓你寫得快，犧牲了型別安全；C# 為了讓大型系統可靠，要求你寫得明確。ERP 系統動輒幾十萬行程式碼、跑多年、處理錢的事——它選 C# 不是偶然，是因為「編譯期就抓到錯誤」比「上線後出包」便宜得多。</p>
-</div>
+  <div style="padding: 0 16px 4px;">
+    <div class="progress-label" id="progressLabel">學習進度 0%</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
 
-</section>
+<main id="main">
 
-<!-- ============================================ -->
-<section id="s2">
-<h2><span class="num">Chapter 02</span>第一個 C# 程式</h2>
-<p class="section-lede">看一個最小的 C# 程式長什麼樣，理解每個元素為什麼存在。</p>
+<!-- ══ 0. OVERVIEW ══ -->
+<section class="section active" id="sec-overview">
+  <div class="hero">
+    <div class="hero-badges">
+      <span class="hero-badge cs">C#</span>
+      <span style="color:var(--text-muted);font-size:18px">vs</span>
+      <span class="hero-badge js">JavaScript</span>
+    </div>
+    <h2>給 JS 開發者的 C# 完整筆記</h2>
+    <p>你已經會 JS，C# 的概念大部分都類似。這份筆記每個概念都會對照 JS，讓你快速建立連結</p>
+  </div>
 
-<h3>2.1 經典寫法（傳統 C# / .NET Framework）</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">using System;
+  <h3>C# 是什麼？</h3>
+  <p>C# 是微軟開發的<strong>強型別、編譯式、物件導向</strong>語言，主要用於後端 API、桌面應用、遊戲（Unity）開發。搭配 .NET 平台運行，是企業系統最常見的語言之一。</p>
 
-namespace HelloWorld
+  <h3>最大的心態差異</h3>
+  <table>
+    <tr><th>概念</th><th>JavaScript</th><th>C#</th></tr>
+    <tr><td>型別系統</td><td>動態型別，執行時才知道型別</td><td>靜態型別，寫的時候就要指定型別</td></tr>
+    <tr><td>執行方式</td><td>解譯式（直接執行）</td><td>編譯式（先編譯成 IL，再執行）</td></tr>
+    <tr><td>錯誤時機</td><td>很多錯誤在執行時才發現</td><td>大部分錯誤在編譯時就抓到</td></tr>
+    <tr><td>函數/方法</td><td>一等公民，可以隨意傳遞</td><td>通常屬於某個類別</td></tr>
+    <tr><td>null</td><td>到處都是 null/undefined</td><td>有 null 安全機制，可以避免 NullReferenceException</td></tr>
+    <tr><td>分號</td><td>可選</td><td>必填</td></tr>
+    <tr><td>縮排</td><td>建議用</td><td>建議用（不影響編譯）</td></tr>
+  </table>
+
+  <div class="callout callout-js">
+    <strong>🟡 JS 開發者的優勢</strong>
+    你已經懂 async/await、箭頭函數、陣列方法（map/filter/reduce）、物件導向概念。C# 的對應功能幾乎都存在，只是語法不同。學習曲線比你想像的低很多。
+  </div>
+
+  <h3>Hello World — 為什麼 C# 要寫這麼多行？</h3>
+  <p>先看傳統寫法（你在很多教學文件會看到的），每一行都有它存在的理由：</p>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# 傳統寫法</div>
+      <div class="compare-body"><code><span class="kw">using</span> System;
+
+<span class="kw">class</span> <span class="cls">Program</span>
 {
-    class Program
+    <span class="kw">static void</span> <span class="fn">Main</span>()
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello, World!");
-        }
+        Console.<span class="fn">WriteLine</span>(<span class="str">"Hello, World!"</span>);
     }
-}</code></pre>
+}</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code>
 
-<p>逐行拆解：</p>
-<ul>
-  <li><code>using System;</code> — 引入命名空間，類似 JS 的 <code>import</code>。<code>Console</code> 在 <code>System</code> 命名空間裡。</li>
-  <li><code>namespace HelloWorld</code> — 你自己的命名空間，避免名稱衝突。</li>
-  <li><code>class Program</code> — 一個類別。<strong>C# 所有程式碼都必須在類別裡</strong>。</li>
-  <li><code>static void Main(...)</code> — 程式進入點。<code>static</code> 表示不用建立物件就能呼叫；<code>void</code> 表示無回傳值。</li>
-  <li><code>Console.WriteLine</code> — 印一行到主控台，類似 JS 的 <code>console.log</code>。</li>
-</ul>
+console.<span class="fn">log</span>(<span class="str">"Hello, World!"</span>);</code></div>
+    </div>
+  </div>
 
-<h3>2.2 新寫法（.NET 6+ 的 Top-level statements）</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">Console.WriteLine("Hello, World!");</code></pre>
-<p>新版本可以省略 namespace、class、Main，直接寫敘述。但 ERP 老系統大概率用的是傳統寫法，你看到完整版要習慣。</p>
+  <h3>逐行拆解</h3>
 
-<div class="callout why">
-<span class="label">Why · 為什麼 C# 強制用類別包起來</span>
-<p>這是「物件導向為本」的設計哲學。C# 認為：一段獨立存在的函式（如 JS 的全域函式）會讓大型程式變混亂；強制每段邏輯都歸屬於某個類別，能逼你思考「這段程式碼屬於哪個概念」。對 ERP 這種大型系統，這個強制非常有價值。</p>
-</div>
+  <div class="breakdown">
 
+    <div class="breakdown-item">
+      <div class="breakdown-code"><code><span class="kw">using</span> System;</code></div>
+      <div class="breakdown-explain">
+        <div class="breakdown-label cs-label">這行在做什麼</div>
+        <p><code>System</code> 是 C# 的標準函式庫命名空間，裡面有 <code>Console</code>、<code>Math</code>、<code>DateTime</code> 等常用工具。<code>using</code> 就是「我要使用這個命名空間裡的東西」。</p>
+        <div class="breakdown-label js-label">JS 對應概念</div>
+        <p>就像 JS 的 <code>import</code>，只是 C# 這裡是 import「一整個命名空間」而不是單一模組。沒寫這行的話，每次用 Console 都要打完整路徑 <code>System.Console.WriteLine()</code>。</p>
+      </div>
+    </div>
+
+    <div class="breakdown-item">
+      <div class="breakdown-code"><code><span class="kw">class</span> <span class="cls">Program</span></code></div>
+      <div class="breakdown-explain">
+        <div class="breakdown-label cs-label">這行在做什麼</div>
+        <p>C# 所有的程式碼<strong>必須存在於某個類別裡</strong>，不能像 JS 那樣直接在頂層寫邏輯。<code>Program</code> 只是這個類別的名字，你可以叫它任何名字。</p>
+        <div class="breakdown-label js-label">JS 對應概念</div>
+        <p>JS 不需要這個，因為 JS 允許「模組頂層程式碼」。但你在寫 React/Vue 組件時其實也是在定義 class 或 function，只是語言不強制而已。</p>
+      </div>
+    </div>
+
+    <div class="breakdown-item">
+      <div class="breakdown-code"><code><span class="kw">static void</span> <span class="fn">Main</span>()</code></div>
+      <div class="breakdown-explain">
+        <div class="breakdown-label cs-label">這行在做什麼</div>
+        <p>這是程式的<strong>進入點</strong>，相當於「程式從這裡開始跑」。拆開來看：</p>
+        <ul>
+          <li><code>static</code> — 不需要建立物件就能呼叫（類別直接呼叫）</li>
+          <li><code>void</code> — 這個方法沒有回傳值</li>
+          <li><code>Main</code> — 這個名字是固定的，.NET 執行環境會找這個方法當入口</li>
+        </ul>
+        <div class="breakdown-label js-label">JS 對應概念</div>
+        <p>就像 Node.js 直接從檔案頂層開始執行。C# 需要你明確指定「從哪個方法開始」，而 .NET 規定這個方法一定要叫 <code>Main</code>。</p>
+      </div>
+    </div>
+
+    <div class="breakdown-item">
+      <div class="breakdown-code"><code>Console.<span class="fn">WriteLine</span>(<span class="str">"Hello, World!"</span>);</code></div>
+      <div class="breakdown-explain">
+        <div class="breakdown-label cs-label">這行在做什麼</div>
+        <p><code>Console</code> 是 System 命名空間裡的類別，<code>WriteLine</code> 是它的方法，會輸出文字並換行。結尾的<strong>分號是必填的</strong>，每個陳述式（statement）都要加。</p>
+        <div class="breakdown-label js-label">JS 對應概念</div>
+        <p><code>console.log()</code> — 幾乎一模一樣，只是 C# 的 C 是大寫（因為 Console 是類別名稱）。</p>
+      </div>
+    </div>
+
+    <div class="breakdown-item">
+      <div class="breakdown-code"><code>{ }</code> <span style="color:var(--text-muted);font-size:13px">（大括號）</span></div>
+      <div class="breakdown-explain">
+        <div class="breakdown-label cs-label">這行在做什麼</div>
+        <p>C# 用大括號 <code>{ }</code> 表示程式碼區塊的開始和結束。類別有一對，方法裡面又有一對，所以你看到很多層縮排。</p>
+        <div class="breakdown-label js-label">JS 對應概念</div>
+        <p>和 JS 的 <code>{ }</code> 完全一樣，只是 C# 的每個 <code>if</code>、<code>for</code>、<code>class</code>、<code>method</code> 都必須用大括號，不能像 JS 那樣省略單行的括號。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h3>現代 C# 的解法 — 頂層語句（Top-level statements）</h3>
+  <p>C# 9 之後加入了「頂層語句」，讓你不用寫 class 和 Main，小程式直接這樣寫就好：</p>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 現代 C#（頂層語句）</div>
+      <div class="compare-body"><code><span class="cmt">// Program.cs — 這樣就夠了！</span>
+Console.<span class="fn">WriteLine</span>(<span class="str">"Hello, World!"</span>);
+
+<span class="cmt">// 完全不需要 using、class、Main</span>
+<span class="cmt">// .NET 幫你自動包一層</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code>console.<span class="fn">log</span>(<span class="str">"Hello, World!"</span>);
+
+<span class="cmt">// 一樣簡潔！</span></code></div>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>💡 所以為什麼教學還是寫傳統的？</strong>
+    因為大型專案的程式碼都是傳統寫法 — 有 class、有 Main、有多個方法。頂層語句只適合程式入口（Program.cs），其他檔案還是要寫 class。所以兩種都要認識，但實際開發中你只有在 Program.cs 才會用頂層語句。
+  </div>
+
+  <style>
+    .breakdown { margin: 16px 0 20px; display: flex; flex-direction: column; gap: 12px; }
+    .breakdown-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .breakdown-code {
+      background: var(--code-bg); padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      overflow-x: auto;        /* 長行不被裁 */
+      white-space: pre;
+    }
+    .breakdown-explain { padding: 14px 16px; background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+    .breakdown-explain p { margin: 0; font-size: 13.5px; }
+    .breakdown-explain ul { margin: 4px 0 0 0; }
+    .breakdown-explain ul li { font-size: 13px; }
+    /* breakdown 裡面的 inline code block */
+    .breakdown-explain pre {
+      margin: 6px 0 0; padding: 10px 12px;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow-x: auto; font-size: 12px;
+      white-space: pre;
+    }
+    .breakdown-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+    .cs-label { color: var(--cs-light); }
+    .js-label { color: var(--js); }
+  </style>
+
+  <div class="nav-buttons">
+    <button class="btn" disabled>← 上一節</button>
+    <button class="btn btn-primary" onclick="showSection('types')">型別系統 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s3">
-<h2><span class="num">Chapter 03</span>型別系統</h2>
-<p class="section-lede">這是 C# 跟 JS 最大的分水嶺。學好型別系統，C# 就學會一半。</p>
+<!-- ══ 1. TYPES ══ -->
+<section class="section" id="sec-types">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">型別系統</h2>
+    <p class="section-desc">C# 最大的特色就是強型別，每個變數都必須有明確的型別</p>
+  </div>
 
-<h3>3.1 內建基本型別</h3>
-<table>
-<tr><th>C# 型別</th><th>說明</th><th>JS 對應</th><th>範例</th></tr>
-<tr><td><code>int</code></td><td>32 位元整數</td><td>number</td><td><code>int age = 28;</code></td></tr>
-<tr><td><code>long</code></td><td>64 位元整數</td><td>number / BigInt</td><td><code>long big = 100000000000L;</code></td></tr>
-<tr><td><code>double</code></td><td>64 位元浮點數</td><td>number</td><td><code>double pi = 3.14;</code></td></tr>
-<tr><td><code>decimal</code></td><td>高精度小數（給錢用）</td><td>(無)</td><td><code>decimal price = 99.99m;</code></td></tr>
-<tr><td><code>bool</code></td><td>布林值</td><td>boolean</td><td><code>bool isOk = true;</code></td></tr>
-<tr><td><code>char</code></td><td>單一字元（用單引號）</td><td>(無)</td><td><code>char c = 'A';</code></td></tr>
-<tr><td><code>string</code></td><td>字串（用雙引號）</td><td>string</td><td><code>string name = "BoKai";</code></td></tr>
-</table>
+  <h3>基本型別對照</h3>
+  <table>
+    <tr><th>C# 型別</th><th>說明</th><th>JS 對應</th><th>範例</th></tr>
+    <tr><td>int</td><td>整數（-21億 ~ 21億）</td><td>Number</td><td>42</td></tr>
+    <tr><td>long</td><td>大整數</td><td>BigInt</td><td>1234567890L</td></tr>
+    <tr><td>double</td><td>浮點數（預設）</td><td>Number</td><td>3.14</td></tr>
+    <tr><td>float</td><td>單精度浮點數</td><td>Number</td><td>3.14f</td></tr>
+    <tr><td>decimal</td><td>高精度小數（金額用）</td><td>無直接對應</td><td>9.99m</td></tr>
+    <tr><td>bool</td><td>布林值</td><td>boolean</td><td>true / false</td></tr>
+    <tr><td>char</td><td>單一字元（單引號）</td><td>無</td><td>'A'</td></tr>
+    <tr><td>string</td><td>字串（雙引號）</td><td>string</td><td>"Hello"</td></tr>
+    <tr><td>object</td><td>所有型別的基底</td><td>Object</td><td>任何值</td></tr>
+  </table>
 
-<div class="callout warn">
-<span class="label">注意 · ERP 開發必記</span>
-<p>處理金額一律用 <code>decimal</code>，不要用 <code>double</code>。<code>double</code> 是二進位浮點數，<code>0.1 + 0.2 = 0.30000000000000004</code> 這種事在 JS 你看過了，在處理發票、訂單金額時是災難。<code>decimal</code> 是十進位高精度，<code>0.1m + 0.2m</code> 就是 <code>0.3m</code>。</p>
-</div>
+  <div class="callout callout-warn">
+    <strong>⚠️ char vs string</strong>
+    C# 的 char 用單引號 <code>'A'</code>，string 用雙引號 <code>"Hello"</code>。JS 沒有 char，所有字串都是 string。搞混會編譯錯誤。
+  </div>
 
-<h3>3.2 強型別 vs 弱型別的具體差異</h3>
-<div class="compare-grid">
-<div>
-<p class="code-label js">JS（可以）</p>
-<pre><code class="language-javascript">let x = 5;
-x = "hello";   // OK
-x = true;      // OK
-console.log("5" + 3);  // "53"</code></pre>
-</div>
-<div>
-<p class="code-label cs">C#（不行）</p>
-<pre><code class="language-csharp">int x = 5;
-x = "hello";  // 編譯錯誤！
-// "5" + 3 也會錯（除非明確轉型）</code></pre>
-</div>
-</div>
+  <h3>值型別 vs 參考型別</h3>
+  <p>這是 C# 很重要的概念，JS 中也有類似的概念（primitive vs object）：</p>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 值型別（Value Type）</div>
+      <div class="compare-body"><code><span class="cmt">// int, bool, double, char, struct</span>
+<span class="cmt">// 複製時是複製值本身</span>
+<span class="kw">int</span> a = <span class="num">5</span>;
+<span class="kw">int</span> b = a;  <span class="cmt">// b 是 a 的複製</span>
+b = <span class="num">10</span>;
+Console.<span class="fn">WriteLine</span>(a); <span class="cmt">// 還是 5</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 參考型別（Reference Type）</div>
+      <div class="compare-body"><code><span class="cmt">// class, string, array, List</span>
+<span class="cmt">// 複製時是複製參考（記憶體位址）</span>
+<span class="kw">int</span>[] a = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> };
+<span class="kw">int</span>[] b = a;  <span class="cmt">// b 指向同一個陣列</span>
+b[<span class="num">0</span>] = <span class="num">99</span>;
+Console.<span class="fn">WriteLine</span>(a[<span class="num">0</span>]); <span class="cmt">// 99！</span></code></div>
+    </div>
+  </div>
 
-<h3>3.3 型別推斷：var</h3>
-<p>C# 可以用 <code>var</code> 讓編譯器自己推斷型別，看起來像 JS，但骨子裡完全不同：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">var name = "BoKai";   // 編譯器推斷為 string
-var age = 28;         // 推斷為 int
-name = 123;           // 錯！name 已經被定型成 string</code></pre>
-<p>關鍵：<code>var</code> 不是「動態型別」，而是「讓編譯器幫我寫型別」。型別一旦在宣告時被推斷出來，就<strong>固定了</strong>。</p>
+  <h3>可為 null 的型別（Nullable）</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="cmt">// 值型別預設不能是 null</span>
+<span class="kw">int</span> x = <span class="kw">null</span>; <span class="cmt">// ❌ 編譯錯誤</span>
 
-<h3>3.4 型別轉換</h3>
-<h4>隱式轉換（小型別自動轉大型別）</h4>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">int i = 100;
-double d = i;  // OK，int 可以自動變 double</code></pre>
+<span class="cmt">// 加 ? 才能是 null</span>
+<span class="kw">int</span>? x = <span class="kw">null</span>; <span class="cmt">// ✅</span>
+<span class="kw">string</span>? name = <span class="kw">null</span>; <span class="cmt">// ✅</span>
 
-<h4>顯式轉換（要明確寫出來）</h4>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">double d = 3.14;
-int i = (int)d;  // 強制轉型，小數點被截掉，i = 3</code></pre>
+<span class="cmt">// 使用前要檢查</span>
+<span class="kw">if</span> (x <span class="kw">is not null</span>)
+{
+    Console.<span class="fn">WriteLine</span>(x.Value);
+}</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// JS 隨時都可以是 null/undefined</span>
+<span class="kw">let</span> x = <span class="kw">null</span>;   <span class="cmt">// 沒問題</span>
+<span class="kw">let</span> y;           <span class="cmt">// undefined</span>
 
-<h4>字串 ↔ 數字</h4>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 字串轉數字
-string s = "123";
-int n = int.Parse(s);              // 失敗會丟例外
-bool ok = int.TryParse(s, out int n2);  // 失敗回 false，安全
+<span class="cmt">// 可選鏈</span>
+<span class="kw">const</span> name = user?.name;</code></div>
+    </div>
+  </div>
 
-// 數字轉字串
-int x = 42;
-string s2 = x.ToString();
-string s3 = $"年齡：{x}";  // 內插字串，類似 JS template literal</code></pre>
-
-<h3>3.5 Nullable 可為空型別</h3>
-<p>這是 C# 跟 JS 一個很大的差異：<strong>值型別預設不能為 null</strong>。</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">int x = null;   // 錯！int 不能是 null
-int? y = null;  // OK，加上 ? 表示「可為 null 的 int」
-
-if (y.HasValue) { ... }  // 檢查有沒有值
-int z = y ?? 0;          // 如果 y 是 null 就用 0（類似 JS 的 ?? ）</code></pre>
-
-<div class="callout why">
-<span class="label">Why · 為什麼分這麼細</span>
-<p>JS 的 null/undefined 滿天飛是無數 bug 的來源。C# 在型別系統就強制你想清楚：「這個變數有可能是空的嗎？」如果是，你就要明確標 <code>?</code>，並且處理「空的情況」。這逼你寫出更安全的程式碼。新版 C# 連 <code>string</code>（參考型別）也支援這套「可為 null 註記」。</p>
-</div>
-
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('overview')">← 概覽</button>
+    <button class="btn btn-primary" onclick="showSection('variables')">變數宣告 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s4">
-<h2><span class="num">Chapter 04</span>變數、運算、字串</h2>
-<p class="section-lede">日常會一直用到的基本操作。</p>
+<!-- ══ 2. VARIABLES ══ -->
+<section class="section" id="sec-variables">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">變數宣告</h2>
+    <p class="section-desc">C# 的變數宣告比 JS 更嚴格，但 var 讓它不那麼囉嗦</p>
+  </div>
 
-<h3>4.1 命名慣例</h3>
-<table>
-<tr><th>項目</th><th>慣例</th><th>範例</th></tr>
-<tr><td>區域變數、參數</td><td>camelCase</td><td><code>int userAge</code></td></tr>
-<tr><td>類別、方法、屬性、命名空間</td><td>PascalCase</td><td><code>public class UserService</code></td></tr>
-<tr><td>常數</td><td>PascalCase（不是 SCREAMING_CASE）</td><td><code>const int MaxRetries = 3;</code></td></tr>
-<tr><td>私有欄位</td><td>底線 + camelCase</td><td><code>private int _count;</code></td></tr>
-<tr><td>介面</td><td>I 開頭</td><td><code>interface IRepository</code></td></tr>
-</table>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — 宣告方式</div>
+      <div class="compare-body"><code><span class="cmt">// 明確型別</span>
+<span class="kw">int</span> age = <span class="num">25</span>;
+<span class="kw">string</span> name = <span class="str">"Cooper"</span>;
+<span class="kw">bool</span> isActive = <span class="kw">true</span>;
+<span class="kw">double</span> price = <span class="num">9.99</span>;
 
-<h3>4.2 字串處理</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 內插字串（用 $ 開頭，類似 JS 的 `${}`）
-string name = "BoKai";
-int age = 28;
-string msg = $"Hi {name}, 你 {age} 歲";
+<span class="cmt">// var — 型別推斷（編譯器自動判斷）</span>
+<span class="kw">var</span> age = <span class="num">25</span>;        <span class="cmt">// int</span>
+<span class="kw">var</span> name = <span class="str">"Cooper"</span>; <span class="cmt">// string</span>
+<span class="kw">var</span> list = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">int</span>&gt;();
 
-// 多行字串（用 @ 表示逐字字串）
-string sql = @"SELECT id, name
-               FROM users
-               WHERE age > 18";
+<span class="cmt">// const — 編譯時常數（必須當場給值）</span>
+<span class="kw">const double</span> PI = <span class="num">3.14159</span>;
 
-// 兩者合用
-string path = $@"C:\Users\{name}\Documents";
+<span class="cmt">// readonly — 執行時常數（可在建構子賦值）</span>
+<span class="kw">readonly string</span> id = <span class="fn">Guid</span>.<span class="fn">NewGuid</span>().<span class="fn">ToString</span>();</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// let — 可重新賦值</span>
+<span class="kw">let</span> age = <span class="num">25</span>;
+<span class="kw">let</span> name = <span class="str">"Cooper"</span>;
 
-// 常用方法
-"hello".ToUpper();              // "HELLO"
-"  hi  ".Trim();                // "hi"
-"a,b,c".Split(',');             // ["a", "b", "c"]
-string.Join("-", new[] {"a","b","c"});  // "a-b-c"
-"hello".Contains("ell");        // true
-"hello".Replace("l", "L");      // "heLLo"
-"hello".Substring(1, 3);        // "ell"
-string.IsNullOrEmpty(s);        // 檢查 null 或空字串
-string.IsNullOrWhiteSpace(s);   // 檢查 null、空字串、或全是空白</code></pre>
+<span class="cmt">// const — 不可重新賦值</span>
+<span class="kw">const</span> PI = <span class="num">3.14159</span>;
 
-<h3>4.3 字串是不可變的</h3>
-<p>跟 JS 一樣，C# 的 string 不可變。所有「修改」操作都是回傳新字串：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">string s = "hello";
-s.ToUpper();         // 不會改變 s，s 仍是 "hello"
-s = s.ToUpper();     // 這才會讓 s 變成 "HELLO"</code></pre>
+<span class="cmt">// var — 不推薦（函數作用域）</span>
+<span class="kw">var</span> old = <span class="str">"don't use"</span>;
 
-<div class="callout warn">
-<span class="label">效能注意</span>
-<p>大量字串拼接要用 <code>StringBuilder</code>，不要用 <code>+</code>。每次 <code>+</code> 都會產生新字串，效能很差。</p>
-</div>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">var sb = new StringBuilder();
-for (int i = 0; i &lt; 1000; i++)
-{
-    sb.Append(i);
-    sb.Append(",");
-}
-string result = sb.ToString();</code></pre>
+<span class="cmt">// JS 不需要宣告型別</span>
+<span class="kw">let</span> x = <span class="num">42</span>;
+x = <span class="str">"now a string"</span>; <span class="cmt">// 完全合法</span></code></div>
+      </div>
+    </div>
+  </div>
 
-<h3>4.4 運算子</h3>
-<p>大部分跟 JS 一樣（<code>+ - * / % == != &lt; &gt; &amp;&amp; ||</code>），幾個值得注意的：</p>
-<ul>
-  <li><code>==</code> 在 C# 對值型別比較值、對參考型別比較參考（沒有 JS 的 <code>===</code> 因為 C# 本來就是嚴格比較）</li>
-  <li><code>??</code> null 合併運算子（同 JS）：<code>x ?? "預設"</code></li>
-  <li><code>?.</code> null 條件存取（同 JS）：<code>user?.Address?.City</code></li>
-  <li><code>is</code> 型別檢查：<code>if (obj is string s) { ... }</code></li>
-</ul>
+  <div class="callout callout-info">
+    <strong>💡 C# 的 var ≠ JS 的 var</strong>
+    C# 的 <code>var</code> 是「型別推斷」，編譯器會幫你推斷型別，型別一旦確定就不能變。JS 的 <code>var</code> 是函數作用域、可重新賦值為任何型別。完全不同！C# 的 <code>var</code> 反而更像 JS 的 <code>const</code>（都是推斷後不能換型別）。
+  </div>
 
+  <h3>字串操作對比</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="kw">string</span> name = <span class="str">"Cooper"</span>;
+
+<span class="cmt">// 字串插值（最常用）</span>
+<span class="kw">string</span> msg = <span class="str">$"Hello, {name}!"</span>;
+
+<span class="cmt">// 多行字串（C# 11+）</span>
+<span class="kw">string</span> html = <span class="str">"""
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p&gt;World&lt;/p&gt;
+    """</span>;
+
+<span class="cmt">// 常用方法</span>
+name.<span class="fn">Length</span>          <span class="cmt">// 長度（是屬性不是方法）</span>
+name.<span class="fn">ToUpper</span>()       <span class="cmt">// 轉大寫</span>
+name.<span class="fn">Contains</span>(<span class="str">"oo"</span>)  <span class="cmt">// 包含</span>
+name.<span class="fn">Replace</span>(<span class="str">"o"</span>,<span class="str">"0"</span>)<span class="cmt">// 取代</span>
+name.<span class="fn">Split</span>(<span class="str">','</span>)       <span class="cmt">// 分割</span>
+name.<span class="fn">Trim</span>()           <span class="cmt">// 去空白</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">const</span> name = <span class="str">"Cooper"</span>;
+
+<span class="cmt">// 模板字串</span>
+<span class="kw">const</span> msg = <span class="str">`Hello, ${name}!`</span>;
+
+<span class="cmt">// 多行字串</span>
+<span class="kw">const</span> html = <span class="str">`
+  &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;p&gt;World&lt;/p&gt;
+`</span>;
+
+<span class="cmt">// 常用方法</span>
+name.<span class="fn">length</span>             <span class="cmt">// 長度</span>
+name.<span class="fn">toUpperCase</span>()      <span class="cmt">// 轉大寫</span>
+name.<span class="fn">includes</span>(<span class="str">"oo"</span>)    <span class="cmt">// 包含</span>
+name.<span class="fn">replace</span>(<span class="str">"o"</span>,<span class="str">"0"</span>)  <span class="cmt">// 取代</span>
+name.<span class="fn">split</span>(<span class="str">','</span>)         <span class="cmt">// 分割</span>
+name.<span class="fn">trim</span>()             <span class="cmt">// 去空白</span></code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('types')">← 型別系統</button>
+    <button class="btn btn-primary" onclick="showSection('operators')">運算子 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s5">
-<h2><span class="num">Chapter 05</span>流程控制</h2>
-<p class="section-lede">if、迴圈、switch——跟 JS 大同小異，但有幾個 C# 獨有的好東西。</p>
+<!-- ══ 3. OPERATORS ══ -->
+<section class="section" id="sec-operators">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">運算子</h2>
+    <p class="section-desc">大部分和 JS 一樣，但有幾個重要差異</p>
+  </div>
 
-<h3>5.1 if / else</h3>
-<p>語法跟 JS 完全一樣：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">if (age &gt;= 18)
+  <h3>比較運算子</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="cmt">// C# 只有 == 和 !=</span>
+<span class="cmt">// 沒有 === 因為型別已經在宣告時確定</span>
+
+<span class="num">5</span> == <span class="num">5</span>     <span class="cmt">// true</span>
+<span class="num">5</span> == <span class="str">"5"</span>   <span class="cmt">// 編譯錯誤！不同型別不能比</span>
+
+<span class="kw">string</span> a = <span class="str">"hello"</span>;
+<span class="kw">string</span> b = <span class="str">"hello"</span>;
+a == b   <span class="cmt">// true（string 比內容）</span>
+
+<span class="cmt">// 物件比較（比參考）</span>
+<span class="kw">var</span> x = <span class="kw">new</span> <span class="cls">Person</span>();
+<span class="kw">var</span> y = <span class="kw">new</span> <span class="cls">Person</span>();
+x == y   <span class="cmt">// false（不同物件）</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// JS 有 == 和 ===</span>
+<span class="num">5</span> == <span class="str">"5"</span>   <span class="cmt">// true（隱式轉型）😱</span>
+<span class="num">5</span> === <span class="str">"5"</span>  <span class="cmt">// false（嚴格比較）✅</span>
+
+<span class="kw">const</span> a = <span class="str">"hello"</span>;
+<span class="kw">const</span> b = <span class="str">"hello"</span>;
+a === b  <span class="cmt">// true</span>
+
+<span class="kw">const</span> x = {};
+<span class="kw">const</span> y = {};
+x === y  <span class="cmt">// false（不同參考）</span></code></div>
+    </div>
+  </div>
+
+  <h3>C# 特有的運算子</h3>
+  <pre>
+    <div class="pre-header">🟣 C# 特有運算子</div>
+    <div class="pre-body"><code><span class="cmt">// ?? 空值合併（和 JS 一樣！）</span>
+<span class="kw">string</span>? name = <span class="kw">null</span>;
+<span class="kw">string</span> display = name ?? <span class="str">"匿名"</span>;  <span class="cmt">// "匿名"</span>
+
+<span class="cmt">// ??= 空值賦值（C# 8+）</span>
+name ??= <span class="str">"預設值"</span>;  <span class="cmt">// 只有 null 時才賦值</span>
+
+<span class="cmt">// ?. 可選鏈（和 JS 完全一樣！）</span>
+<span class="kw">int</span>? len = user?.Name?.Length;
+
+<span class="cmt">// is — 型別判斷（比 typeof 強）</span>
+<span class="kw">if</span> (obj <span class="kw">is string</span> s)
 {
-    Console.WriteLine("成年");
-}
-else if (age &gt;= 13)
-{
-    Console.WriteLine("青少年");
-}
-else
-{
-    Console.WriteLine("兒童");
-}
-
-// 條件運算子（同 JS 三元）
-string result = age &gt;= 18 ? "成年" : "未成年";</code></pre>
-
-<h3>5.2 switch（傳統與新版）</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 傳統 switch
-switch (day)
-{
-    case 1:
-    case 2:
-        Console.WriteLine("週一二");
-        break;
-    case 3:
-        Console.WriteLine("週三");
-        break;
-    default:
-        Console.WriteLine("其他");
-        break;
-}
-
-// 新版 switch expression（C# 8+，超好用）
-string desc = day switch
-{
-    1 or 2 =&gt; "週一二",
-    3 =&gt; "週三",
-    &gt;= 4 and &lt;= 5 =&gt; "週四五",
-    _ =&gt; "其他"
-};</code></pre>
-
-<h3>5.3 迴圈</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// for（同 JS）
-for (int i = 0; i &lt; 10; i++) { ... }
-
-// while
-while (count &lt; 100) { count++; }
-
-// do-while
-do { ... } while (condition);
-
-// foreach（類似 JS 的 for...of）
-foreach (var item in list)
-{
-    Console.WriteLine(item);
+    Console.<span class="fn">WriteLine</span>(s.<span class="fn">Length</span>); <span class="cmt">// s 自動是 string 型別</span>
 }
 
-// break、continue 用法同 JS</code></pre>
+<span class="cmt">// as — 安全型別轉換（失敗回傳 null）</span>
+<span class="kw">var</span> s = obj <span class="kw">as string</span>;  <span class="cmt">// 不是 string 就是 null</span>
 
-<div class="callout why">
-<span class="label">Why · foreach 跟 for 怎麼選</span>
-<p><code>foreach</code> 是「我只想拿到每個元素」；<code>for</code> 是「我需要索引、或要反向走、或要跳著走」。對集合操作優先用 <code>foreach</code>，意圖更清楚。</p>
-</div>
+<span class="cmt">// (type) — 強制型別轉換（失敗丟例外）</span>
+<span class="kw">int</span> x = (<span class="tp">int</span>)<span class="num">3.9</span>;  <span class="cmt">// 3（截斷）</span></code></div>
+  </pre>
 
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('variables')">← 變數宣告</button>
+    <button class="btn btn-primary" onclick="showSection('control')">流程控制 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s6">
-<h2><span class="num">Chapter 06</span>方法 Methods</h2>
-<p class="section-lede">C# 沒有「函式」這個獨立概念，只有「方法」（屬於類別的函式）。</p>
+<!-- ══ 4. CONTROL ══ -->
+<section class="section" id="sec-control">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">流程控制</h2>
+    <p class="section-desc">if / switch / for / while / foreach — 大部分和 JS 一樣</p>
+  </div>
 
-<h3>6.1 基本宣告</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 修飾子 回傳型別 方法名(參數型別 參數名)
-public int Add(int a, int b)
-{
-    return a + b;
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — if / else</div>
+      <div class="compare-body"><code><span class="kw">int</span> score = <span class="num">85</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>)
+    Console.<span class="fn">WriteLine</span>(<span class="str">"A"</span>);
+<span class="kw">else if</span> (score >= <span class="num">80</span>)
+    Console.<span class="fn">WriteLine</span>(<span class="str">"B"</span>);
+<span class="kw">else</span>
+    Console.<span class="fn">WriteLine</span>(<span class="str">"C"</span>);
+
+<span class="cmt">// 三元運算子（和 JS 一樣）</span>
+<span class="kw">string</span> grade = score >= <span class="num">60</span> ? <span class="str">"Pass"</span> : <span class="str">"Fail"</span>;</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">const</span> score = <span class="num">85</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+  console.<span class="fn">log</span>(<span class="str">"A"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">80</span>) {
+  console.<span class="fn">log</span>(<span class="str">"B"</span>);
+} <span class="kw">else</span> {
+  console.<span class="fn">log</span>(<span class="str">"C"</span>);
 }
 
-// 沒有回傳值用 void
-public void PrintHello(string name)
-{
-    Console.WriteLine($"Hello, {name}");
-}</code></pre>
+<span class="cmt">// 三元運算子</span>
+<span class="kw">const</span> grade = score >= <span class="num">60</span> ? <span class="str">"Pass"</span> : <span class="str">"Fail"</span>;</code></div>
+    </div>
+  </div>
 
-<h3>6.2 跟 JS 函式的關鍵差異</h3>
-<table>
-<tr><th>面向</th><th>JS</th><th>C#</th></tr>
-<tr><td>是否獨立存在</td><td>可以是頂層函式</td><td>必須在類別裡，叫「方法」</td></tr>
-<tr><td>參數型別</td><td>不用寫</td><td>必須寫</td></tr>
-<tr><td>回傳型別</td><td>不用寫</td><td>必須寫（或 void）</td></tr>
-<tr><td>this 綁定</td><td>動態</td><td>固定指當前實例</td></tr>
-</table>
-
-<h3>6.3 預設參數、命名參數</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public void Greet(string name, string greeting = "Hello")
+  <h3>Switch — C# 更強大</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# switch expression（現代）</div>
+      <div class="compare-body"><code><span class="cmt">// switch expression（C# 8+，很簡潔）</span>
+<span class="kw">string</span> grade = score <span class="kw">switch</span>
 {
-    Console.WriteLine($"{greeting}, {name}");
+    >= <span class="num">90</span> => <span class="str">"A"</span>,
+    >= <span class="num">80</span> => <span class="str">"B"</span>,
+    >= <span class="num">70</span> => <span class="str">"C"</span>,
+    _      => <span class="str">"F"</span>  <span class="cmt">// _ 是預設值（類似 default）</span>
+};
+
+<span class="cmt">// 型別匹配（JS 做不到）</span>
+<span class="kw">string</span> desc = obj <span class="kw">switch</span>
+{
+    <span class="tp">int</span> n    => <span class="str">$"整數 {n}"</span>,
+    <span class="tp">string</span> s => <span class="str">$"字串 {s}"</span>,
+    <span class="kw">null</span>     => <span class="str">"null"</span>,
+    _         => <span class="str">"其他"</span>
+};</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// JS switch 不支援範圍比較</span>
+<span class="kw">switch</span> (<span class="kw">true</span>) {
+  <span class="kw">case</span> score >= <span class="num">90</span>: <span class="kw">return</span> <span class="str">"A"</span>;
+  <span class="kw">case</span> score >= <span class="num">80</span>: <span class="kw">return</span> <span class="str">"B"</span>;
+  <span class="kw">default</span>: <span class="kw">return</span> <span class="str">"F"</span>;
 }
 
-Greet("BoKai");                          // Hello, BoKai
-Greet("BoKai", "Hi");                    // Hi, BoKai
-Greet(name: "BoKai", greeting: "Hey");   // 用命名參數（順序可換）</code></pre>
+<span class="cmt">// 或用物件映射</span>
+<span class="kw">const</span> map = {
+  A: <span class="num">90</span>, B: <span class="num">80</span>, C: <span class="num">70</span>
+};</code></div>
+    </div>
+  </div>
 
-<h3>6.4 方法多載 Overloading</h3>
-<p>同名方法、不同參數，編譯器自動依參數選對的版本。JS 沒這個（JS 是動態的，沒辦法）：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public int Add(int a, int b) =&gt; a + b;
-public double Add(double a, double b) =&gt; a + b;
-public string Add(string a, string b) =&gt; a + b;
+  <h3>迴圈對比</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="cmt">// for（和 JS 一樣）</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++)
+    Console.<span class="fn">WriteLine</span>(i);
 
-Add(1, 2);          // 用 int 版
-Add(1.5, 2.5);      // 用 double 版
-Add("a", "b");      // 用 string 版</code></pre>
+<span class="cmt">// foreach（遍歷集合）</span>
+<span class="kw">int</span>[] nums = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> };
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> nums)
+    Console.<span class="fn">WriteLine</span>(n);
 
-<h3>6.5 ref、out、in 參數（JS 沒有的概念）</h3>
-<p>預設參數是「按值傳遞」（傳一份拷貝），這幾個關鍵字改變傳遞方式：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// ref：傳參考，呼叫前必須已初始化
-public void Double(ref int x) { x *= 2; }
-int n = 5;
-Double(ref n);  // n 變成 10
+<span class="cmt">// while / do-while（和 JS 一樣）</span>
+<span class="kw">while</span> (condition) { ... }
+<span class="kw">do</span> { ... } <span class="kw">while</span> (condition);</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// for</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++)
+  console.<span class="fn">log</span>(i);
 
-// out：傳參考，呼叫前不用初始化，但方法內必須賦值
-public bool TryParseAge(string s, out int age)
-{
-    return int.TryParse(s, out age);
-}
-if (TryParseAge("28", out int myAge)) { ... }
+<span class="cmt">// for...of（類似 C# foreach）</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">for</span> (<span class="kw">const</span> n <span class="kw">of</span> nums)
+  console.<span class="fn">log</span>(n);
 
-// in：傳參考，但是唯讀（效能優化用，較少見）</code></pre>
+<span class="cmt">// forEach 方法</span>
+nums.<span class="fn">forEach</span>(n => console.<span class="fn">log</span>(n));</code></div>
+    </div>
+  </div>
 
-<h3>6.6 params 可變參數</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public int Sum(params int[] nums)
-{
-    int total = 0;
-    foreach (var n in nums) total += n;
-    return total;
-}
-
-Sum(1, 2, 3);        // 6
-Sum(1, 2, 3, 4, 5);  // 15</code></pre>
-
-<h3>6.7 表達式方法（簡潔寫法）</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 一行就能寫完的方法可以用 =&gt;
-public int Square(int x) =&gt; x * x;
-public string FullName(string first, string last) =&gt; $"{first} {last}";</code></pre>
-
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('operators')">← 運算子</button>
+    <button class="btn btn-primary" onclick="showSection('functions')">方法 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s7">
-<h2><span class="num">Chapter 07</span>類別與物件導向</h2>
-<p class="section-lede">C# 的核心。理解類別，你就理解了 C# 的設計哲學。</p>
+<!-- ══ 5. FUNCTIONS ══ -->
+<section class="section" id="sec-functions">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">方法 (Method)</h2>
+    <p class="section-desc">C# 叫「方法」不叫「函數」，通常屬於某個類別</p>
+  </div>
 
-<h3>7.1 類別基本結構</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class Person
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# 方法</div>
+      <div class="compare-body"><code><span class="cmt">// 回傳型別 方法名稱(參數型別 參數名)</span>
+<span class="kw">static int</span> <span class="fn">Add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b)
 {
-    // 欄位 (field) - 通常設為 private
-    private string _name;
-    private int _age;
-
-    // 屬性 (property) - 對外的介面
-    public string Name
-    {
-        get { return _name; }
-        set { _name = value; }
-    }
-    public int Age { get; set; }  // 自動屬性，最常用
-
-    // 建構子
-    public Person(string name, int age)
-    {
-        _name = name;
-        Age = age;
-    }
-
-    // 方法
-    public void SayHello()
-    {
-        Console.WriteLine($"Hi, I'm {_name}");
-    }
+    <span class="kw">return</span> a + b;
 }
 
-// 使用
-Person p = new Person("BoKai", 28);
-p.SayHello();
-Console.WriteLine(p.Name);  // 透過屬性讀取
-p.Age = 29;                 // 透過屬性寫入</code></pre>
-
-<h3>7.2 屬性 Property（C# 的招牌特性）</h3>
-<p>屬性是「看起來像欄位、實際是方法」的東西。JS 也有 getter/setter，但 C# 用得更廣、語法更精煉：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class Product
+<span class="cmt">// void = 沒有回傳值</span>
+<span class="kw">static void</span> <span class="fn">PrintHello</span>(<span class="kw">string</span> name)
 {
-    // 自動屬性（最常用）
-    public string Name { get; set; }
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"Hello, {name}!"</span>);
+}
 
-    // 唯讀屬性（只能在建構子裡賦值）
-    public int Id { get; }
+<span class="cmt">// 預設參數</span>
+<span class="kw">static string</span> <span class="fn">Greet</span>(<span class="kw">string</span> name, <span class="kw">string</span> greeting = <span class="str">"Hello"</span>)
+    => <span class="str">$"{greeting}, {name}!"</span>;  <span class="cmt">// 箭頭方法（單行）</span>
 
-    // 自訂邏輯的屬性
-    private decimal _price;
-    public decimal Price
-    {
-        get =&gt; _price;
-        set
-        {
-            if (value &lt; 0) throw new ArgumentException("價格不能為負");
-            _price = value;
-        }
-    }
+<span class="cmt">// 呼叫</span>
+<span class="fn">Add</span>(<span class="num">1</span>, <span class="num">2</span>);
+<span class="fn">Greet</span>(<span class="str">"Cooper"</span>);
+<span class="fn">Greet</span>(name: <span class="str">"Cooper"</span>, greeting: <span class="str">"Hi"</span>); <span class="cmt">// 具名參數</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// 不需要宣告回傳型別</span>
+<span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  <span class="kw">return</span> a + b;
+}
 
-    // 計算屬性（沒有 setter）
-    public decimal PriceWithTax =&gt; _price * 1.05m;
+<span class="cmt">// 沒有 void，不 return 就是 undefined</span>
+<span class="kw">function</span> <span class="fn">printHello</span>(name) {
+  console.<span class="fn">log</span>(<span class="str">`Hello, ${name}!`</span>);
+}
 
-    // 不同存取權限
-    public int Stock { get; private set; }  // 外面只能讀，類別內可寫
-}</code></pre>
+<span class="cmt">// 預設參數</span>
+<span class="kw">const</span> <span class="fn">greet</span> = (name, greeting = <span class="str">"Hello"</span>) =>
+  <span class="str">`${greeting}, ${name}!`</span>;
 
-<h3>7.3 存取修飾子</h3>
-<table>
-<tr><th>修飾子</th><th>意思</th></tr>
-<tr><td><code>public</code></td><td>任何地方都能存取</td></tr>
-<tr><td><code>private</code></td><td>只有同一個類別內能存取（預設值）</td></tr>
-<tr><td><code>protected</code></td><td>同類別 + 子類別能存取</td></tr>
-<tr><td><code>internal</code></td><td>同一個組件（assembly）內能存取</td></tr>
-<tr><td><code>protected internal</code></td><td>protected 或 internal 任一條件</td></tr>
-</table>
+<span class="cmt">// 呼叫</span>
+<span class="fn">add</span>(<span class="num">1</span>, <span class="num">2</span>);
+<span class="fn">greet</span>(<span class="str">"Cooper"</span>);</code></div>
+    </div>
+  </div>
 
-<h3>7.4 建構子</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class User
+  <h3>Lambda 表達式（C# 的箭頭函數）</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="cmt">// Lambda 表達式</span>
+<span class="kw">Func</span>&lt;<span class="tp">int</span>, <span class="tp">int</span>, <span class="tp">int</span>&gt; add = (a, b) => a + b;
+<span class="kw">Action</span>&lt;<span class="tp">string</span>&gt; print = s => Console.<span class="fn">WriteLine</span>(s);
+<span class="kw">Func</span>&lt;<span class="tp">int</span>, <span class="tp">bool</span>&gt; isEven = n => n % <span class="num">2</span> == <span class="num">0</span>;
+
+<span class="cmt">// Func = 有回傳值的函數型別</span>
+<span class="cmt">// Action = 沒有回傳值的函數型別</span>
+<span class="cmt">// Func&lt;參數型別..., 回傳型別&gt;</span>
+
+<span class="cmt">// 傳入方法</span>
+<span class="kw">var</span> evens = numbers.<span class="fn">Where</span>(n => n % <span class="num">2</span> == <span class="num">0</span>);</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// 箭頭函數</span>
+<span class="kw">const</span> add = (a, b) => a + b;
+<span class="kw">const</span> print = s => console.<span class="fn">log</span>(s);
+<span class="kw">const</span> isEven = n => n % <span class="num">2</span> === <span class="num">0</span>;
+
+<span class="cmt">// JS 函數是一等公民</span>
+<span class="cmt">// 隨時可以傳遞，不需要特別宣告型別</span>
+
+<span class="cmt">// 傳入方法</span>
+<span class="kw">const</span> evens = numbers.<span class="fn">filter</span>(n => n % <span class="num">2</span> === <span class="num">0</span>);</code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('control')">← 流程控制</button>
+    <button class="btn btn-primary" onclick="showSection('classes')">類別 & 物件 →</button>
+  </div>
+</section>
+
+<!-- ══ 6. CLASSES ══ -->
+<section class="section" id="sec-classes">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">類別 & 物件</h2>
+    <p class="section-desc">C# 是真正的 OOP 語言，類別的功能比 JS 更完整</p>
+  </div>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# 類別</div>
+      <div class="compare-body"><code><span class="kw">public class</span> <span class="cls">Person</span>
 {
-    public string Name { get; set; }
-    public int Age { get; set; }
+    <span class="cmt">// 屬性（Properties）</span>
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public int</span> Age { <span class="kw">get</span>; <span class="kw">private set</span>; } <span class="cmt">// 外部唯讀</span>
 
-    // 預設建構子
-    public User() { }
-
-    // 帶參數的建構子
-    public User(string name, int age)
+    <span class="cmt">// 建構子</span>
+    <span class="kw">public</span> <span class="fn">Person</span>(<span class="kw">string</span> name, <span class="kw">int</span> age)
     {
         Name = name;
         Age = age;
     }
 
-    // 建構子可以呼叫其他建構子（用 this）
-    public User(string name) : this(name, 0) { }
-}</code></pre>
-
-<h3>7.5 static 靜態成員</h3>
-<p>靜態成員屬於「類別本身」，不屬於某個實例：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class MathHelper
-{
-    // 靜態方法
-    public static int Square(int x) =&gt; x * x;
-
-    // 靜態欄位
-    public static readonly double Pi = 3.14159;
+    <span class="cmt">// 方法</span>
+    <span class="kw">public string</span> <span class="fn">Greet</span>()
+        => <span class="str">$"Hi, I'm {Name}, {Age} years old."</span>;
 }
 
-// 用法：直接用類別名呼叫，不用 new
-int s = MathHelper.Square(5);
-double p = MathHelper.Pi;</code></pre>
+<span class="cmt">// 使用</span>
+<span class="kw">var</span> p = <span class="kw">new</span> <span class="cls">Person</span>(<span class="str">"Cooper"</span>, <span class="num">25</span>);
+Console.<span class="fn">WriteLine</span>(p.<span class="fn">Greet</span>());
+Console.<span class="fn">WriteLine</span>(p.Name);</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">class</span> <span class="cls">Person</span> {
+  <span class="cmt">// 屬性</span>
+  #age; <span class="cmt">// private field</span>
 
-<div class="callout why">
-<span class="label">Why · 為什麼需要 static</span>
-<p>有些東西天生不屬於「某個物件」，而屬於「整個概念」。例如「圓周率」不屬於某顆圓，「平方計算」也不需要一個物件來執行。用 <code>static</code> 表達「這個成員是工具性的、共用的」。<code>Console.WriteLine</code> 就是 static——你不用 <code>new Console()</code>。</p>
-</div>
+  <span class="cmt">// 建構子</span>
+  <span class="fn">constructor</span>(name, age) {
+    <span class="kw">this</span>.name = name;
+    <span class="kw">this</span>.#age = age;
+  }
 
-<h3>7.6 struct（值類型的類別）</h3>
-<p>C# 有兩種「自訂型別」：<code>class</code>（參考型別）和 <code>struct</code>（值型別）。差異很重要，下一章專講：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public struct Point
-{
-    public int X { get; set; }
-    public int Y { get; set; }
-}</code></pre>
-<p>用法上看起來一樣，但記憶體行為完全不同（見 Chapter 09）。日常 ERP 開發 90% 用 class，struct 用在「小型、不可變、值語意」的東西。</p>
+  <span class="cmt">// getter</span>
+  <span class="kw">get</span> <span class="fn">age</span>() { <span class="kw">return this</span>.#age; }
 
+  <span class="cmt">// 方法</span>
+  <span class="fn">greet</span>() {
+    <span class="kw">return</span> <span class="str">`Hi, I'm ${this.name}`</span>;
+  }
+}
+
+<span class="cmt">// 使用</span>
+<span class="kw">const</span> p = <span class="kw">new</span> <span class="cls">Person</span>(<span class="str">"Cooper"</span>, <span class="num">25</span>);
+console.<span class="fn">log</span>(p.<span class="fn">greet</span>());
+console.<span class="fn">log</span>(p.name);</code></div>
+    </div>
+  </div>
+
+  <h3>存取修飾詞</h3>
+  <table>
+    <tr><th>修飾詞</th><th>說明</th><th>JS 對應</th></tr>
+    <tr><td>public</td><td>任何地方都能存取</td><td>一般屬性</td></tr>
+    <tr><td>private</td><td>只有類別內部可存取</td><td>#name（private field）</td></tr>
+    <tr><td>protected</td><td>類別本身 + 子類別</td><td>無直接對應</td></tr>
+    <tr><td>internal</td><td>同一個組件（專案）內</td><td>無直接對應</td></tr>
+  </table>
+
+  <h3>Record — 現代 C# 的不可變資料類別</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# record</div>
+      <div class="compare-body"><code><span class="cmt">// 一行定義資料類別（C# 9+）</span>
+<span class="kw">public record</span> <span class="cls">Point</span>(<span class="kw">int</span> X, <span class="kw">int</span> Y);
+
+<span class="kw">var</span> p1 = <span class="kw">new</span> <span class="cls">Point</span>(<span class="num">1</span>, <span class="num">2</span>);
+<span class="kw">var</span> p2 = p1 <span class="kw">with</span> { X = <span class="num">10</span> }; <span class="cmt">// 複製並改 X</span>
+
+p1 == p2  <span class="cmt">// false（值不同）</span>
+<span class="kw">var</span> p3 = <span class="kw">new</span> <span class="cls">Point</span>(<span class="num">1</span>, <span class="num">2</span>);
+p1 == p3  <span class="cmt">// true（值相同就相等）</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript 類似概念</div>
+      <div class="compare-body"><code><span class="cmt">// JS 沒有 record，通常用物件</span>
+<span class="kw">const</span> p1 = { x: <span class="num">1</span>, y: <span class="num">2</span> };
+
+<span class="cmt">// 複製並修改</span>
+<span class="kw">const</span> p2 = { ...p1, x: <span class="num">10</span> };
+
+<span class="cmt">// JS 物件比較的是參考</span>
+p1 === p2  <span class="cmt">// false（不同物件）</span>
+<span class="cmt">// 即使值一樣也是 false！</span></code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('functions')">← 方法</button>
+    <button class="btn btn-primary" onclick="showSection('oop')">OOP 三大特性 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s8">
-<h2><span class="num">Chapter 08</span>進階 OO：繼承、多型、介面</h2>
-<p class="section-lede">這套東西在 ERP 程式碼裡到處都是，必須熟悉。</p>
+<!-- ══ 7. OOP ══ -->
+<section class="section" id="sec-oop">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">OOP 三大特性</h2>
+    <p class="section-desc">封裝、繼承、多型 — C# 比 JS 更嚴謹的物件導向</p>
+  </div>
 
-<h3>8.1 繼承</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 父類別
-public class Animal
+  <!-- ─ 封裝 ─ -->
+  <h3>① 封裝（Encapsulation）</h3>
+  <p>封裝的概念是：把資料（欄位）藏起來，只透過公開的介面（屬性/方法）讓外界存取。這樣可以控制「誰能讀、誰能寫」，避免資料被意外改壞。</p>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — 封裝</div>
+      <div class="compare-body"><code><span class="kw">public class</span> <span class="cls">BankAccount</span>
 {
-    public string Name { get; set; }
-    public void Eat() =&gt; Console.WriteLine($"{Name} 在吃");
-}
+    <span class="cmt">// private 欄位 — 外部完全看不到</span>
+    <span class="kw">private decimal</span> _balance = <span class="num">0</span>;
 
-// 子類別（用 : 表示繼承）
-public class Dog : Animal
-{
-    public void Bark() =&gt; Console.WriteLine("汪！");
-}
+    <span class="cmt">// public 屬性 — 外部只能讀，不能直接改</span>
+    <span class="kw">public decimal</span> Balance => _balance;
 
-Dog d = new Dog();
-d.Name = "小白";
-d.Eat();   // 從 Animal 繼承來的
-d.Bark();  // Dog 自己的</code></pre>
-
-<p>關鍵：<strong>C# 只支援單一繼承</strong>（一個類別只能有一個父類別），但可以實作多個介面。</p>
-
-<h3>8.2 多型 virtual / override</h3>
-<p>子類別覆寫父類別的方法：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class Animal
-{
-    public virtual void Speak()  // virtual 表示「可被覆寫」
+    <span class="cmt">// 透過方法控制存款邏輯</span>
+    <span class="kw">public void</span> <span class="fn">Deposit</span>(<span class="kw">decimal</span> amount)
     {
-        Console.WriteLine("某種聲音");
+        <span class="kw">if</span> (amount <= <span class="num">0</span>)
+            <span class="kw">throw new</span> <span class="cls">ArgumentException</span>(<span class="str">"金額必須大於 0"</span>);
+        _balance += amount;
+    }
+
+    <span class="kw">public void</span> <span class="fn">Withdraw</span>(<span class="kw">decimal</span> amount)
+    {
+        <span class="kw">if</span> (amount > _balance)
+            <span class="kw">throw new</span> <span class="cls">InvalidOperationException</span>(<span class="str">"餘額不足"</span>);
+        _balance -= amount;
     }
 }
 
-public class Dog : Animal
+<span class="kw">var</span> acc = <span class="kw">new</span> <span class="cls">BankAccount</span>();
+acc.<span class="fn">Deposit</span>(<span class="num">1000</span>);
+Console.<span class="fn">WriteLine</span>(acc.Balance);  <span class="cmt">// 1000</span>
+acc._balance = <span class="num">9999</span>;  <span class="cmt">// ❌ 編譯錯誤！private 不能直接存取</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">class</span> <span class="cls">BankAccount</span> {
+  <span class="cmt">// # 前綴 = private（ES2022）</span>
+  #balance = <span class="num">0</span>;
+
+  <span class="cmt">// getter 讓外部只能讀</span>
+  <span class="kw">get</span> <span class="fn">balance</span>() { <span class="kw">return this</span>.#balance; }
+
+  <span class="fn">deposit</span>(amount) {
+    <span class="kw">if</span> (amount <= <span class="num">0</span>)
+      <span class="kw">throw new</span> <span class="cls">Error</span>(<span class="str">"金額必須大於 0"</span>);
+    <span class="kw">this</span>.#balance += amount;
+  }
+
+  <span class="fn">withdraw</span>(amount) {
+    <span class="kw">if</span> (amount > <span class="kw">this</span>.#balance)
+      <span class="kw">throw new</span> <span class="cls">Error</span>(<span class="str">"餘額不足"</span>);
+    <span class="kw">this</span>.#balance -= amount;
+  }
+}
+
+<span class="kw">const</span> acc = <span class="kw">new</span> <span class="cls">BankAccount</span>();
+acc.<span class="fn">deposit</span>(<span class="num">1000</span>);
+console.<span class="fn">log</span>(acc.balance);  <span class="cmt">// 1000</span>
+acc.#balance = <span class="num">9999</span>;  <span class="cmt">// ❌ SyntaxError</span></code></div>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>💡 C# 的 { get; set; } 是什麼？</strong>
+    這是「自動屬性」，背後 C# 會自動建一個 private 欄位幫你存值。<br>
+    <code>public string Name { get; set; }</code> — 外部可讀可寫<br>
+    <code>public string Name { get; private set; }</code> — 外部只能讀，類別內部才能寫<br>
+    <code>public string Name { get; }</code> — 唯讀，只能在建構子賦值
+  </div>
+
+  <!-- ─ 繼承 ─ -->
+  <h3>② 繼承（Inheritance）</h3>
+  <p>子類別繼承父類別的屬性和方法，達到程式碼複用。C# 一個類別只能繼承一個父類別（和 JS 一樣），但可以實作多個 Interface。</p>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="kw">public class</span> <span class="cls">Animal</span>
 {
-    public override void Speak()  // override 表示「我要覆寫」
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="cmt">// virtual = 允許子類別覆寫</span>
+    <span class="kw">public virtual void</span> <span class="fn">Speak</span>()
+        => Console.<span class="fn">WriteLine</span>(<span class="str">"..."</span>);
+}
+
+<span class="cmt">// : Animal 代表繼承 Animal</span>
+<span class="kw">public class</span> <span class="cls">Dog</span> : <span class="cls">Animal</span>
+{
+    <span class="cmt">// override = 覆寫父類別的 virtual 方法</span>
+    <span class="kw">public override void</span> <span class="fn">Speak</span>()
+        => Console.<span class="fn">WriteLine</span>(<span class="str">"Woof!"</span>);
+
+    <span class="cmt">// 子類別自己的方法</span>
+    <span class="kw">public void</span> <span class="fn">Fetch</span>()
+        => Console.<span class="fn">WriteLine</span>(<span class="str">"*撿球*"</span>);
+}
+
+<span class="kw">var</span> d = <span class="kw">new</span> <span class="cls">Dog</span> { Name = <span class="str">"Rex"</span> };
+d.<span class="fn">Speak</span>();   <span class="cmt">// "Woof!"（覆寫後的版本）</span>
+d.<span class="fn">Fetch</span>();   <span class="cmt">// "*撿球*"</span>
+Console.<span class="fn">WriteLine</span>(d.Name); <span class="cmt">// "Rex"（繼承自 Animal）</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">class</span> <span class="cls">Animal</span> {
+  <span class="fn">constructor</span>(name) {
+    <span class="kw">this</span>.name = name;
+  }
+  <span class="cmt">// JS 方法預設就可以被覆寫</span>
+  <span class="cmt">// 不需要 virtual 關鍵字</span>
+  <span class="fn">speak</span>() {
+    console.<span class="fn">log</span>(<span class="str">"..."</span>);
+  }
+}
+
+<span class="cmt">// extends 代表繼承</span>
+<span class="kw">class</span> <span class="cls">Dog</span> <span class="kw">extends</span> <span class="cls">Animal</span> {
+  <span class="cmt">// 直接覆寫，不需要 override</span>
+  <span class="fn">speak</span>() {
+    console.<span class="fn">log</span>(<span class="str">"Woof!"</span>);
+  }
+  <span class="fn">fetch</span>() {
+    console.<span class="fn">log</span>(<span class="str">"*撿球*"</span>);
+  }
+}
+
+<span class="kw">const</span> d = <span class="kw">new</span> <span class="cls">Dog</span>(<span class="str">"Rex"</span>);
+d.<span class="fn">speak</span>();
+d.<span class="fn">fetch</span>();
+console.<span class="fn">log</span>(d.name);</code></div>
+    </div>
+  </div>
+
+  <h4>base — 呼叫父類別</h4>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — base</div>
+      <div class="compare-body"><code><span class="kw">public class</span> <span class="cls">Cat</span> : <span class="cls">Animal</span>
+{
+    <span class="kw">public int</span> Lives { <span class="kw">get</span>; }
+
+    <span class="cmt">// base(...) 呼叫父類別建構子</span>
+    <span class="kw">public</span> <span class="fn">Cat</span>(<span class="kw">string</span> name, <span class="kw">int</span> lives) : <span class="kw">base</span>(name)
     {
-        Console.WriteLine("汪！");
+        Lives = lives;
     }
-}
 
-Animal a = new Dog();
-a.Speak();  // 印「汪！」——這就是多型：用父類別型別變數，呼叫的是子類別的方法</code></pre>
-
-<h3>8.3 abstract 抽象類別</h3>
-<p>抽象類別不能被實例化，是「不完整的設計藍圖」：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public abstract class Shape
-{
-    public abstract double Area();  // 抽象方法，子類別必須實作
-
-    public void Print()             // 一般方法，可直接用
+    <span class="kw">public override void</span> <span class="fn">Speak</span>()
     {
-        Console.WriteLine($"面積：{Area()}");
+        <span class="kw">base</span>.<span class="fn">Speak</span>(); <span class="cmt">// 先執行父類別的版本</span>
+        Console.<span class="fn">WriteLine</span>(<span class="str">"Meow!"</span>);
     }
+}</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript — super</div>
+      <div class="compare-body"><code><span class="kw">class</span> <span class="cls">Cat</span> <span class="kw">extends</span> <span class="cls">Animal</span> {
+  <span class="fn">constructor</span>(name, lives) {
+    <span class="kw">super</span>(name); <span class="cmt">// 呼叫父類別建構子</span>
+    <span class="kw">this</span>.lives = lives;
+  }
+
+  <span class="fn">speak</span>() {
+    <span class="kw">super</span>.<span class="fn">speak</span>(); <span class="cmt">// 先執行父類別版本</span>
+    console.<span class="fn">log</span>(<span class="str">"Meow!"</span>);
+  }
+}</code></div>
+    </div>
+  </div>
+
+  <!-- ─ 多型 ─ -->
+  <h3>③ 多型（Polymorphism）</h3>
+  <p>多型的意思是：<strong>同一個型別的變數，可以在執行時指向不同的子類別物件，並呼叫各自的版本</strong>。這讓你可以寫「通用的程式碼」，不需要一堆 if/else 判斷型別。</p>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — 多型</div>
+      <div class="compare-body"><code><span class="cmt">// 用父類別型別裝不同的子類別</span>
+<span class="cls">Animal</span> a1 = <span class="kw">new</span> <span class="cls">Dog</span>();
+<span class="cls">Animal</span> a2 = <span class="kw">new</span> <span class="cls">Cat</span>(<span class="str">"Kitty"</span>, <span class="num">9</span>);
+<span class="cls">Animal</span> a3 = <span class="kw">new</span> <span class="cls">Animal</span>();
+
+<span class="kw">var</span> animals = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="cls">Animal</span>&gt; { a1, a2, a3 };
+
+<span class="cmt">// 同樣呼叫 Speak()，但實際執行各自的版本</span>
+<span class="kw">foreach</span> (<span class="kw">var</span> animal <span class="kw">in</span> animals)
+{
+    animal.<span class="fn">Speak</span>();
+    <span class="cmt">// Dog  → "Woof!"</span>
+    <span class="cmt">// Cat  → "..." 然後 "Meow!"</span>
+    <span class="cmt">// Animal → "..."</span>
 }
 
-public class Circle : Shape
-{
-    public double Radius { get; set; }
-    public override double Area() =&gt; Math.PI * Radius * Radius;
+<span class="cmt">// 不需要這樣寫：</span>
+<span class="cmt">// if (animal is Dog) ...dog stuff</span>
+<span class="cmt">// if (animal is Cat) ...cat stuff</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// JS 也有多型，只是沒有型別約束</span>
+<span class="kw">const</span> animals = [
+  <span class="kw">new</span> <span class="cls">Dog</span>(<span class="str">"Rex"</span>),
+  <span class="kw">new</span> <span class="cls">Cat</span>(<span class="str">"Kitty"</span>),
+  <span class="kw">new</span> <span class="cls">Animal</span>(<span class="str">"?"</span>),
+];
+
+<span class="cmt">// 一樣呼叫 speak()，執行各自的版本</span>
+<span class="kw">for</span> (<span class="kw">const</span> animal <span class="kw">of</span> animals) {
+  animal.<span class="fn">speak</span>();
 }
 
-// Shape s = new Shape();  // 錯！抽象類別不能 new
-Shape s = new Circle { Radius = 5 };
-s.Print();</code></pre>
+<span class="cmt">// JS 不需要宣告型別</span>
+<span class="cmt">// 只要物件有 speak() 就能呼叫</span>
+<span class="cmt">// （Duck Typing）</span></code></div>
+    </div>
+  </div>
 
-<h3>8.4 介面 Interface</h3>
-<p>介面是「純規格」，只定義「有什麼方法」，不定義「怎麼做」：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public interface IRepository
+  <div class="callout callout-info">
+    <strong>💡 C# 多型 vs JS Duck Typing</strong>
+    JS 的「多型」其實是 Duck Typing：「只要物件有這個方法，就能呼叫」，不在乎它是什麼類別。C# 的多型更嚴謹：變數必須是同一個父類別型別，執行時才決定呼叫哪個子類別的版本。C# 這樣做的好處是型別安全 — 你絕對不會意外傳進一個沒有 Speak() 的物件。
+  </div>
+
+  <!-- ─ Interface ─ -->
+  <h3>Interface — 多型的另一種形式</h3>
+  <p>Interface 定義「合約」：任何實作這個 Interface 的類別，都保證有這些方法。這讓多型可以跨越繼承階層。</p>
+
+  <div class="compare-box" style="margin: 14px 0 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# Interface</div>
+    <div class="compare-body"><code><span class="cmt">// 定義合約 — 名稱慣例以 I 開頭</span>
+<span class="kw">public interface</span> <span class="cls">ISpeakable</span>
 {
-    void Save(string data);
-    string Load(int id);
+    <span class="kw">void</span> <span class="fn">Speak</span>();
+    <span class="kw">string</span> Name { <span class="kw">get</span>; }
 }
 
-public class FileRepository : IRepository
+<span class="cmt">// 任何類別都可以實作，不需要繼承同一個父類別</span>
+<span class="kw">public class</span> <span class="cls">Robot</span> : <span class="cls">ISpeakable</span>
 {
-    public void Save(string data) { /* 寫檔 */ }
-    public string Load(int id) { return "..."; }
+    <span class="kw">public string</span> Name => <span class="str">"R2D2"</span>;
+    <span class="kw">public void</span> <span class="fn">Speak</span>() => Console.<span class="fn">WriteLine</span>(<span class="str">"Beep boop!"</span>);
 }
 
-public class DatabaseRepository : IRepository
+<span class="cmt">// Robot 和 Dog 完全不同繼承體系</span>
+<span class="cmt">// 但都能放進 ISpeakable 的 List</span>
+<span class="kw">var</span> speakers = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="cls">ISpeakable</span>&gt;
 {
-    public void Save(string data) { /* 寫 DB */ }
-    public string Load(int id) { return "..."; }
-}
-
-// 用介面型別，可以塞任何實作
-IRepository repo = new DatabaseRepository();
-repo.Save("hello");</code></pre>
-
-<div class="callout why">
-<span class="label">Why · 介面 vs 抽象類別怎麼選</span>
-<p><strong>抽象類別</strong>適合「has-a 繼承樹、共用部分實作」（例如各種 Shape 共用 Print 方法）。<strong>介面</strong>適合「描述能力、不繼承實作」（例如「我能被儲存」就實作 ISaveable）。一個類別只能繼承一個抽象類別，但能實作多個介面。<br>實務上：你在 ERP 看到 <code>I開頭的型別</code>（如 IUserService、IOrderRepository）全是介面。介面是現代 C# 大型專案的骨架。</p>
-</div>
-
-<h3>8.5 sealed 與 base</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// sealed 表示「這個類別不能再被繼承」
-public sealed class Logger { ... }
-
-// base 用來呼叫父類別的成員
-public class Dog : Animal
-{
-    public override void Speak()
-    {
-        base.Speak();      // 先呼叫父類別的版本
-        Console.WriteLine("汪！");
-    }
-}</code></pre>
-
-</section>
-
-<!-- ============================================ -->
-<section id="s9">
-<h2><span class="num">Chapter 09</span>記憶體模型：值型別 vs 參考型別</h2>
-<p class="section-lede">這章是 C# 跟 JS 心智模型差最遠的地方。理解了它，很多 bug 你會自己預測。</p>
-
-<h3>9.1 兩種型別、兩個地方</h3>
-<table>
-<tr><th></th><th>值型別 Value Type</th><th>參考型別 Reference Type</th></tr>
-<tr><td>包含</td><td><code>int, double, bool, char, struct, enum</code></td><td><code>class, string, array, interface, delegate</code></td></tr>
-<tr><td>存哪</td><td>Stack（堆疊）</td><td>Heap（堆積），變數本身存指標在 Stack</td></tr>
-<tr><td>賦值</td><td>複製整個值</td><td>複製指標（兩個變數指向同一個物件）</td></tr>
-<tr><td>預設值</td><td>0 / false（不能是 null，除非加 ?）</td><td>null</td></tr>
-<tr><td>GC 管理</td><td>否（隨函式呼叫結束自動清）</td><td>是（GC 定期回收）</td></tr>
-</table>
-
-<h3>9.2 賦值的差異（最重要）</h3>
-<div class="compare-grid">
-<div>
-<p class="code-label cs">值型別</p>
-<pre><code class="language-csharp">int a = 5;
-int b = a;   // b 拿到 a 的拷貝
-b = 10;
-Console.WriteLine(a);  // 5（不受影響）</code></pre>
-</div>
-<div>
-<p class="code-label cs">參考型別</p>
-<pre><code class="language-csharp">var p1 = new Person { Name = "A" };
-var p2 = p1;   // p2 跟 p1 指向同一個物件
-p2.Name = "B";
-Console.WriteLine(p1.Name);  // "B"！同一個物件被改了</code></pre>
-</div>
-</div>
-
-<div class="callout why">
-<span class="label">Why · 為什麼這樣設計</span>
-<p>小型、簡單的資料（一個 int、一個座標 Point）放 stack 快，複製整份成本低。複雜物件（User、Order，可能包含一堆欄位、巢狀物件）放 heap，傳指標便宜——你不會想每次傳一個 Order 就把它整份複製一次。<br>JS 的設計是「全部都當參考型別處理」（除了 primitives），所以 JS 開發者不太需要想這個。但在 C# 你必須清楚知道你在處理哪一種。</p>
-</div>
-
-<h3>9.3 傳參數時的行為</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">void ChangeInt(int x) { x = 100; }
-void ChangeUser(User u) { u.Name = "改了"; }
-void ReplaceUser(User u) { u = new User { Name = "新人" }; }
-
-int n = 5;
-ChangeInt(n);
-Console.WriteLine(n);  // 5（值型別，拷貝傳入）
-
-User user = new User { Name = "原本" };
-ChangeUser(user);
-Console.WriteLine(user.Name);  // "改了"（同一個物件被修改）
-
-ReplaceUser(user);
-Console.WriteLine(user.Name);  // 仍是 "改了"（u 是另一個指標，重新指向新物件不影響外面）</code></pre>
-
-<h3>9.4 Boxing / Unboxing（裝箱、拆箱）</h3>
-<p>值型別轉成 object（參考型別）會「裝箱」——值會被搬到 heap 包成物件。反過來叫「拆箱」。</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">int n = 42;
-object o = n;       // 裝箱：n 的值被複製到 heap
-int n2 = (int)o;    // 拆箱</code></pre>
-<p>裝拆箱有效能成本（涉及 heap 分配），大量發生時要避免。泛型（下一章）就是為了解決這個問題誕生的。</p>
-
-<h3>9.5 GC 垃圾回收</h3>
-<p>跟 JS 引擎類似：當一個物件沒有任何變數指著它時，GC 會在某個時間點把它清掉。你<strong>不需要手動釋放記憶體</strong>。但要注意：</p>
-<ul>
-  <li><strong>避免「永遠不釋放」的參考</strong>（例如把物件存進長存的全域集合，會讓 GC 收不掉）</li>
-  <li><strong>使用 IDisposable 的物件要記得 Dispose</strong>（檔案、資料庫連線這些「非記憶體」的資源 GC 管不到，下面講）</li>
-</ul>
-
-<h3>9.6 using 與 IDisposable</h3>
-<p>檔案、DB 連線、網路連線這些「外部資源」要明確釋放：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 傳統寫法
-using (var conn = new SqlConnection(connStr))
-{
-    conn.Open();
-    // ... 用連線
-}  // 離開 using 區塊自動 Dispose（釋放連線）
-
-// 新版簡寫（C# 8+）
-using var conn = new SqlConnection(connStr);
-conn.Open();
-// 離開當前作用域時自動 Dispose</code></pre>
-
-<div class="callout warn">
-<span class="label">ERP 開發必記</span>
-<p>所有 DB 連線、檔案操作、Stream 都要用 <code>using</code>。忘記釋放會導致連線池耗盡、檔案鎖住等問題，這在生產環境是大事。</p>
-</div>
-
-</section>
-
-<!-- ============================================ -->
-<section id="s10">
-<h2><span class="num">Chapter 10</span>集合與泛型</h2>
-<p class="section-lede">日常一直用。陣列只是起點，List 和 Dictionary 才是主力。</p>
-
-<h3>10.1 陣列 Array</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 宣告與初始化
-int[] nums = new int[5];           // 5 個元素，預設都 0
-int[] nums2 = new int[] { 1, 2, 3 };
-int[] nums3 = { 1, 2, 3 };          // 簡寫
-string[] names = new string[3];     // 預設都 null
-
-// 存取與長度
-nums[0] = 10;
-int len = nums.Length;
-foreach (var n in nums) Console.WriteLine(n);</code></pre>
-<p>陣列大小固定，新增刪除元素很麻煩。實務上更常用 <code>List&lt;T&gt;</code>。</p>
-
-<h3>10.2 泛型集合 List&lt;T&gt;</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">List&lt;int&gt; numbers = new List&lt;int&gt;();
-numbers.Add(1);
-numbers.Add(2);
-numbers.Add(3);
-numbers.Remove(2);
-int first = numbers[0];
-int count = numbers.Count;
-
-// 初始化器
-var fruits = new List&lt;string&gt; { "apple", "banana", "cherry" };
-
-foreach (var f in fruits) Console.WriteLine(f);</code></pre>
-
-<h3>10.3 Dictionary&lt;TKey, TValue&gt;</h3>
-<p>類似 JS 的 Map / 物件：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">var ages = new Dictionary&lt;string, int&gt;();
-ages["BoKai"] = 28;
-ages["Alice"] = 30;
-ages.Add("Bob", 25);
-
-if (ages.ContainsKey("BoKai"))
-    Console.WriteLine(ages["BoKai"]);
-
-// 安全取值
-if (ages.TryGetValue("Charlie", out int age)) { ... }
-
-foreach (var kvp in ages)
-    Console.WriteLine($"{kvp.Key}: {kvp.Value}");</code></pre>
-
-<h3>10.4 其他常見集合</h3>
-<table>
-<tr><th>型別</th><th>說明</th><th>類比</th></tr>
-<tr><td><code>HashSet&lt;T&gt;</code></td><td>不重複的集合</td><td>JS 的 Set</td></tr>
-<tr><td><code>Queue&lt;T&gt;</code></td><td>FIFO 佇列</td><td>陣列 push + shift</td></tr>
-<tr><td><code>Stack&lt;T&gt;</code></td><td>LIFO 堆疊</td><td>陣列 push + pop</td></tr>
-<tr><td><code>IEnumerable&lt;T&gt;</code></td><td>所有可被 foreach 走訪的東西的抽象</td><td>JS 的 iterable</td></tr>
-</table>
-
-<h3>10.5 泛型 Generic（C# 的核心特性）</h3>
-<p>泛型讓你寫「型別中立」的程式碼，編譯時才決定實際型別：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 不用泛型：要為每種型別寫一個版本
-public int MaxInt(int a, int b) =&gt; a &gt; b ? a : b;
-public double MaxDouble(double a, double b) =&gt; a &gt; b ? a : b;
-// ... 重複到死
-
-// 用泛型：一個版本通吃
-public T Max&lt;T&gt;(T a, T b) where T : IComparable&lt;T&gt;
-{
-    return a.CompareTo(b) &gt; 0 ? a : b;
-}
-
-int m1 = Max(3, 7);          // T 自動推斷為 int
-string m2 = Max("a", "b");   // T 自動推斷為 string</code></pre>
-
-<div class="callout why">
-<span class="label">Why · 泛型解決什麼問題</span>
-<p>沒有泛型的話，<code>List</code> 只能存 <code>object</code>，取出來都要強制轉型，還會有裝拆箱效能問題、執行期才發現型別錯誤。<code>List&lt;int&gt;</code> 編譯期就保證裡面都是 int，<strong>型別安全 + 效能好</strong>。所有現代 C# 集合都是泛型的。</p>
-</div>
-
-</section>
-
-<!-- ============================================ -->
-<section id="s11">
-<h2><span class="num">Chapter 11</span>LINQ：資料處理利器</h2>
-<p class="section-lede">如果你以前用過 JS 的 <code>array.filter().map().reduce()</code>，LINQ 就是 C# 的同類東西，但更強大。</p>
-
-<h3>11.1 LINQ 是什麼</h3>
-<p>LINQ（Language Integrated Query）讓你用「查詢」的方式操作集合、資料庫、XML。對 ERP 開發超重要——處理大量資料、寫複雜邏輯都靠它。</p>
-
-<h3>11.2 跟 JS array methods 對照</h3>
-<table>
-<tr><th>用途</th><th>JS</th><th>C# (LINQ)</th></tr>
-<tr><td>過濾</td><td><code>filter()</code></td><td><code>Where()</code></td></tr>
-<tr><td>轉換</td><td><code>map()</code></td><td><code>Select()</code></td></tr>
-<tr><td>找第一個</td><td><code>find()</code></td><td><code>FirstOrDefault()</code></td></tr>
-<tr><td>累加</td><td><code>reduce()</code></td><td><code>Aggregate()</code> / <code>Sum()</code></td></tr>
-<tr><td>排序</td><td><code>sort()</code></td><td><code>OrderBy()</code> / <code>OrderByDescending()</code></td></tr>
-<tr><td>分組</td><td>(無內建)</td><td><code>GroupBy()</code></td></tr>
-<tr><td>是否包含</td><td><code>some()</code> / <code>every()</code></td><td><code>Any()</code> / <code>All()</code></td></tr>
-</table>
-
-<h3>11.3 實例</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">var users = new List&lt;User&gt;
-{
-    new User { Name = "Alice", Age = 30, City = "Taipei" },
-    new User { Name = "Bob", Age = 25, City = "Taichung" },
-    new User { Name = "Charlie", Age = 35, City = "Taipei" }
+    <span class="kw">new</span> <span class="cls">Dog</span>(),
+    <span class="kw">new</span> <span class="cls">Cat</span>(<span class="str">"Kitty"</span>, <span class="num">9</span>),
+    <span class="kw">new</span> <span class="cls">Robot</span>()
 };
 
-// 找出台北、年齡大於 28 的人，取出名字
-var names = users
-    .Where(u =&gt; u.City == "Taipei" &amp;&amp; u.Age &gt; 28)
-    .Select(u =&gt; u.Name)
-    .ToList();
-// ["Alice", "Charlie"]
+<span class="kw">foreach</span> (<span class="kw">var</span> s <span class="kw">in</span> speakers)
+    s.<span class="fn">Speak</span>();  <span class="cmt">// 各自執行自己的版本</span></code></div>
+  </div>
 
-// 排序
-var sorted = users.OrderBy(u =&gt; u.Age).ToList();
+  <div class="callout callout-js">
+    <strong>🟡 和 TypeScript 的對比</strong>
+    TypeScript 的 interface 和 C# 很像，但有一個關鍵差異：C# 必須明確宣告「我實作了這個 interface」（<code>class Dog : ISpeakable</code>），TypeScript 是結構型別 — 只要你的物件形狀符合 interface 的定義，就自動算實作了，不需要明確宣告。
+  </div>
 
-// 取最年輕的
-var youngest = users.OrderBy(u =&gt; u.Age).FirstOrDefault();
+  <h3>三大特性總結</h3>
+  <table>
+    <tr><th>特性</th><th>核心概念</th><th>C# 關鍵字</th><th>JS 對應</th></tr>
+    <tr><td>封裝</td><td>隱藏內部資料，只開放需要的介面</td><td>private, public, get/set</td><td># private field, getter/setter</td></tr>
+    <tr><td>繼承</td><td>子類別繼承父類別的屬性和方法</td><td>: (冒號), virtual, override, base</td><td>extends, super</td></tr>
+    <tr><td>多型</td><td>同型別變數，執行時表現各自行為</td><td>virtual, override, interface</td><td>直接覆寫方法（duck typing）</td></tr>
+  </table>
 
-// 統計
-int totalAge = users.Sum(u =&gt; u.Age);
-double avgAge = users.Average(u =&gt; u.Age);
-int count = users.Count(u =&gt; u.City == "Taipei");
-
-// 分組
-var byCity = users.GroupBy(u =&gt; u.City);
-foreach (var group in byCity)
-{
-    Console.WriteLine($"{group.Key}: {group.Count()} 人");
-}</code></pre>
-
-<h3>11.4 查詢語法（另一種寫法）</h3>
-<p>LINQ 有兩種語法，上面是「方法語法」，還有「查詢語法」像 SQL：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">var query = from u in users
-            where u.City == "Taipei" &amp;&amp; u.Age &gt; 28
-            orderby u.Age
-            select u.Name;</code></pre>
-<p>實務上方法語法用得多，因為更彈性、可串接。兩種選一種會就好。</p>
-
-<div class="callout why">
-<span class="label">Why · LINQ 為什麼這麼重要</span>
-<p>它讓「集合操作」變得宣告式、可組合、可讀。處理 ERP 的訂單、商品、客戶資料這類需求時，LINQ 一行寫完的事，用 for 迴圈要寫十行。而且它連 <strong>SQL 查詢</strong>都能用同一套語法（透過 Entity Framework），是 .NET 生態的招牌。</p>
-</div>
-
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('classes')">← 類別</button>
+    <button class="btn btn-primary" onclick="showSection('collections')">集合 & 陣列 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s12">
-<h2><span class="num">Chapter 12</span>例外處理</h2>
-<p class="section-lede">跟 JS 概念類似，但 C# 例外是強型別的，有更完整的階層。</p>
+<!-- ══ 8. COLLECTIONS ══ -->
+<section class="section" id="sec-collections">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">集合 & 陣列</h2>
+    <p class="section-desc">C# 的陣列是固定大小的，List 才是你最常用的</p>
+  </div>
 
-<h3>12.1 try / catch / finally</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">try
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# — 主要集合型別</div>
+      <div class="compare-body"><code><span class="cmt">// 陣列（固定大小）</span>
+<span class="kw">int</span>[] nums = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> };
+<span class="kw">int</span>[] arr = <span class="kw">new int</span>[<span class="num">5</span>];  <span class="cmt">// 長度 5，全為 0</span>
+
+<span class="cmt">// List&lt;T&gt; — 動態陣列（最常用！）</span>
+<span class="kw">var</span> list = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">string</span>&gt;();
+list.<span class="fn">Add</span>(<span class="str">"apple"</span>);
+list.<span class="fn">Add</span>(<span class="str">"banana"</span>);
+list.<span class="fn">Remove</span>(<span class="str">"apple"</span>);
+list.<span class="fn">Count</span>;         <span class="cmt">// 長度</span>
+list[<span class="num">0</span>];            <span class="cmt">// 索引存取</span>
+list.<span class="fn">Contains</span>(<span class="str">"banana"</span>);
+
+<span class="cmt">// Dictionary&lt;K,V&gt; — 鍵值對（類似 JS 物件）</span>
+<span class="kw">var</span> dict = <span class="kw">new</span> <span class="cls">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">int</span>&gt;();
+dict[<span class="str">"alice"</span>] = <span class="num">25</span>;
+dict[<span class="str">"bob"</span>]   = <span class="num">30</span>;
+dict.<span class="fn">ContainsKey</span>(<span class="str">"alice"</span>);  <span class="cmt">// true</span>
+dict.<span class="fn">TryGetValue</span>(<span class="str">"carol"</span>, <span class="kw">out var</span> age); <span class="cmt">// 安全取值</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// 陣列（動態，可改大小）</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+
+<span class="cmt">// Array（JS 陣列既是 List 也是陣列）</span>
+<span class="kw">const</span> list = [];
+list.<span class="fn">push</span>(<span class="str">"apple"</span>);
+list.<span class="fn">push</span>(<span class="str">"banana"</span>);
+list.<span class="fn">splice</span>(list.<span class="fn">indexOf</span>(<span class="str">"apple"</span>), <span class="num">1</span>);
+list.length;         <span class="cmt">// 長度</span>
+list[<span class="num">0</span>];            <span class="cmt">// 索引</span>
+list.<span class="fn">includes</span>(<span class="str">"banana"</span>);
+
+<span class="cmt">// Object 或 Map（類似 Dictionary）</span>
+<span class="kw">const</span> dict = {};
+dict[<span class="str">"alice"</span>] = <span class="num">25</span>;
+<span class="str">"alice"</span> <span class="kw">in</span> dict;    <span class="cmt">// true</span>
+
+<span class="kw">const</span> map = <span class="kw">new</span> <span class="cls">Map</span>();
+map.<span class="fn">set</span>(<span class="str">"alice"</span>, <span class="num">25</span>);
+map.<span class="fn">has</span>(<span class="str">"alice"</span>);   <span class="cmt">// true</span></code></div>
+    </div>
+  </div>
+
+  <h3>集合初始化語法</h3>
+  <div class="compare-box" style="margin:12px 0 20px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# 集合初始化</div>
+    <div class="compare-body"><code><span class="cmt">// List 初始化</span>
+<span class="kw">var</span> fruits = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">string</span>&gt; { <span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span> };
+
+<span class="cmt">// Dictionary 初始化</span>
+<span class="kw">var</span> scores = <span class="kw">new</span> <span class="cls">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">int</span>&gt;
 {
-    int result = int.Parse(userInput);
-    // ...
-}
-catch (FormatException ex)
-{
-    // 特定型別的例外
-    Console.WriteLine($"格式錯誤：{ex.Message}");
-}
-catch (Exception ex)
-{
-    // 通用例外（接住所有）
-    Console.WriteLine($"未預期錯誤：{ex.Message}");
-}
-finally
-{
-    // 不管有沒有錯都會執行（清理用）
-    Console.WriteLine("結束");
-}</code></pre>
+    { <span class="str">"Alice"</span>, <span class="num">90</span> },
+    { <span class="str">"Bob"</span>,   <span class="num">85</span> }
+};
 
-<h3>12.2 拋出例外</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public void Withdraw(decimal amount)
-{
-    if (amount &lt; 0)
-        throw new ArgumentException("金額不能為負", nameof(amount));
-    if (amount &gt; _balance)
-        throw new InvalidOperationException("餘額不足");
-    _balance -= amount;
-}</code></pre>
+<span class="cmt">// C# 12 集合表達式（最新最簡潔）</span>
+<span class="cls">List</span>&lt;<span class="tp">int</span>&gt; nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+<span class="kw">int</span>[] arr = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];</code></div>
+  </div>
 
-<h3>12.3 常見例外型別</h3>
-<table>
-<tr><th>型別</th><th>什麼情況</th></tr>
-<tr><td><code>ArgumentException</code></td><td>參數值不合法</td></tr>
-<tr><td><code>ArgumentNullException</code></td><td>參數是 null</td></tr>
-<tr><td><code>NullReferenceException</code></td><td>對 null 物件呼叫成員（要避免）</td></tr>
-<tr><td><code>InvalidOperationException</code></td><td>物件狀態不允許這個操作</td></tr>
-<tr><td><code>FormatException</code></td><td>字串格式不對（如 Parse 失敗）</td></tr>
-<tr><td><code>IndexOutOfRangeException</code></td><td>陣列索引超出範圍</td></tr>
-<tr><td><code>FileNotFoundException</code></td><td>檔案不存在</td></tr>
-<tr><td><code>SqlException</code></td><td>SQL 操作錯誤（在 ERP 會常遇到）</td></tr>
-</table>
-
-<h3>12.4 自訂例外</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class InsufficientFundsException : Exception
-{
-    public decimal Balance { get; }
-    public decimal Required { get; }
-
-    public InsufficientFundsException(decimal balance, decimal required)
-        : base($"餘額 {balance} 不足支付 {required}")
-    {
-        Balance = balance;
-        Required = required;
-    }
-}</code></pre>
-
-<div class="callout warn">
-<span class="label">最佳實踐</span>
-<p>不要用 <code>catch (Exception)</code> 然後吞掉錯誤——這會把問題藏起來，debug 時痛苦。要嘛只接住你能處理的特定型別，要嘛重新 throw。</p>
-</div>
-
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('oop')">← OOP</button>
+    <button class="btn btn-primary" onclick="showSection('linq')">LINQ →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s13">
-<h2><span class="num">Chapter 13</span>委派、Lambda、事件</h2>
-<p class="section-lede">這是 C# 處理「把函式當值傳遞」的方式。對 JS 開發者來說 Lambda 最熟，委派(delegate)是 C# 比較獨特的概念。</p>
+<!-- ══ 9. LINQ ══ -->
+<section class="section" id="sec-linq">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">LINQ</h2>
+    <p class="section-desc">Language Integrated Query — C# 版的 Array 方法，功能更強大</p>
+  </div>
 
-<h3>13.1 委派 Delegate</h3>
-<p>委派是「型別化的函式指標」，相當於 JS 的 callback，但有明確的型別簽章：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 宣告委派型別
-public delegate int MathOp(int a, int b);
+  <p>如果你用過 JS 的 <code>.filter()</code> <code>.map()</code> <code>.reduce()</code>，LINQ 就是 C# 版本，而且更強大。</p>
 
-public int Add(int a, int b) =&gt; a + b;
-public int Mul(int a, int b) =&gt; a * b;
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# LINQ</div>
+      <div class="compare-body"><code><span class="kw">var</span> numbers = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">int</span>&gt; { <span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span> };
 
-MathOp op = Add;
-int r1 = op(2, 3);  // 5
+<span class="cmt">// Where = filter</span>
+<span class="kw">var</span> evens = numbers.<span class="fn">Where</span>(n => n % <span class="num">2</span> == <span class="num">0</span>);
+<span class="cmt">// [2, 4, 6]</span>
 
-op = Mul;
-int r2 = op(2, 3);  // 6</code></pre>
+<span class="cmt">// Select = map</span>
+<span class="kw">var</span> doubled = numbers.<span class="fn">Select</span>(n => n * <span class="num">2</span>);
+<span class="cmt">// [2, 4, 6, 8, 10, 12]</span>
 
-<h3>13.2 內建委派：Func 和 Action</h3>
-<p>實務上很少自己宣告 delegate，直接用內建的就好：</p>
-<table>
-<tr><th>型別</th><th>用途</th></tr>
-<tr><td><code>Action</code></td><td>沒回傳值的方法</td></tr>
-<tr><td><code>Action&lt;T&gt;</code></td><td>吃一個參數、無回傳</td></tr>
-<tr><td><code>Func&lt;TResult&gt;</code></td><td>沒參數、有回傳</td></tr>
-<tr><td><code>Func&lt;T, TResult&gt;</code></td><td>吃 T、回傳 TResult</td></tr>
-<tr><td><code>Func&lt;T1, T2, TResult&gt;</code></td><td>吃兩個參數、回傳 TResult</td></tr>
-<tr><td><code>Predicate&lt;T&gt;</code></td><td>吃 T、回傳 bool</td></tr>
-</table>
+<span class="cmt">// Aggregate = reduce</span>
+<span class="kw">var</span> sum = numbers.<span class="fn">Aggregate</span>(<span class="num">0</span>, (acc, n) => acc + n);
 
-<h3>13.3 Lambda 表達式</h3>
-<p>跟 JS 的箭頭函式幾乎一樣：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">Func&lt;int, int, int&gt; add = (a, b) =&gt; a + b;
-Func&lt;int, int&gt; square = x =&gt; x * x;
-Action&lt;string&gt; print = msg =&gt; Console.WriteLine(msg);
+<span class="cmt">// 直接用 Sum(), Count(), Min(), Max(), Average()</span>
+<span class="kw">var</span> total = numbers.<span class="fn">Sum</span>();
+<span class="kw">var</span> avg   = numbers.<span class="fn">Average</span>();
 
-// 多行
-Func&lt;int, int&gt; complex = x =&gt;
+<span class="cmt">// 鏈式（和 JS 一樣）</span>
+<span class="kw">var</span> result = numbers
+    .<span class="fn">Where</span>(n => n > <span class="num">2</span>)
+    .<span class="fn">Select</span>(n => n * <span class="num">10</span>)
+    .<span class="fn">OrderByDescending</span>(n => n)
+    .<span class="fn">Take</span>(<span class="num">3</span>)             <span class="cmt">// 取前 3 個</span>
+    .<span class="fn">ToList</span>();            <span class="cmt">// 轉成 List</span></code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">const</span> numbers = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>];
+
+<span class="cmt">// filter</span>
+<span class="kw">const</span> evens = numbers.<span class="fn">filter</span>(n => n % <span class="num">2</span> === <span class="num">0</span>);
+<span class="cmt">// [2, 4, 6]</span>
+
+<span class="cmt">// map</span>
+<span class="kw">const</span> doubled = numbers.<span class="fn">map</span>(n => n * <span class="num">2</span>);
+<span class="cmt">// [2, 4, 6, 8, 10, 12]</span>
+
+<span class="cmt">// reduce</span>
+<span class="kw">const</span> sum = numbers.<span class="fn">reduce</span>((acc, n) => acc + n, <span class="num">0</span>);
+
+<span class="cmt">// 沒有內建 Sum/Average</span>
+<span class="cmt">// 需要自己 reduce 或用工具庫</span>
+
+<span class="cmt">// 鏈式</span>
+<span class="kw">const</span> result = numbers
+    .<span class="fn">filter</span>(n => n > <span class="num">2</span>)
+    .<span class="fn">map</span>(n => n * <span class="num">10</span>)
+    .<span class="fn">sort</span>((a, b) => b - a)
+    .<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">3</span>);</code></div>
+    </div>
+  </div>
+
+  <h3>LINQ 對物件的查詢</h3>
+  <div class="compare-box" style="margin:12px 0 20px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# LINQ — 操作物件集合</div>
+    <div class="compare-body"><code><span class="kw">var</span> users = <span class="kw">new</span> <span class="cls">List</span>&lt;<span class="cls">User</span>&gt;
 {
-    int y = x * 2;
-    return y + 1;
-};</code></pre>
+    <span class="kw">new</span>(<span class="str">"Alice"</span>, <span class="num">30</span>, <span class="str">"admin"</span>),
+    <span class="kw">new</span>(<span class="str">"Bob"</span>,   <span class="num">25</span>, <span class="str">"user"</span>),
+    <span class="kw">new</span>(<span class="str">"Carol"</span>, <span class="num">28</span>, <span class="str">"admin"</span>),
+};
 
-<h3>13.4 事件 Event</h3>
-<p>事件是「特殊的委派」，用 <code>event</code> 關鍵字標記，類似 JS 的 EventEmitter 模式：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">public class Button
+<span class="cmt">// 找出所有 admin</span>
+<span class="kw">var</span> admins = users.<span class="fn">Where</span>(u => u.Role == <span class="str">"admin"</span>);
+
+<span class="cmt">// 取得名字列表</span>
+<span class="kw">var</span> names = users.<span class="fn">Select</span>(u => u.Name).<span class="fn">ToList</span>();
+
+<span class="cmt">// 排序</span>
+<span class="kw">var</span> sorted = users.<span class="fn">OrderBy</span>(u => u.Age);
+
+<span class="cmt">// 第一個（找不到會丟例外）</span>
+<span class="kw">var</span> first = users.<span class="fn">First</span>(u => u.Role == <span class="str">"admin"</span>);
+
+<span class="cmt">// 第一個（找不到回傳 null，更安全）</span>
+<span class="kw">var</span> safe = users.<span class="fn">FirstOrDefault</span>(u => u.Age > <span class="num">50</span>);
+
+<span class="cmt">// 分組（類似 SQL GROUP BY）</span>
+<span class="kw">var</span> byRole = users.<span class="fn">GroupBy</span>(u => u.Role);
+<span class="kw">foreach</span> (<span class="kw">var</span> group <span class="kw">in</span> byRole)
 {
-    public event Action OnClick;  // 宣告事件
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"{group.Key}: {group.Count()} 人"</span>);
+}</code></div>
+  </div>
 
-    public void Click()
-    {
-        OnClick?.Invoke();  // 觸發事件
-    }
-}
-
-var btn = new Button();
-btn.OnClick += () =&gt; Console.WriteLine("被點了");  // 訂閱
-btn.OnClick += () =&gt; Console.WriteLine("又一個處理器");
-btn.Click();  // 兩個都會被呼叫</code></pre>
-
-<p>事件在 Windows Forms、WPF 桌面應用程式（包括很多 ERP 系統的前端）裡到處都是——按鈕、選單、所有 UI 互動都是事件驅動的。</p>
-
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('collections')">← 集合</button>
+    <button class="btn btn-primary" onclick="showSection('async')">Async & Await →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s14">
-<h2><span class="num">Chapter 14</span>非同步 async/await</h2>
-<p class="section-lede">你會 JS 的 async/await，C# 用起來幾乎一樣，但理解原理還是值得。</p>
+<!-- ══ 10. ASYNC ══ -->
+<section class="section" id="sec-async">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Async & Await</h2>
+    <p class="section-desc">C# 的 async/await 和 JS 幾乎一樣！這是最容易上手的部分</p>
+  </div>
 
-<h3>14.1 為什麼需要非同步</h3>
-<p>讀檔、查 DB、呼叫 API 這些 I/O 操作很慢。如果同步等待，整條執行緒會卡住——UI 應用會凍結、伺服器會無法回應其他請求。非同步讓 CPU 在等待時去做別的事。</p>
+  <div class="callout callout-tip">
+    <strong>✅ 好消息</strong>
+    C# 的 async/await 概念和 JS 幾乎完全相同！唯一的差別是 C# 用 <code>Task</code> 代替 JS 的 <code>Promise</code>，其他語法幾乎一致。
+  </div>
 
-<h3>14.2 基本用法</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 定義非同步方法（回傳型別包 Task）
-public async Task&lt;string&gt; FetchDataAsync(string url)
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# async/await</div>
+      <div class="compare-body"><code><span class="cmt">// Task = Promise</span>
+<span class="cmt">// Task&lt;T&gt; = Promise&lt;T&gt;（有回傳值）</span>
+
+<span class="kw">public async</span> <span class="cls">Task</span>&lt;<span class="tp">string</span>&gt; <span class="fn">FetchUserAsync</span>(<span class="kw">int</span> id)
 {
-    using var client = new HttpClient();
-    string result = await client.GetStringAsync(url);
-    return result;
+    <span class="kw">using var</span> client = <span class="kw">new</span> <span class="cls">HttpClient</span>();
+    <span class="kw">var</span> response = <span class="kw">await</span> client.<span class="fn">GetStringAsync</span>(
+        <span class="str">$"https://api.example.com/users/{id}"</span>
+    );
+    <span class="kw">return</span> response;
 }
 
-// 呼叫
-string data = await FetchDataAsync("https://...");
+<span class="cmt">// 呼叫</span>
+<span class="kw">var</span> user = <span class="kw">await</span> <span class="fn">FetchUserAsync</span>(<span class="num">1</span>);
 
-// 沒回傳值的非同步方法
-public async Task SaveAsync()
+<span class="cmt">// 沒有回傳值用 Task（不是 Task&lt;T&gt;）</span>
+<span class="kw">public async</span> <span class="cls">Task</span> <span class="fn">SaveAsync</span>(<span class="cls">User</span> user)
 {
-    await File.WriteAllTextAsync("path", "data");
-}</code></pre>
-
-<h3>14.3 跟 JS 的對照</h3>
-<table>
-<tr><th>JS</th><th>C#</th></tr>
-<tr><td><code>Promise&lt;T&gt;</code></td><td><code>Task&lt;T&gt;</code></td></tr>
-<tr><td><code>Promise&lt;void&gt;</code></td><td><code>Task</code></td></tr>
-<tr><td><code>async function</code></td><td><code>async</code> 修飾子</td></tr>
-<tr><td><code>await promise</code></td><td><code>await task</code></td></tr>
-<tr><td><code>Promise.all([...])</code></td><td><code>Task.WhenAll(...)</code></td></tr>
-<tr><td><code>Promise.race([...])</code></td><td><code>Task.WhenAny(...)</code></td></tr>
-</table>
-
-<h3>14.4 並行執行</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 序列：總時間 = T1 + T2
-var a = await FetchDataAsync(url1);
-var b = await FetchDataAsync(url2);
-
-// 並行：總時間 = max(T1, T2)
-var taskA = FetchDataAsync(url1);
-var taskB = FetchDataAsync(url2);
-await Task.WhenAll(taskA, taskB);
-var a = taskA.Result;
-var b = taskB.Result;</code></pre>
-
-<div class="callout warn">
-<span class="label">命名慣例</span>
-<p>非同步方法<strong>慣例上加 Async 後綴</strong>：<code>SaveAsync</code>、<code>FetchDataAsync</code>。看到名字就知道要 await。.NET 標準函式庫所有非同步版本都遵循這慣例。</p>
-</div>
-
-</section>
-
-<!-- ============================================ -->
-<section id="s15">
-<h2><span class="num">Chapter 15</span>命名空間與檔案組織</h2>
-<p class="section-lede">理解 C# 專案怎麼組織，你進公司看程式碼才不會迷路。</p>
-
-<h3>15.1 命名空間 Namespace</h3>
-<p>命名空間是「邏輯上的資料夾」，避免類別名稱衝突：</p>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">// 檔案：UserService.cs
-namespace MyCompany.ERP.Services
-{
-    public class UserService { ... }
+    <span class="kw">await</span> _db.<span class="fn">SaveChangesAsync</span>();
 }
 
-// 在別處用
-using MyCompany.ERP.Services;
-var svc = new UserService();
+<span class="cmt">// 並行執行（類似 Promise.all）</span>
+<span class="kw">var</span> t1 = <span class="fn">FetchUserAsync</span>(<span class="num">1</span>);
+<span class="kw">var</span> t2 = <span class="fn">FetchUserAsync</span>(<span class="num">2</span>);
+<span class="kw">var</span> results = <span class="kw">await</span> <span class="cls">Task</span>.<span class="fn">WhenAll</span>(t1, t2);</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// Promise = Task</span>
 
-// 或不 using，寫完整名
-var svc = new MyCompany.ERP.Services.UserService();</code></pre>
+<span class="kw">async function</span> <span class="fn">fetchUser</span>(id) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(
+    <span class="str">`https://api.example.com/users/${id}`</span>
+  );
+  <span class="kw">return</span> response.<span class="fn">json</span>();
+}
 
-<h3>15.2 常用 using</h3>
-<p class="code-label cs">C#</p>
-<pre><code class="language-csharp">using System;                       // 基本：Console, String, Math
-using System.Collections.Generic;   // List, Dictionary, HashSet
-using System.Linq;                  // LINQ 方法
-using System.IO;                    // 檔案操作
-using System.Threading.Tasks;       // Task, async/await
-using System.Data.SqlClient;        // SQL Server 連線（.NET Framework）
-using Microsoft.Data.SqlClient;     // SQL Server 連線（.NET 新版）</code></pre>
+<span class="cmt">// 呼叫</span>
+<span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">fetchUser</span>(<span class="num">1</span>);
 
-<h3>15.3 專案組織</h3>
-<p>典型的 C# 解決方案 (Solution) 結構：</p>
-<pre><code>MyERP.sln                    解決方案（含多個專案）
-├── MyERP.Core/             核心商業邏輯、模型
-│   ├── Models/
-│   ├── Services/
-│   └── Interfaces/
-├── MyERP.Data/             資料存取層
-│   ├── Repositories/
-│   └── DbContext.cs
-├── MyERP.UI/               使用者介面
-│   └── Forms/
-└── MyERP.Tests/            測試</code></pre>
+<span class="cmt">// 沒有回傳值就不寫回傳型別</span>
+<span class="kw">async function</span> <span class="fn">save</span>(user) {
+  <span class="kw">await</span> db.<span class="fn">save</span>(user);
+}
 
-<p>每個資料夾通常對應一個命名空間，每個檔案通常放一個類別（檔名 = 類別名）。</p>
+<span class="cmt">// 並行（Promise.all）</span>
+<span class="kw">const</span> [u1, u2] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+  <span class="fn">fetchUser</span>(<span class="num">1</span>),
+  <span class="fn">fetchUser</span>(<span class="num">2</span>)
+]);</code></div>
+    </div>
+  </div>
 
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('linq')">← LINQ</button>
+    <button class="btn btn-primary" onclick="showSection('generics')">泛型 →</button>
+  </div>
 </section>
 
-<!-- ============================================ -->
-<section id="s16">
-<h2><span class="num">Chapter 16</span>入職前的最後叮嚀</h2>
-<p class="section-lede">把這些放心裡，你進去做 ERP 會適應得快很多。</p>
+<!-- ══ 11. GENERICS ══ -->
+<section class="section" id="sec-generics">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">泛型（Generics）</h2>
+    <p class="section-desc">寫一份程式碼，支援多種型別 — 類似 TypeScript 的泛型</p>
+  </div>
 
-<h3>16.1 你已經會的、會的</h3>
-<p>從 JS 過來，這些東西你幾乎免費獲得：</p>
-<ul>
-  <li>變數、運算子、流程控制（if/for/while）的概念</li>
-  <li>函式/方法的基本用法</li>
-  <li>陣列、迴圈、字串操作的直覺</li>
-  <li>async/await（語法幾乎一樣）</li>
-  <li>Lambda 表達式（就是箭頭函式）</li>
-  <li>LINQ 大部分方法（就是 array methods）</li>
-</ul>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# 泛型</div>
+      <div class="compare-body"><code><span class="cmt">// T 是型別參數，呼叫時才決定</span>
+<span class="kw">public static</span> T <span class="fn">GetFirst</span>&lt;T&gt;(<span class="cls">List</span>&lt;T&gt; items)
+{
+    <span class="kw">return</span> items[<span class="num">0</span>];
+}
 
-<h3>16.2 真正要花力氣的</h3>
-<ul>
-  <li><strong>型別系統的紀律</strong>——什麼都要先想型別。剛開始會卡，習慣之後反而會喜歡（編譯期幫你抓 bug）</li>
-  <li><strong>值型別 vs 參考型別</strong>——這個直覺要建立起來，賦值、傳參數的行為都跟它有關</li>
-  <li><strong>物件導向的思維</strong>——一切都在類別裡，習慣把功能「封裝」成類別</li>
-  <li><strong>例外處理的階層</strong>——熟悉常見例外型別，知道什麼時候該 catch、什麼時候該 throw</li>
-  <li><strong>using / IDisposable</strong>——DB 連線、檔案、Stream 都要記得釋放</li>
-</ul>
+<span class="cmt">// 使用</span>
+<span class="fn">GetFirst</span>&lt;<span class="tp">int</span>&gt;(<span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">int</span>&gt; { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> });    <span class="cmt">// 1</span>
+<span class="fn">GetFirst</span>&lt;<span class="tp">string</span>&gt;(<span class="kw">new</span> <span class="cls">List</span>&lt;<span class="tp">string</span>&gt; { <span class="str">"a"</span> }); <span class="cmt">// "a"</span>
 
-<h3>16.3 你進公司會看到的東西（先預習名詞）</h3>
-<ul>
-  <li><strong>ADO.NET</strong>：.NET 連 SQL 資料庫的基礎 API（SqlConnection、SqlCommand、SqlDataReader）</li>
-  <li><strong>Entity Framework</strong>：ORM，用物件操作 DB，LINQ 直接查 DB</li>
-  <li><strong>Windows Forms / WPF</strong>：桌面應用框架。Forms 是老牌、簡單；WPF 較新、用 XAML</li>
-  <li><strong>NuGet</strong>：套件管理器，類似 npm</li>
-  <li><strong>Visual Studio</strong>：主流 IDE，比 VS Code 更完整。會用 VS 是基本技能</li>
-  <li><strong>PowerBuilder 整合</strong>：公司的特殊狀況。PowerBuilder 多半透過 COM 或 .dll 跟 C# 互動，你需要的時候再學</li>
-</ul>
+<span class="cmt">// 泛型類別</span>
+<span class="kw">public class</span> <span class="cls">Box</span>&lt;T&gt;
+{
+    <span class="kw">public</span> T Value { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="fn">Box</span>(T value) => Value = value;
+}
 
-<h3>16.4 學習節奏建議</h3>
-<ol>
-  <li><strong>第一週</strong>：讀完這份筆記、跑幾個小程式（Hello World、計算機、簡單的類別練習）</li>
-  <li><strong>到職前</strong>：寫一個小專案（如待辦清單），讓自己摸過類別、List、檔案讀寫、try/catch</li>
-  <li><strong>到職第一個月</strong>：別急著精通，先讀懂同事的程式碼。看到不懂的關鍵字就查，記下來</li>
-  <li><strong>到職後二到三個月</strong>：開始能改簡單功能、寫小模組。這時候再回來找我，我幫你做「進階補強」</li>
-</ol>
+<span class="kw">var</span> intBox = <span class="kw">new</span> <span class="cls">Box</span>&lt;<span class="tp">int</span>&gt;(<span class="num">42</span>);
+<span class="kw">var</span> strBox = <span class="kw">new</span> <span class="cls">Box</span>&lt;<span class="tp">string</span>&gt;(<span class="str">"hello"</span>);
 
-<h3>16.5 一句總結</h3>
-<p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 19px; color: var(--ink-soft); padding: 24px; border-left: 3px solid var(--accent); background: var(--bg-soft); border-radius: 0 6px 6px 0; margin: 24px 0;">JS 是「先寫再說，錯了再修」；C# 是「先想清楚，編譯期就抓錯」。前者適合快速迭代的前端，後者適合穩定可靠的企業系統。你不是在學一個更難的語言，是在學一種更嚴謹的思維方式——這正是 ERP 領域需要的。</p>
+<span class="cmt">// 約束（限制型別）</span>
+<span class="kw">public static</span> T <span class="fn">Max</span>&lt;T&gt;(T a, T b) <span class="kw">where</span> T : <span class="cls">IComparable</span>&lt;T&gt;
+    => a.<span class="fn">CompareTo</span>(b) > <span class="num">0</span> ? a : b;</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 TypeScript（最接近）</div>
+      <div class="compare-body"><code><span class="cmt">// TS 泛型和 C# 幾乎一樣！</span>
+<span class="kw">function</span> <span class="fn">getFirst</span>&lt;T&gt;(items: T[]): T {
+  <span class="kw">return</span> items[<span class="num">0</span>];
+}
 
-<p style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--rule); color: var(--ink-mute); font-size: 14px; text-align: center;">
-End of foundational notes · 進階主題等你進公司後再補
-</p>
+<span class="cmt">// 使用</span>
+<span class="fn">getFirst</span>&lt;<span class="tp">number</span>&gt;([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]);
+<span class="fn">getFirst</span>&lt;<span class="tp">string</span>&gt;([<span class="str">"a"</span>]);
+
+<span class="cmt">// 泛型介面</span>
+<span class="kw">interface</span> <span class="cls">Box</span>&lt;T&gt; {
+  value: T;
+}
+
+<span class="cmt">// 純 JS 沒有泛型，任何型別都用 any 代替</span>
+<span class="kw">function</span> <span class="fn">getFirst</span>(items) {
+  <span class="kw">return</span> items[<span class="num">0</span>];
+}</code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('async')">← Async</button>
+    <button class="btn btn-primary" onclick="showSection('exceptions')">例外處理 →</button>
+  </div>
+</section>
+
+<!-- ══ 12. EXCEPTIONS ══ -->
+<section class="section" id="sec-exceptions">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">例外處理</h2>
+    <p class="section-desc">try/catch/finally — 語法和 JS 幾乎相同，但型別更豐富</p>
+  </div>
+
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C#</div>
+      <div class="compare-body"><code><span class="kw">try</span>
+{
+    <span class="kw">var</span> result = <span class="num">10</span> / divisor;
+    <span class="kw">var</span> user = <span class="kw">await</span> <span class="fn">GetUserAsync</span>(<span class="num">0</span>);
+}
+<span class="kw">catch</span> (<span class="cls">DivideByZeroException</span> ex)
+{
+    Console.<span class="fn">WriteLine</span>(<span class="str">"除以零！"</span>);
+}
+<span class="kw">catch</span> (<span class="cls">HttpRequestException</span> ex)
+{
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"網路錯誤: {ex.Message}"</span>);
+}
+<span class="kw">catch</span> (<span class="cls">Exception</span> ex)  <span class="cmt">// 捕捉所有例外</span>
+{
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"錯誤: {ex.Message}"</span>);
+    <span class="kw">throw</span>;  <span class="cmt">// 重新拋出</span>
+}
+<span class="kw">finally</span>
+{
+    <span class="cmt">// 一定會執行（清理資源）</span>
+}
+
+<span class="cmt">// 自訂例外</span>
+<span class="kw">public class</span> <span class="cls">UserNotFoundException</span> : <span class="cls">Exception</span>
+{
+    <span class="kw">public</span> <span class="fn">UserNotFoundException</span>(<span class="kw">int</span> id)
+        : <span class="kw">base</span>(<span class="str">$"User {id} not found"</span>) { }
+}</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="kw">try</span> {
+  <span class="kw">const</span> result = <span class="num">10</span> / divisor;
+  <span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">0</span>);
+}
+<span class="kw">catch</span> (err) {
+  <span class="cmt">// JS 只能 catch 一種</span>
+  <span class="kw">if</span> (err <span class="kw">instanceof</span> <span class="cls">NetworkError</span>) {
+    console.<span class="fn">log</span>(<span class="str">"網路錯誤"</span>);
+  } <span class="kw">else</span> {
+    console.<span class="fn">log</span>(err.message);
+    <span class="kw">throw</span> err;
+  }
+}
+<span class="kw">finally</span> {
+  <span class="cmt">// 一定會執行</span>
+}
+
+<span class="cmt">// 自訂 Error</span>
+<span class="kw">class</span> <span class="cls">UserNotFoundError</span> <span class="kw">extends</span> <span class="cls">Error</span> {
+  <span class="fn">constructor</span>(id) {
+    <span class="kw">super</span>(<span class="str">`User ${id} not found`</span>);
+  }
+}</code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('generics')">← 泛型</button>
+    <button class="btn btn-primary" onclick="showSection('modern')">現代語法 →</button>
+  </div>
+</section>
+
+<!-- ══ 13. MODERN ══ -->
+<section class="section" id="sec-modern">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">現代 C# 語法</h2>
+    <p class="section-desc">C# 10-13 的新語法，讓程式碼更簡潔</p>
+  </div>
+
+  <h3>Pattern Matching — C# 的超強比對</h3>
+  <div class="compare-box" style="margin:12px 0 20px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# Pattern Matching</div>
+    <div class="compare-body"><code><span class="cmt">// is 型別 + 條件</span>
+<span class="kw">if</span> (obj <span class="kw">is string</span> s <span class="kw">and</span> { Length: > <span class="num">5</span> })
+    Console.<span class="fn">WriteLine</span>(<span class="str">$"長字串: {s}"</span>);
+
+<span class="cmt">// switch 模式匹配</span>
+<span class="kw">string</span> Classify(<span class="kw">object</span> obj) => obj <span class="kw">switch</span>
+{
+    <span class="tp">int</span> n <span class="kw">when</span> n < <span class="num">0</span> => <span class="str">"負數"</span>,
+    <span class="tp">int</span> n             => <span class="str">$"整數 {n}"</span>,
+    <span class="tp">string</span> { Length: <span class="num">0</span> } => <span class="str">"空字串"</span>,
+    <span class="tp">string</span> s          => <span class="str">$"字串 {s}"</span>,
+    <span class="kw">null</span>               => <span class="str">"null"</span>,
+    _                  => <span class="str">"其他"</span>
+};
+
+<span class="cmt">// 解構 record（類似 JS 解構）</span>
+<span class="kw">var</span> point = <span class="kw">new</span> <span class="cls">Point</span>(<span class="num">3</span>, <span class="num">4</span>);
+<span class="kw">var</span> (x, y) = point;  <span class="cmt">// 解構</span>
+Console.<span class="fn">WriteLine</span>(<span class="str">$"x={x}, y={y}"</span>);</code></div>
+  </div>
+
+  <h3>常用現代語法對照</h3>
+  <div class="compare">
+    <div class="compare-box">
+      <div class="compare-header cs-header">🟣 C# 現代語法</div>
+      <div class="compare-body"><code><span class="cmt">// 解構（C# 有 record 才能解構）</span>
+<span class="kw">var</span> (name, age) = person;
+
+<span class="cmt">// 展開（spread）— C# 用 concat/AddRange</span>
+<span class="kw">var</span> combined = list1.<span class="fn">Concat</span>(list2).<span class="fn">ToList</span>();
+
+<span class="cmt">// Object 初始化</span>
+<span class="kw">var</span> user = <span class="kw">new</span> <span class="cls">User</span>
+{
+    Name = <span class="str">"Cooper"</span>,
+    Age  = <span class="num">25</span>
+};
+
+<span class="cmt">// using 自動釋放資源（類似 defer）</span>
+<span class="kw">using var</span> file = <span class="cls">File</span>.<span class="fn">OpenRead</span>(<span class="str">"data.txt"</span>);
+<span class="cmt">// 離開 scope 自動關閉</span>
+
+<span class="cmt">// Raw string（C# 11）</span>
+<span class="kw">var</span> json = <span class="str">"""
+{
+  "name": "Cooper",
+  "age": 25
+}
+"""</span>;</code></div>
+    </div>
+    <div class="compare-box">
+      <div class="compare-header js-header">🟡 JavaScript</div>
+      <div class="compare-body"><code><span class="cmt">// 解構</span>
+<span class="kw">const</span> { name, age } = person;
+<span class="kw">const</span> [first, ...rest] = arr;
+
+<span class="cmt">// 展開</span>
+<span class="kw">const</span> combined = [...arr1, ...arr2];
+
+<span class="cmt">// 物件簡寫</span>
+<span class="kw">const</span> user = {
+  name: <span class="str">"Cooper"</span>,
+  age: <span class="num">25</span>
+};
+
+<span class="cmt">// 沒有 using，需要手動 close/dispose</span>
+<span class="cmt">// 或使用 Symbol.dispose（新提案）</span>
+
+<span class="cmt">// Template literal</span>
+<span class="kw">const</span> json = <span class="str">`
+{
+  "name": "Cooper"
+}
+`</span>;</code></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('exceptions')">← 例外處理</button>
+    <button class="btn btn-primary" onclick="showSection('dotnet'">.NET 生態系 →</button>
+  </div>
+</section>
+
+<!-- ══ 14. DOTNET ══ -->
+<section class="section" id="sec-dotnet">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">.NET 生態系</h2>
+    <p class="section-desc">ASP.NET Core、Entity Framework — C# 的主要應用場景</p>
+  </div>
+
+  <h3>對應關係：JS 生態 vs .NET 生態</h3>
+  <table>
+    <tr><th>用途</th><th>JS 生態</th><th>.NET 生態</th></tr>
+    <tr><td>後端框架</td><td>Express, Fastify, NestJS</td><td>ASP.NET Core</td></tr>
+    <tr><td>ORM</td><td>Prisma, Drizzle, TypeORM</td><td>Entity Framework Core</td></tr>
+    <tr><td>套件管理</td><td>npm / pnpm</td><td>NuGet</td></tr>
+    <tr><td>測試</td><td>Jest, Vitest</td><td>xUnit, NUnit, MSTest</td></tr>
+    <tr><td>執行環境</td><td>Node.js</td><td>.NET Runtime</td></tr>
+    <tr><td>設定檔</td><td>package.json</td><td>.csproj</td></tr>
+  </table>
+
+  <h3>ASP.NET Core — 最簡單的 API</h3>
+  <div class="compare-box" style="margin:12px 0 20px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# — Minimal API（類似 Express）</div>
+    <div class="compare-body"><code><span class="cmt">// Program.cs</span>
+<span class="kw">var</span> builder = <span class="cls">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cmt">// GET /users</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/users"</span>, () =>
+{
+    <span class="kw">return new</span>[] { <span class="str">"Alice"</span>, <span class="str">"Bob"</span> };
+});
+
+<span class="cmt">// GET /users/{id}</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/users/{id}"</span>, (<span class="kw">int</span> id) =>
+{
+    <span class="kw">return</span> <span class="kw">new</span> { Id = id, Name = <span class="str">"Alice"</span> };
+});
+
+<span class="cmt">// POST /users</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/users"</span>, (<span class="cls">CreateUserRequest</span> req) =>
+{
+    <span class="cmt">// req 自動從 JSON body 反序列化</span>
+    <span class="kw">return</span> <span class="cls">Results</span>.<span class="fn">Created</span>(<span class="str">$"/users/1"</span>, req);
+});
+
+app.<span class="fn">Run</span>();</code></div>
+  </div>
+
+  <h3>Entity Framework Core — 類似 Prisma</h3>
+  <div class="compare-box" style="margin:12px 0 20px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+    <div class="compare-header cs-header">🟣 C# — EF Core ORM</div>
+    <div class="compare-body"><code><span class="cmt">// 定義 Model（類似 Prisma schema）</span>
+<span class="kw">public class</span> <span class="cls">User</span>
+{
+    <span class="kw">public int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">""</span>;
+    <span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Post</span>&gt; Posts { <span class="kw">get</span>; <span class="kw">set</span>; } = [];
+}
+
+<span class="cmt">// DbContext（資料庫連線）</span>
+<span class="kw">public class</span> <span class="cls">AppDbContext</span> : <span class="cls">DbContext</span>
+{
+    <span class="kw">public</span> <span class="cls">DbSet</span>&lt;<span class="cls">User</span>&gt; Users => <span class="fn">Set</span>&lt;<span class="cls">User</span>&gt;();
+}
+
+<span class="cmt">// 查詢（LINQ + EF = 自動轉 SQL）</span>
+<span class="kw">var</span> users = <span class="kw">await</span> db.Users
+    .<span class="fn">Where</span>(u => u.Name.<span class="fn">Contains</span>(<span class="str">"Alice"</span>))
+    .<span class="fn">Include</span>(u => u.Posts)   <span class="cmt">// JOIN</span>
+    .<span class="fn">ToListAsync</span>();
+
+<span class="cmt">// 新增</span>
+db.Users.<span class="fn">Add</span>(<span class="kw">new</span> <span class="cls">User</span> { Name = <span class="str">"Cooper"</span> });
+<span class="kw">await</span> db.<span class="fn">SaveChangesAsync</span>();
+
+<span class="cmt">// 刪除</span>
+<span class="kw">var</span> user = <span class="kw">await</span> db.Users.<span class="fn">FindAsync</span>(<span class="num">1</span>);
+db.Users.<span class="fn">Remove</span>(user!);
+<span class="kw">await</span> db.<span class="fn">SaveChangesAsync</span>();</code></div>
+  </div>
+
+  <div class="callout callout-js">
+    <strong>🟡 給 Myverse 開發者的提示</strong>
+    你在 Myverse 用 Supabase 做後端，切換到 C# 後對應的技術棧是：<br>
+    Nuxt server/api → ASP.NET Core Minimal API<br>
+    Supabase client → Entity Framework Core + PostgreSQL<br>
+    Pinia → 不需要（後端沒有全域狀態管理）
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('modern')">← 現代語法</button>
+    <button class="btn btn-primary" onclick="showSection('overview')">🏠 回到首頁</button>
+  </div>
 </section>
 
 </main>
-</div>
 
 <script>
-hljs.highlightAll();
+const sectionMap = {
+  overview: 'sec-overview',
+  types: 'sec-types',
+  variables: 'sec-variables',
+  operators: 'sec-operators',
+  control: 'sec-control',
+  functions: 'sec-functions',
+  classes: 'sec-classes',
+  oop: 'sec-oop',
+  collections: 'sec-collections',
+  linq: 'sec-linq',
+  async: 'sec-async',
+  generics: 'sec-generics',
+  exceptions: 'sec-exceptions',
+  modern: 'sec-modern',
+  dotnet: 'sec-dotnet'
+}
+
+const visited = new Set(['overview'])
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  const secEl = document.getElementById(sectionMap[id])
+  if (secEl) secEl.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick')?.includes(`'${id}'`)) item.classList.add('active')
+  })
+  visited.add(id)
+  updateProgress()
+  document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function updateProgress() {
+  const total = Object.keys(sectionMap).length
+  const pct = Math.round((visited.size / total) * 100)
+  document.getElementById('progressFill').style.width = pct + '%'
+  document.getElementById('progressLabel').textContent = `學習進度 ${pct}%`
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase()
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = (item.getAttribute('data-label') || item.textContent).toLowerCase()
+    item.style.display = label.includes(q) ? 'flex' : 'none'
+  })
+  document.querySelectorAll('.nav-section-title').forEach(t => {
+    t.style.display = q ? 'none' : ''
+  })
+}
+
+updateProgress()
 </script>
 </body>
 </html>
