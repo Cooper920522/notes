@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 完整筆記 — 入門到實戰</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;600;800&display=swap');
+
+  :root {
+    --red: #f14e32;
+    --dark-red: #b83e28;
+    --light-red: #ffd0c8;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --accent: #f14e32;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --yellow: #e3b341;
+    --purple: #d2a8ff;
+    --code-bg: #0d1117;
+    --tag-bg: #2d1009;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  #sidebar {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+
+  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo .git-icon { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .git-logo {
+    width: 32px; height: 32px;
+    background: var(--red);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: white;
+    font-family: 'Sora', sans-serif;
+  }
+  .sidebar-logo h1 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800; color: var(--red); }
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); }
+
+  .search-box { margin: 12px 16px; position: relative; }
+  .search-box input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px 8px 32px; color: var(--text); font-size: 13px; outline: none; font-family: 'Noto Sans TC', sans-serif; }
+  .search-box input:focus { border-color: var(--red); }
+  .search-box::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; }
+
+  .nav-section { padding: 8px 0; }
+  .nav-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); padding: 10px 20px 4px; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--red); border-left-color: var(--red); background: rgba(241,78,50,0.06); }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .progress-bar { margin: auto 16px 16px; background: var(--surface2); border-radius: 4px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow)); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
+
+  #main { flex: 1; overflow-y: auto; max-width: 900px; padding: 48px 56px; }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .section-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.8px; text-transform: uppercase; }
+  .badge-beginner { background: rgba(241,78,50,0.15); color: var(--red); }
+  .badge-intermediate { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .badge-advanced { background: rgba(227,179,65,0.15); color: var(--yellow); }
+  .badge-practical { background: rgba(63,185,80,0.15); color: var(--green); }
+
+  h2.section-title { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .section-desc { color: var(--text-muted); font-size: 14px; }
+
+  h3 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600; color: var(--text); margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
+  h3::before { content: ''; display: inline-block; width: 3px; height: 18px; background: var(--red); border-radius: 2px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--yellow); margin: 18px 0 8px; }
+  p { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.8; }
+
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; margin: 12px 0 20px; position: relative; }
+  pre .lang-tag { position: absolute; top: 10px; right: 14px; font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.9; color: #e6edf3; }
+  :not(pre) > code { background: var(--tag-bg); padding: 2px 7px; border-radius: 5px; font-size: 12.5px; color: var(--light-red); }
+
+  .cmd  { color: #79c0ff; }   /* git command */
+  .flag { color: #d2a8ff; }   /* flags / options */
+  .arg  { color: #a5d6ff; }   /* arguments */
+  .br   { color: #f0883e; }   /* branch name */
+  .cmt  { color: #6e7681; font-style: italic; } /* comment */
+  .ok   { color: #3fb950; }   /* success output */
+  .err  { color: #f14e32; }   /* error/warning */
+  .hash { color: #e3b341; }   /* commit hash */
+  .str  { color: #a5d6ff; }   /* string */
+
+  .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 13.5px; }
+  .callout-tip  { background: rgba(63,185,80,0.08);  border-color: var(--green); }
+  .callout-info { background: rgba(88,166,255,0.08); border-color: var(--blue); }
+  .callout-warn { background: rgba(241,78,50,0.08);  border-color: var(--red); }
+  .callout-yellow { background: rgba(227,179,65,0.08); border-color: var(--yellow); }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .callout-tip    strong { color: var(--green); }
+  .callout-info   strong { color: var(--blue); }
+  .callout-warn   strong { color: var(--red); }
+  .callout-yellow strong { color: var(--yellow); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card-icon { font-size: 22px; margin-bottom: 8px; }
+  .card h4 { color: var(--red); margin: 0 0 6px; font-size: 13.5px; }
+  .card p { color: var(--text-muted); margin: 0; font-size: 12.5px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* git graph */
+  .git-graph { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 12px 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+  .g-main   { color: #58a6ff; }
+  .g-feat   { color: #3fb950; }
+  .g-hotfix { color: #f14e32; }
+  .g-tag    { background: rgba(227,179,65,0.2); color: var(--yellow); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+  .g-head   { background: rgba(241,78,50,0.2); color: var(--red); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+  .g-node   { color: var(--yellow); }
+
+  /* workflow steps */
+  .steps { margin: 16px 0; }
+  .step { display: flex; gap: 14px; margin-bottom: 8px; align-items: flex-start; }
+  .step-num { background: var(--red); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .step-content { flex: 1; }
+  .step-content p { margin: 0; font-size: 13.5px; }
+
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; font-family: 'Noto Sans TC', sans-serif; }
+  .btn:hover { border-color: var(--red); color: var(--red); }
+  .btn-primary { background: var(--red); color: white; border-color: var(--red); font-weight: 700; }
+  .btn-primary:hover { background: #f97316; border-color: #f97316; }
+  .btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  .hero { background: linear-gradient(135deg, rgba(241,78,50,0.08) 0%, rgba(32,35,42,0.3) 100%); border: 1px solid rgba(241,78,50,0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px; text-align: center; }
+  .hero .big-icon { font-size: 56px; margin-bottom: 12px; }
+  .hero h2 { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
+  .hero p { font-size: 14px; color: var(--text-muted); max-width: 520px; margin: 0 auto; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tag { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); }
+
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 4px 0 4px 20px; font-size: 13.5px; position: relative; color: var(--text); }
+  ul li::before { content: '›'; position: absolute; left: 6px; color: var(--red); font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="git-icon">
+      <div class="git-logo">⎇</div>
+      <h1>Git 完整筆記</h1>
+    </div>
+    <p>入門 → 實戰 · 公司開發常用</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋指令..." oninput="filterNav(this.value)">
+  </div>
+
+  <div class="nav-section" id="navList">
+    <div class="nav-section-title">基礎概念</div>
+    <div class="nav-item active" onclick="showSection('overview')" data-label="Git 概覽 版本控制 介紹">
+      <span class="icon">🏠</span> 概覽與介紹
+    </div>
+    <div class="nav-item" onclick="showSection('setup')" data-label="設定 config 初始化 clone">
+      <span class="icon">⚙️</span> 初始設定
+    </div>
+    <div class="nav-item" onclick="showSection('basics')" data-label="基本操作 add commit status log">
+      <span class="icon">📝</span> 基本操作
+    </div>
+    <div class="nav-item" onclick="showSection('branch')" data-label="分支 branch checkout switch merge">
+      <span class="icon">🌿</span> 分支操作
+    </div>
+    <div class="nav-item" onclick="showSection('remote')" data-label="遠端 remote push pull fetch origin">
+      <span class="icon">☁️</span> 遠端操作
+    </div>
+
+    <div class="nav-section-title">核心技能</div>
+    <div class="nav-item" onclick="showSection('merge')" data-label="merge rebase 合併 衝突解決">
+      <span class="icon">🔀</span> Merge & Rebase
+    </div>
+    <div class="nav-item" onclick="showSection('stash')" data-label="stash 暫存 儲藏">
+      <span class="icon">📦</span> Stash 暫存
+    </div>
+    <div class="nav-item" onclick="showSection('undo')" data-label="reset revert restore 還原 撤銷">
+      <span class="icon">↩️</span> 還原操作
+    </div>
+    <div class="nav-item" onclick="showSection('log')" data-label="log 歷史 查看 blame diff">
+      <span class="icon">🔍</span> 查看歷史
+    </div>
+
+    <div class="nav-section-title">公司實戰</div>
+    <div class="nav-item" onclick="showSection('workflow')" data-label="Git Flow Feature Branch 工作流 開發流程">
+      <span class="icon">🏢</span> 團隊工作流
+    </div>
+    <div class="nav-item" onclick="showSection('pr')" data-label="PR Pull Request Code Review 審查">
+      <span class="icon">👀</span> PR & Code Review
+    </div>
+    <div class="nav-item" onclick="showSection('commit')" data-label="Commit Message 規範 Conventional Commits">
+      <span class="icon">✍️</span> Commit 規範
+    </div>
+    <div class="nav-item" onclick="showSection('advanced')" data-label="cherry-pick tag reflog 進階指令">
+      <span class="icon">⚡</span> 進階指令
+    </div>
+    <div class="nav-item" onclick="showSection('emergency')" data-label="緊急 救援 誤操作 恢復 災難">
+      <span class="icon">🚨</span> 緊急救援
+    </div>
+    <div class="nav-item" onclick="showSection('cheatsheet')" data-label="速查表 cheatsheet 常用指令">
+      <span class="icon">📋</span> 速查表
+    </div>
+  </div>
+
+  <div style="padding: 0 16px 4px;">
+    <div class="progress-label" id="progressLabel">學習進度 0%</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ══ 0. OVERVIEW ══ -->
+<section class="section active" id="sec-overview">
+  <div class="hero">
+    <div class="big-icon">⎇</div>
+    <h2>Git 完整學習筆記</h2>
+    <p>從基礎操作到公司實際開發流程，掌握每天都會用到的 Git 指令與最佳實踐</p>
+  </div>
+
+  <h3>Git 的三個區域</h3>
+  <p>理解這三個區域是學 Git 最重要的基礎，所有指令都圍繞著這三個區域在移動資料：</p>
+
+  <div class="git-graph">
+    工作目錄 (Working Directory)
+    &nbsp;&nbsp;&nbsp;│  <span style="color:var(--green)">git add</span>
+    &nbsp;&nbsp;&nbsp;▼
+    暫存區 (Staging Area / Index)
+    &nbsp;&nbsp;&nbsp;│  <span style="color:var(--green)">git commit</span>
+    &nbsp;&nbsp;&nbsp;▼
+    本地儲存庫 (Local Repository)
+    &nbsp;&nbsp;&nbsp;│  <span style="color:var(--green)">git push</span>
+    &nbsp;&nbsp;&nbsp;▼
+    遠端儲存庫 (Remote Repository)
+  </div>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">📁</div><h4>工作目錄</h4><p>你實際在電腦上編輯的檔案，未追蹤的變更</p></div>
+    <div class="card"><div class="card-icon">📋</div><h4>暫存區</h4><p>準備要 commit 的變更，git add 後進入</p></div>
+    <div class="card"><div class="card-icon">🗄️</div><h4>本地 Repo</h4><p>commit 後的永久記錄，存在 .git 資料夾</p></div>
+    <div class="card"><div class="card-icon">☁️</div><h4>遠端 Repo</h4><p>GitHub / GitLab，push 後團隊共用</p></div>
+  </div>
+
+  <h3>檔案的四種狀態</h3>
+  <table>
+    <tr><th>狀態</th><th>說明</th><th>如何進入</th></tr>
+    <tr><td><code>Untracked</code></td><td>新檔案，Git 還不認識</td><td>建立新檔案</td></tr>
+    <tr><td><code>Modified</code></td><td>已追蹤但有變更，未暫存</td><td>編輯已 commit 的檔案</td></tr>
+    <tr><td><code>Staged</code></td><td>已暫存，準備 commit</td><td>git add</td></tr>
+    <tr><td><code>Committed</code></td><td>已提交，安全儲存</td><td>git commit</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" disabled>← 上一節</button>
+    <button class="btn btn-primary" onclick="showSection('setup')">初始設定 →</button>
+  </div>
+</section>
+
+<!-- ══ 1. SETUP ══ -->
+<section class="section" id="sec-setup">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">初始設定</h2>
+    <p class="section-desc">第一次使用 Git 或加入新公司時的必要設定</p>
+  </div>
+
+  <h3>全域設定（第一次用 Git）</h3>
+  <pre><code><span class="cmt"># 設定名字與 Email（commit 記錄會顯示）</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> user.name  <span class="str">"Cooper Chen"</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> user.email <span class="str">"cooper@example.com"</span>
+
+<span class="cmt"># 設定預設編輯器（選一個）</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> core.editor <span class="str">"code --wait"</span>  <span class="cmt"># VS Code</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> core.editor <span class="str">"vim"</span>
+
+<span class="cmt"># 設定預設分支名稱為 main（新版 Git 推薦）</span>
+<span class="cmd">git config</span> <span class="flag">--global</span> init.defaultBranch main
+
+<span class="cmt"># 查看所有設定</span>
+<span class="cmd">git config</span> <span class="flag">--list</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>建立或取得 Repo</h3>
+  <pre><code><span class="cmt"># 建立全新 repo（在現有資料夾）</span>
+<span class="cmd">git init</span>
+
+<span class="cmt"># 複製現有 repo（加入公司時最常用）</span>
+<span class="cmd">git clone</span> <span class="arg">https://github.com/company/project.git</span>
+
+<span class="cmt"># clone 並指定本地資料夾名稱</span>
+<span class="cmd">git clone</span> <span class="arg">https://github.com/company/project.git</span> <span class="arg">my-project</span>
+
+<span class="cmt"># clone 只取特定分支（大型 repo 加速）</span>
+<span class="cmd">git clone</span> <span class="flag">--branch</span> <span class="br">develop</span> <span class="flag">--single-branch</span> <span class="arg">https://github.com/company/project.git</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>.gitignore — 排除不需要追蹤的檔案</h3>
+  <pre><code><span class="cmt"># .gitignore 範例（前端專案）</span>
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store         <span class="cmt"># macOS 系統檔</span>
+Thumbs.db         <span class="cmt"># Windows 系統檔</span>
+.vscode/          <span class="cmt"># 看團隊習慣，有時共用</span>
+.nuxt/
+.output/
+<span class="lang-tag">GITIGNORE</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 .gitignore 已追蹤的檔案</strong>
+    如果檔案已經被 commit 過，之後加入 .gitignore 不會自動取消追蹤。需要手動執行：<br>
+    <code>git rm --cached 檔案名稱</code>，再 commit 一次。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('overview')">← 概覽</button>
+    <button class="btn btn-primary" onclick="showSection('basics')">基本操作 →</button>
+  </div>
+</section>
+
+<!-- ══ 2. BASICS ══ -->
+<section class="section" id="sec-basics">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">基本操作</h2>
+    <p class="section-desc">每天都會用到的核心指令</p>
+  </div>
+
+  <h3>查看狀態</h3>
+  <pre><code><span class="cmt"># 查看當前狀態（最常用）</span>
+<span class="cmd">git status</span>
+
+<span class="cmt"># 簡短版本</span>
+<span class="cmd">git status</span> <span class="flag">-s</span>
+<span class="cmt"># 輸出：</span>
+<span class="ok"> M README.md     # 已修改（已暫存）</span>
+<span class="ok"> M src/app.vue   # 已修改（未暫存）</span>
+<span class="ok">?? newfile.js    # 未追蹤</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>加入暫存區</h3>
+  <pre><code><span class="cmt"># 加入單一檔案</span>
+<span class="cmd">git add</span> <span class="arg">src/components/Button.vue</span>
+
+<span class="cmt"># 加入整個資料夾</span>
+<span class="cmd">git add</span> <span class="arg">src/</span>
+
+<span class="cmt"># 加入所有變更（最常用）</span>
+<span class="cmd">git add</span> <span class="flag">.</span>
+
+<span class="cmt"># 互動式選擇要加入哪些部分（同一個檔案分多次 commit）</span>
+<span class="cmd">git add</span> <span class="flag">-p</span>
+
+<span class="cmt"># 取消暫存（把檔案從 staging area 移回工作目錄）</span>
+<span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">src/app.vue</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>提交 Commit</h3>
+  <pre><code><span class="cmt"># 標準提交</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login form validation"</span>
+
+<span class="cmt"># 跳過 git add，直接提交所有已追蹤檔案的變更</span>
+<span class="cmd">git commit</span> <span class="flag">-am</span> <span class="str">"fix: correct typo in header"</span>
+
+<span class="cmt"># 修改最後一次 commit（還沒 push 才能用）</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">-m</span> <span class="str">"feat: add login form"</span>
+
+<span class="cmt"># 修改最後一次 commit，只改訊息（不改檔案）</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">--no-edit</span>  <span class="cmt"># 訊息不變，只加入新的暫存變更</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ --amend 只能用在還沒 push 的 commit</strong>
+    如果已經 push 到遠端，amend 會改變 commit hash，強制 push 會影響所有協作者。已 push 的 commit 用 <code>git revert</code> 代替。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('setup')">← 初始設定</button>
+    <button class="btn btn-primary" onclick="showSection('branch')">分支操作 →</button>
+  </div>
+</section>
+
+<!-- ══ 3. BRANCH ══ -->
+<section class="section" id="sec-branch">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">分支操作</h2>
+    <p class="section-desc">分支是 Git 的核心優勢，讓多人開發互不干擾</p>
+  </div>
+
+  <h3>查看 & 建立分支</h3>
+  <pre><code><span class="cmt"># 查看所有本地分支（* 是當前分支）</span>
+<span class="cmd">git branch</span>
+
+<span class="cmt"># 查看所有分支（含遠端）</span>
+<span class="cmd">git branch</span> <span class="flag">-a</span>
+
+<span class="cmt"># 查看遠端分支</span>
+<span class="cmd">git branch</span> <span class="flag">-r</span>
+
+<span class="cmt"># 建立新分支</span>
+<span class="cmd">git branch</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 建立並立刻切換（最常用）</span>
+<span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span>
+<span class="cmt"># 舊寫法（功能相同）</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 從指定分支建立</span>
+<span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>切換 & 刪除分支</h3>
+  <pre><code><span class="cmt"># 切換分支</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>
+<span class="cmt"># 舊寫法</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>
+
+<span class="cmt"># 切回上一個分支（- 代表上一個）</span>
+<span class="cmd">git switch</span> <span class="flag">-</span>
+
+<span class="cmt"># 刪除已合併的分支（安全）</span>
+<span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 強制刪除（未合併也刪）</span>
+<span class="cmd">git branch</span> <span class="flag">-D</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 刪除遠端分支</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 重新命名分支</span>
+<span class="cmd">git branch</span> <span class="flag">-m</span> <span class="br">old-name</span> <span class="br">new-name</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>分支命名慣例（公司常用）</h3>
+  <table>
+    <tr><th>類型</th><th>格式</th><th>範例</th></tr>
+    <tr><td>功能開發</td><td>feature/描述</td><td>feature/user-login</td></tr>
+    <tr><td>Bug 修復</td><td>fix/描述 或 bugfix/描述</td><td>fix/navbar-overflow</td></tr>
+    <tr><td>緊急修復</td><td>hotfix/描述</td><td>hotfix/payment-crash</td></tr>
+    <tr><td>重構</td><td>refactor/描述</td><td>refactor/auth-module</td></tr>
+    <tr><td>文件</td><td>docs/描述</td><td>docs/api-readme</td></tr>
+    <tr><td>發版</td><td>release/版本號</td><td>release/v1.2.0</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('basics')">← 基本操作</button>
+    <button class="btn btn-primary" onclick="showSection('remote')">遠端操作 →</button>
+  </div>
+</section>
+
+<!-- ══ 4. REMOTE ══ -->
+<section class="section" id="sec-remote">
+  <div class="section-header">
+    <span class="section-badge badge-beginner">入門</span>
+    <h2 class="section-title">遠端操作</h2>
+    <p class="section-desc">與 GitHub / GitLab 的互動，協作開發的基礎</p>
+  </div>
+
+  <h3>遠端管理</h3>
+  <pre><code><span class="cmt"># 查看遠端設定</span>
+<span class="cmd">git remote</span> <span class="flag">-v</span>
+<span class="ok">origin  https://github.com/company/project.git (fetch)
+origin  https://github.com/company/project.git (push)</span>
+
+<span class="cmt"># 新增遠端（通常 clone 後自動設定 origin）</span>
+<span class="cmd">git remote add</span> <span class="arg">origin</span> <span class="arg">https://github.com/company/project.git</span>
+
+<span class="cmt"># 修改遠端 URL</span>
+<span class="cmd">git remote set-url</span> <span class="arg">origin</span> <span class="arg">https://github.com/company/new-project.git</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>fetch / pull / push</h3>
+  <pre><code><span class="cmt"># fetch：下載遠端更新，但不合併（安全）</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>
+<span class="cmd">git fetch</span> <span class="flag">--all</span>  <span class="cmt"># 所有遠端</span>
+
+<span class="cmt"># pull：下載 + 合併（= fetch + merge）</span>
+<span class="cmd">git pull</span>                    <span class="cmt"># 預設 origin 當前分支</span>
+<span class="cmd">git pull</span> <span class="arg">origin</span> <span class="br">develop</span>    <span class="cmt"># 指定遠端和分支</span>
+
+<span class="cmt"># pull 用 rebase 代替 merge（保持線性歷史）</span>
+<span class="cmd">git pull</span> <span class="flag">--rebase</span>
+
+<span class="cmt"># push：推送到遠端</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 第一次推送新分支，設定追蹤關係</span>
+<span class="cmd">git push</span> <span class="flag">-u</span> <span class="arg">origin</span> <span class="br">feature/login</span>
+<span class="cmt"># 之後在這個分支只需要</span>
+<span class="cmd">git push</span>
+
+<span class="cmt"># 強制推送（⚠️ 危險！只在個人分支使用）</span>
+<span class="cmd">git push</span> <span class="flag">--force-with-lease</span>  <span class="cmt"># 比 --force 更安全的版本</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ 不要對 main / develop 使用 force push</strong>
+    force push 會改寫遠端歷史，讓所有協作者的本地 repo 與遠端不同步。只在自己的 feature branch 且確定沒有其他人使用時才用。
+  </div>
+
+  <h3>追蹤遠端分支</h3>
+  <pre><code><span class="cmt"># 切換到遠端已有的分支</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>          <span class="cmt"># Git 會自動追蹤 origin/develop</span>
+
+<span class="cmt"># 手動設定追蹤</span>
+<span class="cmd">git branch</span> <span class="flag">--set-upstream-to</span>=origin/<span class="br">develop</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('branch')">← 分支操作</button>
+    <button class="btn btn-primary" onclick="showSection('merge')">Merge & Rebase →</button>
+  </div>
+</section>
+
+<!-- ══ 5. MERGE ══ -->
+<section class="section" id="sec-merge">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Merge & Rebase</h2>
+    <p class="section-desc">合併分支的兩種方式，以及衝突解決</p>
+  </div>
+
+  <h3>Merge — 合併分支</h3>
+  <pre><code><span class="cmt"># 把 feature/login 合併進 develop</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>
+<span class="cmd">git merge</span> <span class="br">feature/login</span>
+
+<span class="cmt"># --no-ff：強制建立 merge commit（保留分支歷史）</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/login</span>
+
+<span class="cmt"># --squash：把分支所有 commit 壓成一個</span>
+<span class="cmd">git merge</span> <span class="flag">--squash</span> <span class="br">feature/login</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login feature"</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>Rebase — 變基</h3>
+  <pre><code><span class="cmt"># 情境：main 有新 commit，feature 要跟上最新進度</span>
+
+<span class="cmt"># Merge 方式（會多一個 merge commit）</span>
+<span class="cmd">git switch</span> <span class="br">feature/login</span>
+<span class="cmd">git merge</span> <span class="br">main</span>
+
+<span class="cmt"># Rebase 方式（把 feature 的 commit 接在 main 最新 commit 後）</span>
+<span class="cmd">git switch</span> <span class="br">feature/login</span>
+<span class="cmd">git rebase</span> <span class="br">main</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="git-graph">
+<span class="cmt">Merge 結果：</span>
+<span class="g-main">main</span>:    A ─ B ─ C ─ ─ ─ ─ M
+                    \         /
+<span class="g-feat">feature</span>:  A ─ B ─ D ─ E ─ ┘
+
+<span class="cmt">Rebase 結果（線性，更乾淨）：</span>
+<span class="g-main">main</span>:    A ─ B ─ C
+<span class="g-feat">feature</span>:          └─ D' ─ E'
+  </div>
+
+  <h3>衝突解決（Conflict）</h3>
+  <pre><code><span class="cmt"># 合併時出現衝突，Git 會在檔案中標記</span>
+<span class="err"><<<<<<< HEAD（你的版本）</span>
+const title = 'My App'
+<span class="err">=======</span>
+const title = 'Company App'
+<span class="err">>>>>>>> feature/login（對方的版本）</span>
+
+<span class="cmt"># 步驟：</span>
+<span class="cmt"># 1. 手動編輯衝突檔案（刪掉 <<<< ==== >>>> 標記，保留正確內容）</span>
+<span class="cmt"># 2. 加入暫存</span>
+<span class="cmd">git add</span> <span class="arg">src/app.vue</span>
+
+<span class="cmt"># 3. 完成合併</span>
+<span class="cmd">git commit</span>  <span class="cmt"># merge 用這個</span>
+<span class="cmd">git rebase</span> <span class="flag">--continue</span>  <span class="cmt"># rebase 用這個</span>
+
+<span class="cmt"># 放棄合併/rebase</span>
+<span class="cmd">git merge</span>  <span class="flag">--abort</span>
+<span class="cmd">git rebase</span> <span class="flag">--abort</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <table>
+    <tr><th></th><th>Merge</th><th>Rebase</th></tr>
+    <tr><td>歷史記錄</td><td>保留完整分支結構</td><td>線性，更乾淨</td></tr>
+    <tr><td>Commit 數</td><td>多一個 merge commit</td><td>不多餘 commit</td></tr>
+    <tr><td>安全性</td><td>較安全，不改 commit</td><td>⚠️ 改寫歷史，共用分支禁用</td></tr>
+    <tr><td>適用場景</td><td>合併進 main/develop</td><td>feature branch 同步最新 main</td></tr>
+  </table>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('remote')">← 遠端操作</button>
+    <button class="btn btn-primary" onclick="showSection('stash')">Stash →</button>
+  </div>
+</section>
+
+<!-- ══ 6. STASH ══ -->
+<section class="section" id="sec-stash">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">Stash 暫存</h2>
+    <p class="section-desc">臨時保存工作進度，切換任務後再恢復</p>
+  </div>
+
+  <p>情境：你正在寫 feature，突然要切去修一個緊急 bug，但目前的程式碼還沒準備好 commit。</p>
+
+  <pre><code><span class="cmt"># 暫存當前工作目錄的所有變更</span>
+<span class="cmd">git stash</span>
+
+<span class="cmt"># 暫存並加上描述（推薦）</span>
+<span class="cmd">git stash push</span> <span class="flag">-m</span> <span class="str">"WIP: login form half done"</span>
+
+<span class="cmt"># 包含 untracked 的新檔案</span>
+<span class="cmd">git stash push</span> <span class="flag">-u</span> <span class="flag">-m</span> <span class="str">"WIP: with new files"</span>
+
+<span class="cmt"># 查看所有 stash</span>
+<span class="cmd">git stash list</span>
+<span class="ok">stash@{0}: On feature/login: WIP: login form half done
+stash@{1}: On develop: WIP: navbar experiment</span>
+
+<span class="cmt"># 恢復最新的 stash（保留 stash 記錄）</span>
+<span class="cmd">git stash apply</span>
+
+<span class="cmt"># 恢復並刪除 stash 記錄（最常用）</span>
+<span class="cmd">git stash pop</span>
+
+<span class="cmt"># 恢復指定的 stash</span>
+<span class="cmd">git stash pop stash@{1}</span>
+
+<span class="cmt"># 刪除指定 stash</span>
+<span class="cmd">git stash drop stash@{0}</span>
+
+<span class="cmt"># 刪除所有 stash</span>
+<span class="cmd">git stash clear</span>
+
+<span class="cmt"># 查看 stash 內容</span>
+<span class="cmd">git stash show</span> <span class="flag">-p</span> stash@{0}
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 實際工作流</strong>
+    1. 正在寫 feature/login，臨時要修 bug<br>
+    2. <code>git stash push -m "WIP: login"</code><br>
+    3. <code>git switch hotfix/urgent-bug</code><br>
+    4. 修好 bug、commit、push<br>
+    5. <code>git switch feature/login</code><br>
+    6. <code>git stash pop</code> — 恢復之前的工作
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('merge')">← Merge & Rebase</button>
+    <button class="btn btn-primary" onclick="showSection('undo')">還原操作 →</button>
+  </div>
+</section>
+
+<!-- ══ 7. UNDO ══ -->
+<section class="section" id="sec-undo">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">還原操作</h2>
+    <p class="section-desc">reset、revert、restore — 後悔藥三兄弟</p>
+  </div>
+
+  <h3>restore — 還原工作目錄</h3>
+  <pre><code><span class="cmt"># 放棄工作目錄的修改，還原到最後一次 commit（⚠️ 不可恢復）</span>
+<span class="cmd">git restore</span> <span class="arg">src/app.vue</span>
+<span class="cmd">git restore</span> <span class="flag">.</span>  <span class="cmt"># 還原所有</span>
+
+<span class="cmt"># 把暫存區的檔案退回工作目錄（取消 git add）</span>
+<span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">src/app.vue</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>reset — 移動 HEAD 位置</h3>
+  <pre><code><span class="cmt"># --soft：HEAD 往回移，commit 取消，但變更保留在暫存區</span>
+<span class="cmd">git reset</span> <span class="flag">--soft</span> HEAD~1   <span class="cmt"># 取消最後一個 commit</span>
+<span class="cmd">git reset</span> <span class="flag">--soft</span> HEAD~3   <span class="cmt"># 取消最後三個 commit</span>
+
+<span class="cmt"># --mixed（預設）：HEAD 往回移，變更退回工作目錄</span>
+<span class="cmd">git reset</span> HEAD~1
+<span class="cmd">git reset</span> <span class="hash">abc1234</span>          <span class="cmt"># 回到指定 commit</span>
+
+<span class="cmt"># --hard：HEAD 往回移，變更完全丟棄（⚠️ 危險）</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1
+<span class="cmd">git reset</span> <span class="flag">--hard</span> origin/main  <span class="cmt"># 強制同步遠端（丟棄本地變更）</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <table>
+    <tr><th>模式</th><th>Commit</th><th>暫存區</th><th>工作目錄</th><th>適用場景</th></tr>
+    <tr><td>--soft</td><td>移除</td><td>保留</td><td>保留</td><td>重新整理最後幾個 commit</td></tr>
+    <tr><td>--mixed</td><td>移除</td><td>清空</td><td>保留</td><td>取消 commit，重新修改</td></tr>
+    <tr><td>--hard</td><td>移除</td><td>清空</td><td>清空</td><td>完全放棄，回到乾淨狀態</td></tr>
+  </table>
+
+  <h3>revert — 安全地撤銷已 push 的 commit</h3>
+  <pre><code><span class="cmt"># 建立一個「反向 commit」來撤銷，不改寫歷史</span>
+<span class="cmt"># 已 push 到遠端的 commit 必須用 revert，不能用 reset</span>
+
+<span class="cmd">git revert</span> <span class="hash">abc1234</span>         <span class="cmt"># 撤銷指定 commit</span>
+<span class="cmd">git revert</span> HEAD            <span class="cmt"># 撤銷最後一個 commit</span>
+<span class="cmd">git revert</span> HEAD~3..HEAD    <span class="cmt"># 撤銷最後三個 commit</span>
+
+<span class="cmt"># 不自動 commit（讓你可以先看結果）</span>
+<span class="cmd">git revert</span> <span class="flag">--no-commit</span> <span class="hash">abc1234</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="callout callout-info">
+    <strong>💡 reset vs revert 選哪個？</strong>
+    <strong>還沒 push</strong>：用 reset（可以任意改寫歷史）<br>
+    <strong>已經 push</strong>：一定要用 revert（建立反向 commit，不影響他人）
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('stash')">← Stash</button>
+    <button class="btn btn-primary" onclick="showSection('log')">查看歷史 →</button>
+  </div>
+</section>
+
+<!-- ══ 8. LOG ══ -->
+<section class="section" id="sec-log">
+  <div class="section-header">
+    <span class="section-badge badge-intermediate">中階</span>
+    <h2 class="section-title">查看歷史</h2>
+    <p class="section-desc">log、diff、blame — 追蹤每一個變更</p>
+  </div>
+
+  <h3>git log</h3>
+  <pre><code><span class="cmt"># 基本 log</span>
+<span class="cmd">git log</span>
+
+<span class="cmt"># 精簡一行顯示</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span>
+<span class="ok">a3f1c2d feat: add login form
+b7e9a1c fix: correct email validation
+c2d4e5f chore: update dependencies</span>
+
+<span class="cmt"># 圖形化顯示分支關係（很實用）</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">--graph</span> <span class="flag">--all</span>
+<span class="ok">* a3f1c2d (HEAD -> feature/login) feat: add login form
+* b7e9a1c fix: correct email validation
+| * c2d4e5f (develop) feat: dashboard layout
+|/
+* d1e2f3a (main) chore: initial setup</span>
+
+<span class="cmt"># 搜尋 commit 訊息</span>
+<span class="cmd">git log</span> <span class="flag">--grep</span>=<span class="str">"login"</span>
+
+<span class="cmt"># 查看某人的 commit</span>
+<span class="cmd">git log</span> <span class="flag">--author</span>=<span class="str">"Cooper"</span>
+
+<span class="cmt"># 查看某時間範圍</span>
+<span class="cmd">git log</span> <span class="flag">--since</span>=<span class="str">"2024-01-01"</span> <span class="flag">--until</span>=<span class="str">"2024-12-31"</span>
+
+<span class="cmt"># 查看某檔案的修改歷史</span>
+<span class="cmd">git log</span> <span class="flag">--follow</span> <span class="arg">src/components/Login.vue</span>
+
+<span class="cmt"># 查看某 commit 的詳細內容</span>
+<span class="cmd">git show</span> <span class="hash">a3f1c2d</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>git diff</h3>
+  <pre><code><span class="cmt"># 查看工作目錄與暫存區的差異</span>
+<span class="cmd">git diff</span>
+
+<span class="cmt"># 查看暫存區與最後 commit 的差異</span>
+<span class="cmd">git diff</span> <span class="flag">--staged</span>
+
+<span class="cmt"># 比較兩個分支的差異</span>
+<span class="cmd">git diff</span> <span class="br">main</span>..<span class="br">feature/login</span>
+
+<span class="cmt"># 只顯示有差異的檔案名稱</span>
+<span class="cmd">git diff</span> <span class="flag">--name-only</span> <span class="br">main</span>..<span class="br">feature/login</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>git blame — 追查每行的修改者</h3>
+  <pre><code><span class="cmt"># 查看每一行是誰、什麼時候修改的</span>
+<span class="cmd">git blame</span> <span class="arg">src/components/Login.vue</span>
+<span class="ok">a3f1c2d (Cooper  2024-03-01 10:30) const handleLogin = () => {
+b7e9a1c (Alice   2024-02-15 14:22)   validateForm()
+c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
+
+<span class="cmt"># 只查某幾行</span>
+<span class="cmd">git blame</span> <span class="flag">-L 10,20</span> <span class="arg">src/components/Login.vue</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('undo')">← 還原操作</button>
+    <button class="btn btn-primary" onclick="showSection('workflow')">團隊工作流 →</button>
+  </div>
+</section>
+
+<!-- ══ 9. WORKFLOW ══ -->
+<section class="section" id="sec-workflow">
+  <div class="section-header">
+    <span class="section-badge badge-practical">實戰</span>
+    <h2 class="section-title">團隊工作流</h2>
+    <p class="section-desc">實際公司開發最常用的 Feature Branch Flow</p>
+  </div>
+
+  <h3>Feature Branch Flow（最常見）</h3>
+
+  <div class="git-graph">
+<span class="g-main">main</span>    ●─────────────────────────────●  <span class="g-tag">v1.0</span>
+          \                           /
+<span class="g-feat">develop</span>  ●───●───●───────●───●───●
+                    \       /
+<span class="g-feat">feature</span>              ●───●
+  </div>
+
+  <h4>完整的日常開發流程</h4>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <p><strong>同步最新的 develop</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="br">develop</span>
+<span class="cmd">git pull</span> <span class="arg">origin</span> <span class="br">develop</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <p><strong>從 develop 建立 feature 分支</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/user-login</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <p><strong>開發功能、定期 commit</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git add</span> <span class="flag">.</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login form UI"</span>
+<span class="cmt"># ... 繼續開發 ...</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login API integration"</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <p><strong>Push 到遠端，開 PR</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git push</span> <span class="flag">-u</span> <span class="arg">origin</span> <span class="br">feature/user-login</span>
+<span class="cmt"># 到 GitHub / GitLab 開 Pull Request</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <p><strong>Code Review 期間有修改，繼續 push</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: address review comments"</span>
+<span class="cmd">git push</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <p><strong>PR 核准後，合併進 develop（通常由 GitHub 操作）</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmt"># GitHub 上點 Merge Pull Request</span>
+<span class="cmt"># 或本地：</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/user-login</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span></code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <p><strong>刪除已合併的 feature 分支</strong></p>
+        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/user-login</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/user-login</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>Hotfix 緊急修復流程</h3>
+  <pre><code><span class="cmt"># 1. 從 main 建立 hotfix 分支</span>
+<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">hotfix/payment-crash</span>
+
+<span class="cmt"># 2. 修復、commit</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: resolve payment calculation error"</span>
+
+<span class="cmt"># 3. 合併回 main（上線）</span>
+<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">hotfix/payment-crash</span>
+<span class="cmd">git tag</span> <span class="flag">-a</span> v1.0.1 <span class="flag">-m</span> <span class="str">"fix: payment crash"</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">main</span> <span class="flag">--tags</span>
+
+<span class="cmt"># 4. 同步回 develop（讓 develop 也有這個修復）</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">hotfix/payment-crash</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('log')">← 查看歷史</button>
+    <button class="btn btn-primary" onclick="showSection('pr')">PR & Code Review →</button>
+  </div>
+</section>
+
+<!-- ══ 10. PR ══ -->
+<section class="section" id="sec-pr">
+  <div class="section-header">
+    <span class="section-badge badge-practical">實戰</span>
+    <h2 class="section-title">PR & Code Review</h2>
+    <p class="section-desc">Pull Request 是公司開發最重要的協作環節</p>
+  </div>
+
+  <h3>開 PR 前的準備</h3>
+  <pre><code><span class="cmt"># 1. 確保分支是最新的，先 rebase 到最新 develop</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>
+<span class="cmd">git rebase</span> origin/<span class="br">develop</span>
+
+<span class="cmt"># 如果有衝突，解決後繼續</span>
+<span class="cmd">git rebase</span> <span class="flag">--continue</span>
+
+<span class="cmt"># 2. 整理 commit（選用，讓歷史更乾淨）</span>
+<span class="cmt"># 把最後 3 個 commit 互動式整理</span>
+<span class="cmd">git rebase</span> <span class="flag">-i</span> HEAD~3
+<span class="cmt"># 出現編輯器，可以：</span>
+<span class="cmt"># pick  = 保留</span>
+<span class="cmt"># squash = 合併進上一個</span>
+<span class="cmt"># reword = 修改訊息</span>
+<span class="cmt"># drop   = 刪除</span>
+
+<span class="cmt"># 3. 推上去</span>
+<span class="cmd">git push</span> <span class="flag">-u</span> <span class="arg">origin</span> <span class="br">feature/user-login</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>好的 PR 描述包含</h3>
+  <ul>
+    <li><strong>做了什麼</strong> — 這個 PR 的目的</li>
+    <li><strong>怎麼做的</strong> — 主要的實作方式</li>
+    <li><strong>如何測試</strong> — reviewer 可以怎麼驗證</li>
+    <li><strong>截圖</strong> — UI 相關的 PR 附上前後對比圖</li>
+    <li><strong>關聯 Issue</strong> — Closes #123</li>
+  </ul>
+
+  <h3>Review 別人的 PR — 本地拉下來測試</h3>
+  <pre><code><span class="cmt"># 方法一：fetch 後 checkout</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>
+<span class="cmd">git switch</span> <span class="br">feature/user-login</span>
+
+<span class="cmt"># 方法二：用 GitHub CLI（更快）</span>
+<span class="cmd">gh pr checkout</span> <span class="num">42</span>  <span class="cmt"># PR #42</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>Review 收到修改意見後</h3>
+  <pre><code><span class="cmt"># 修改程式碼後</span>
+<span class="cmd">git add</span> <span class="flag">.</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: address review - use computed for filtered list"</span>
+<span class="cmd">git push</span>  <span class="cmt"># PR 會自動更新</span>
+
+<span class="cmt"># 如果想把修改 commit 合進前一個（不想讓 review history 多 commit）</span>
+<span class="cmd">git add</span> <span class="flag">.</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">--no-edit</span>
+<span class="cmd">git push</span> <span class="flag">--force-with-lease</span>  <span class="cmt"># ⚠️ 只在自己的 feature branch</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('workflow')">← 工作流</button>
+    <button class="btn btn-primary" onclick="showSection('commit')">Commit 規範 →</button>
+  </div>
+</section>
+
+<!-- ══ 11. COMMIT ══ -->
+<section class="section" id="sec-commit">
+  <div class="section-header">
+    <span class="section-badge badge-practical">實戰</span>
+    <h2 class="section-title">Commit Message 規範</h2>
+    <p class="section-desc">Conventional Commits — 讓 commit 歷史一目了然</p>
+  </div>
+
+  <h3>格式</h3>
+  <pre><code><span class="str">type(scope): description</span>
+
+<span class="cmt"># type   = 變更類型（必填）</span>
+<span class="cmt"># scope  = 影響範圍（選填）</span>
+<span class="cmt"># description = 簡短說明（必填）</span>
+<span class="lang-tag">FORMAT</span></code></pre>
+
+  <h3>Type 類型</h3>
+  <table>
+    <tr><th>Type</th><th>說明</th><th>範例</th></tr>
+    <tr><td><code>feat</code></td><td>新功能</td><td>feat: add user login</td></tr>
+    <tr><td><code>fix</code></td><td>Bug 修復</td><td>fix: correct email validation</td></tr>
+    <tr><td><code>docs</code></td><td>文件變更</td><td>docs: update README</td></tr>
+    <tr><td><code>style</code></td><td>格式調整（不影響功能）</td><td>style: format with prettier</td></tr>
+    <tr><td><code>refactor</code></td><td>重構</td><td>refactor: extract auth logic</td></tr>
+    <tr><td><code>test</code></td><td>測試</td><td>test: add login unit tests</td></tr>
+    <tr><td><code>chore</code></td><td>維護工作</td><td>chore: update dependencies</td></tr>
+    <tr><td><code>perf</code></td><td>效能改善</td><td>perf: optimize list rendering</td></tr>
+    <tr><td><code>ci</code></td><td>CI/CD 設定</td><td>ci: add GitHub Actions</td></tr>
+    <tr><td><code>revert</code></td><td>還原</td><td>revert: feat: add user login</td></tr>
+  </table>
+
+  <h3>實際範例</h3>
+  <pre><code><span class="cmt"># 好的 commit message ✅</span>
+<span class="ok">feat(auth): add JWT refresh token mechanism
+fix(navbar): resolve overflow issue on mobile
+docs(api): add authentication endpoints documentation
+refactor(store): migrate from Vuex to Pinia
+chore(deps): upgrade Vue from 3.3 to 3.4
+feat!: change API response format (BREAKING CHANGE)</span>
+
+<span class="cmt"># 不好的 commit message ❌</span>
+<span class="err">fix bug
+update
+WIP
+asdfgh
+fix: fix the bug that was wrong</span>
+<span class="lang-tag">TEXT</span></code></pre>
+
+  <div class="callout callout-tip">
+    <strong>💡 寫好 commit message 的原則</strong>
+    用祈使句、現在式：「add feature」不是「added feature」<br>
+    說明「做了什麼」，不只是「改了什麼」<br>
+    第一行在 72 字以內<br>
+    必要時加上 body 解釋「為什麼」這樣做
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('pr')">← PR</button>
+    <button class="btn btn-primary" onclick="showSection('advanced')">進階指令 →</button>
+  </div>
+</section>
+
+<!-- ══ 12. ADVANCED ══ -->
+<section class="section" id="sec-advanced">
+  <div class="section-header">
+    <span class="section-badge badge-advanced">進階</span>
+    <h2 class="section-title">進階指令</h2>
+    <p class="section-desc">cherry-pick、tag、reflog、submodule</p>
+  </div>
+
+  <h3>cherry-pick — 撿指定的 commit</h3>
+  <pre><code><span class="cmt"># 把其他分支的某個 commit 搬過來</span>
+<span class="cmt"># 情境：develop 有個 bug fix，要快速移植到 main</span>
+
+<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>         <span class="cmt"># 搬一個</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span> <span class="hash">b7e9a1c</span>  <span class="cmt"># 搬多個</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>..<span class="hash">b7e9a1c</span> <span class="cmt"># 搬範圍</span>
+
+<span class="cmt"># 搬過來但不自動 commit（先看結果）</span>
+<span class="cmd">git cherry-pick</span> <span class="flag">--no-commit</span> <span class="hash">a3f1c2d</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>tag — 版本標籤</h3>
+  <pre><code><span class="cmt"># 建立輕量標籤</span>
+<span class="cmd">git tag</span> v1.0.0
+
+<span class="cmt"># 建立附註標籤（推薦，含說明）</span>
+<span class="cmd">git tag</span> <span class="flag">-a</span> v1.0.0 <span class="flag">-m</span> <span class="str">"Release version 1.0.0"</span>
+
+<span class="cmt"># 對某個舊 commit 打標籤</span>
+<span class="cmd">git tag</span> <span class="flag">-a</span> v0.9.0 <span class="hash">abc1234</span> <span class="flag">-m</span> <span class="str">"Beta release"</span>
+
+<span class="cmt"># 查看所有標籤</span>
+<span class="cmd">git tag</span>
+
+<span class="cmt"># 推送標籤（push 預設不包含 tag）</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> v1.0.0       <span class="cmt"># 推送單一標籤</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="flag">--tags</span>        <span class="cmt"># 推送所有標籤</span>
+
+<span class="cmt"># 刪除標籤</span>
+<span class="cmd">git tag</span> <span class="flag">-d</span> v1.0.0                        <span class="cmt"># 刪除本地</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> v1.0.0          <span class="cmt"># 刪除遠端</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>reflog — Git 的黑盒子</h3>
+  <pre><code><span class="cmt"># 查看本地所有 HEAD 的移動記錄（包含 reset --hard 等危險操作）</span>
+<span class="cmd">git reflog</span>
+<span class="ok">a3f1c2d HEAD@{0}: commit: feat: add login
+b7e9a1c HEAD@{1}: reset --hard: moving to HEAD~1
+c2d4e5f HEAD@{2}: commit: fix: email validation
+d1e2f3a HEAD@{3}: checkout: moving from main to feature/login</span>
+
+<span class="cmt"># 救回被 reset --hard 刪掉的 commit！</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">c2d4e5f</span>  <span class="cmt"># 回到那個 commit</span>
+<span class="cmt"># 或建立新分支從那個點繼續</span>
+<span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">recovered-branch</span> <span class="hash">c2d4e5f</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>互動式 Rebase — 整理 commit 歷史</h3>
+  <pre><code><span class="cmt"># 整理最後 4 個 commit（PR 前整理常用）</span>
+<span class="cmd">git rebase</span> <span class="flag">-i</span> HEAD~4
+
+<span class="cmt"># 出現的編輯介面：</span>
+<span class="ok">pick a3f1c2d feat: add login form
+pick b7e9a1c WIP: still working
+pick c2d4e5f more changes
+pick d1e2f3a fix: final adjustments</span>
+
+<span class="cmt"># 改成：</span>
+<span class="ok">pick a3f1c2d feat: add login form
+squash b7e9a1c WIP: still working
+squash c2d4e5f more changes
+squash d1e2f3a fix: final adjustments</span>
+<span class="cmt"># 儲存後，4 個 commit 合成 1 個，可以編輯最終訊息</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('commit')">← Commit 規範</button>
+    <button class="btn btn-primary" onclick="showSection('emergency')">緊急救援 →</button>
+  </div>
+</section>
+
+<!-- ══ 13. EMERGENCY ══ -->
+<section class="section" id="sec-emergency">
+  <div class="section-header">
+    <span class="section-badge badge-practical">實戰</span>
+    <h2 class="section-title">🚨 緊急救援</h2>
+    <p class="section-desc">常見的「搞砸了」情境與解決方法</p>
+  </div>
+
+  <h3>情境一：commit 了不該 commit 的檔案</h3>
+  <pre><code><span class="cmt"># 還沒 push — 修改最後一個 commit</span>
+<span class="cmd">git rm</span> <span class="flag">--cached</span> <span class="arg">.env</span>          <span class="cmt"># 從追蹤移除（不刪實體檔案）</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">--no-edit</span>  <span class="cmt"># 修改 commit</span>
+
+<span class="cmt"># 已 push — 用 revert</span>
+<span class="cmd">git revert</span> HEAD
+<span class="cmd">git push</span>
+<span class="cmt"># 別忘了把敏感資訊失效（API key 等）</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>情境二：在錯誤的分支 commit 了</h3>
+  <pre><code><span class="cmt"># 不小心在 main 上 commit，應該在 feature 分支</span>
+
+<span class="cmt"># 1. 先記下 commit hash</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">-1</span>
+<span class="ok">a3f1c2d feat: add login form  ← 記下這個</span>
+
+<span class="cmt"># 2. 在 feature 分支 cherry-pick 過來</span>
+<span class="cmd">git switch</span> <span class="br">feature/login</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>
+
+<span class="cmt"># 3. 回到 main，撤銷那個 commit</span>
+<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>情境三：reset --hard 之後後悔了</h3>
+  <pre><code><span class="cmt"># 用 reflog 找回消失的 commit</span>
+<span class="cmd">git reflog</span>
+<span class="ok">b7e9a1c HEAD@{1}: commit: feat: important work  ← 就是這個！</span>
+
+<span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">b7e9a1c</span>  <span class="cmt"># 回去！</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>情境四：merge 之後發現不對，要取消</h3>
+  <pre><code><span class="cmt"># 剛 merge 完，還沒 push</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> ORIG_HEAD   <span class="cmt"># ORIG_HEAD 是 merge 前的位置</span>
+
+<span class="cmt"># 已經 push 了</span>
+<span class="cmd">git revert</span> <span class="flag">-m 1</span> HEAD         <span class="cmt"># -m 1 = 保留主線</span>
+<span class="cmd">git push</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>情境五：把 develop 的更新 rebase 到 feature，搞亂了</h3>
+  <pre><code><span class="cmt"># rebase 到一半不想繼續</span>
+<span class="cmd">git rebase</span> <span class="flag">--abort</span>   <span class="cmt"># 回到 rebase 前的狀態</span>
+
+<span class="cmt"># rebase 完發現結果很奇怪，想要整個 rebase 重來</span>
+<span class="cmd">git reflog</span>
+<span class="cmt"># 找到 rebase 前的 commit hash</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">BEFORE_REBASE_HASH</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>情境六：push 到錯誤的遠端分支</h3>
+  <pre><code><span class="cmt"># 不小心 push 到 main，要撤回</span>
+<span class="cmt"># （前提：你有 main 的 push 權限，公司通常有保護）</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">wrong-branch</span>
+<span class="cmt"># 通知團隊，請大家不要 pull</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="callout callout-yellow">
+    <strong>🛟 Git 的安全網</strong>
+    只要你 commit 過，幾乎都可以用 <code>git reflog</code> 找回來。reflog 預設保留 90 天。真正找不回來的只有：從未 commit 過的工作目錄變更，以及 <code>git clean -fd</code> 刪除的 untracked 檔案。
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('advanced')">← 進階指令</button>
+    <button class="btn btn-primary" onclick="showSection('cheatsheet')">速查表 →</button>
+  </div>
+</section>
+
+<!-- ══ 14. CHEATSHEET ══ -->
+<section class="section" id="sec-cheatsheet">
+  <div class="section-header">
+    <span class="section-badge badge-practical">實戰</span>
+    <h2 class="section-title">速查表</h2>
+    <p class="section-desc">所有常用指令一頁覽盡</p>
+  </div>
+
+  <h3>📝 每日必用</h3>
+  <pre><code><span class="cmd">git status</span>                          <span class="cmt"># 查看狀態</span>
+<span class="cmd">git add</span> <span class="flag">.</span>                           <span class="cmt"># 暫存所有</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"type: description"</span>   <span class="cmt"># 提交</span>
+<span class="cmd">git push</span>                            <span class="cmt"># 推送</span>
+<span class="cmd">git pull</span>                            <span class="cmt"># 拉取</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">--graph</span> <span class="flag">--all</span>     <span class="cmt"># 查看歷史圖</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>🌿 分支</h3>
+  <pre><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/name</span>         <span class="cmt"># 建立並切換</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>                  <span class="cmt"># 切換分支</span>
+<span class="cmd">git switch</span> <span class="flag">-</span>                        <span class="cmt"># 切回上個分支</span>
+<span class="cmd">git branch</span>                          <span class="cmt"># 查看所有分支</span>
+<span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/name</span>         <span class="cmt"># 刪除分支</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/name</span> <span class="cmt"># 刪除遠端分支</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>🔀 合併</h3>
+  <pre><code><span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/name</span>    <span class="cmt"># merge（保留分支歷史）</span>
+<span class="cmd">git rebase</span> <span class="br">main</span>                   <span class="cmt"># rebase（線性歷史）</span>
+<span class="cmd">git rebase</span> <span class="flag">-i</span> HEAD~3              <span class="cmt"># 互動式整理 commit</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">abc1234</span>           <span class="cmt"># 搬移特定 commit</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>↩️ 還原</h3>
+  <pre><code><span class="cmd">git restore</span> <span class="arg">file.vue</span>              <span class="cmt"># 放棄工作目錄修改</span>
+<span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">file.vue</span>     <span class="cmt"># 取消 git add</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">-m</span> <span class="str">"new msg"</span>   <span class="cmt"># 修改最後 commit（未 push）</span>
+<span class="cmd">git reset</span> <span class="flag">--soft</span> HEAD~1           <span class="cmt"># 取消 commit，保留暫存</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1           <span class="cmt"># 完全還原到上個 commit</span>
+<span class="cmd">git revert</span> HEAD                   <span class="cmt"># 安全撤銷（已 push 用）</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>📦 Stash</h3>
+  <pre><code><span class="cmd">git stash push</span> <span class="flag">-m</span> <span class="str">"WIP: desc"</span>    <span class="cmt"># 暫存</span>
+<span class="cmd">git stash list</span>                    <span class="cmt"># 查看所有</span>
+<span class="cmd">git stash pop</span>                     <span class="cmt"># 恢復並刪除</span>
+<span class="cmd">git stash drop stash@{0}</span>          <span class="cmt"># 刪除</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>🚨 救援</h3>
+  <pre><code><span class="cmd">git reflog</span>                        <span class="cmt"># 查看所有 HEAD 移動記錄</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">HASH</span>             <span class="cmt"># 回到指定 commit</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> ORIG_HEAD        <span class="cmt"># 取消 merge</span>
+<span class="cmd">git rebase</span> <span class="flag">--abort</span>               <span class="cmt"># 放棄 rebase</span>
+<span class="cmd">git merge</span>  <span class="flag">--abort</span>               <span class="cmt"># 放棄 merge</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <h3>🔍 查看</h3>
+  <pre><code><span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">--graph</span> <span class="flag">--all</span>   <span class="cmt"># 視覺化歷史</span>
+<span class="cmd">git diff</span>                          <span class="cmt"># 工作目錄 vs 暫存區</span>
+<span class="cmd">git diff</span> <span class="flag">--staged</span>                 <span class="cmt"># 暫存區 vs 最後 commit</span>
+<span class="cmd">git show</span> <span class="hash">abc1234</span>                  <span class="cmt"># 查看 commit 詳情</span>
+<span class="cmd">git blame</span> <span class="arg">file.vue</span>               <span class="cmt"># 每行的修改者</span>
+<span class="cmd">git log</span> <span class="flag">--grep</span>=<span class="str">"keyword"</span>          <span class="cmt"># 搜尋 commit</span>
+<span class="lang-tag">BASH</span></code></pre>
+
+  <div class="nav-buttons">
+    <button class="btn" onclick="showSection('emergency')">← 緊急救援</button>
+    <button class="btn btn-primary" onclick="showSection('overview')">🏠 回到首頁</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+const sectionMap = {
+  overview: 'sec-overview',
+  setup: 'sec-setup',
+  basics: 'sec-basics',
+  branch: 'sec-branch',
+  remote: 'sec-remote',
+  merge: 'sec-merge',
+  stash: 'sec-stash',
+  undo: 'sec-undo',
+  log: 'sec-log',
+  workflow: 'sec-workflow',
+  pr: 'sec-pr',
+  commit: 'sec-commit',
+  advanced: 'sec-advanced',
+  emergency: 'sec-emergency',
+  cheatsheet: 'sec-cheatsheet'
+}
+
+const visited = new Set(['overview'])
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  const secEl = document.getElementById(sectionMap[id])
+  if (secEl) secEl.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick')?.includes(`'${id}'`)) item.classList.add('active')
+  })
+  visited.add(id)
+  updateProgress()
+  document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function updateProgress() {
+  const total = Object.keys(sectionMap).length
+  const pct = Math.round((visited.size / total) * 100)
+  document.getElementById('progressFill').style.width = pct + '%'
+  document.getElementById('progressLabel').textContent = `學習進度 ${pct}%`
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase()
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = (item.getAttribute('data-label') || item.textContent).toLowerCase()
+    item.style.display = label.includes(q) ? 'flex' : 'none'
+  })
+  document.querySelectorAll('.nav-section-title').forEach(t => {
+    t.style.display = q ? 'none' : ''
+  })
+}
+
+updateProgress()
+</script>
+</body>
+</html>
