@@ -109,6 +109,9 @@
   .err  { color: #f14e32; }   /* error/warning */
   .hash { color: #e3b341; }   /* commit hash */
   .str  { color: #a5d6ff; }   /* string */
+  /* 舊版指令標示 */
+  .old  { color: #e3b341; }                      /* 舊版指令本體（黃色） */
+  .old-label { color: #8a7520; font-style: italic; } /* 舊版標籤 */
 
   .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 13.5px; }
   .callout-tip  { background: rgba(63,185,80,0.08);  border-color: var(--green); }
@@ -176,6 +179,30 @@
     #sidebar { display: none; }
     #main { padding: 24px 20px; }
   }
+
+  /* ── 新舊版 tab ── */
+  .ver-tabs { display: flex; gap: 0; margin: 12px 0 0; }
+  .ver-tab {
+    padding: 6px 16px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.8px; cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text-muted);
+    transition: all 0.15s; user-select: none;
+  }
+  .ver-tab:first-child { border-radius: 8px 0 0 0; }
+  .ver-tab:last-child  { border-radius: 0 8px 0 0; border-left: none; }
+  .ver-tab.active-new  { background: rgba(88,166,255,0.15); color: var(--blue); border-color: var(--blue); }
+  .ver-tab.active-old  { background: rgba(227,179,65,0.12); color: var(--yellow); border-color: var(--yellow); }
+  .ver-pane { display: none; }
+  .ver-pane.active { display: block; }
+  .ver-pane pre {
+    border-radius: 0 8px 8px 8px; margin: 0 0 20px;
+  }
+  .ver-pane.old-pane pre {
+    border-color: rgba(227,179,65,0.35);
+    background: rgba(227,179,65,0.03);
+  }
+  .ver-block { margin: 12px 0 4px; }
+
 </style>
 </head>
 <body>
@@ -262,7 +289,24 @@
     <p>從基礎操作到公司實際開發流程，掌握每天都會用到的 Git 指令與最佳實踐</p>
   </div>
 
-  <h3>Git 的三個區域</h3>
+  <h3>新版 vs 舊版指令說明</h3>
+  <p>Git 2.23（2019年）新增了 <code>git switch</code> 和 <code>git restore</code>，讓原本由 <code>git checkout</code> 一手包辦的功能拆成兩個語意更清楚的指令。兩組指令<strong>功能完全相同</strong>，你用哪個都可以。</p>
+
+  <table>
+    <tr><th>用途</th><th>🆕 新版（Git 2.23+）</th><th>📦 舊版</th></tr>
+    <tr><td>切換分支</td><td><code>git switch 分支名</code></td><td><code>git checkout 分支名</code></td></tr>
+    <tr><td>建立並切換分支</td><td><code>git switch -c 新分支</code></td><td><code>git checkout -b 新分支</code></td></tr>
+    <tr><td>還原工作目錄檔案</td><td><code>git restore 檔案</code></td><td><code>git checkout -- 檔案</code></td></tr>
+    <tr><td>取消暫存</td><td><code>git restore --staged 檔案</code></td><td><code>git reset HEAD 檔案</code></td></tr>
+    <tr><td>查看暫存區差異</td><td><code>git diff --staged</code></td><td><code>git diff --cached</code>（完全相同）</td></tr>
+  </table>
+
+  <div class="callout callout-yellow">
+    <strong>📦 關於本筆記的標示方式</strong>
+    本筆記在每個有新舊差異的指令旁，都會以 <span style="color:var(--yellow)">▶ 舊版</span> 標示對應的舊版寫法，讓你新舊都看得到，不會混淆。
+  </div>
+
+    <h3>Git 的三個區域</h3>
   <p>理解這三個區域是學 Git 最重要的基礎，所有指令都圍繞著這三個區域在移動資料：</p>
 
   <div class="git-graph">
@@ -386,7 +430,13 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>加入暫存區</h3>
-  <pre><code><span class="cmt"># 加入單一檔案</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_add')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_add')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_add">
+<pre><code><span class="cmt"># 加入單一檔案</span>
 <span class="cmd">git add</span> <span class="arg">src/components/Button.vue</span>
 
 <span class="cmt"># 加入整個資料夾</span>
@@ -401,6 +451,25 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
 <span class="cmt"># 取消暫存（把檔案從 staging area 移回工作目錄）</span>
 <span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">src/app.vue</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_add">
+<pre><code><span class="cmt"># 加入單一檔案</span>
+<span class="cmd">git add</span> <span class="arg">src/components/Button.vue</span>
+
+<span class="cmt"># 加入整個資料夾</span>
+<span class="cmd">git add</span> <span class="arg">src/</span>
+
+<span class="cmt"># 加入所有變更（最常用）</span>
+<span class="cmd">git add</span> <span class="flag">.</span>
+
+<span class="cmt"># 互動式選擇要加入哪些部分（同一個檔案分多次 commit）</span>
+<span class="cmd">git add</span> <span class="flag">-p</span>
+
+<span class="cmt"># 取消暫存（把檔案從 staging area 移回工作目錄）</span>
+<span class="cmd">git reset HEAD</span> <span class="arg">src/app.vue</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>提交 Commit</h3>
   <pre><code><span class="cmt"># 標準提交</span>
@@ -450,18 +519,20 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
 
 <span class="cmt"># 建立並立刻切換（最常用）</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span>
-<span class="cmt"># 舊寫法（功能相同）</span>
-<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/login</span>
 
 <span class="cmt"># 從指定分支建立</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span> <span class="br">develop</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>切換 & 刪除分支</h3>
-  <pre><code><span class="cmt"># 切換分支</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_branch_switch')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_branch_switch')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_branch_switch">
+<pre><code><span class="cmt"># 切換分支</span>
 <span class="cmd">git switch</span> <span class="br">develop</span>
-<span class="cmt"># 舊寫法</span>
-<span class="cmd">git checkout</span> <span class="br">develop</span>
 
 <span class="cmt"># 切回上一個分支（- 代表上一個）</span>
 <span class="cmd">git switch</span> <span class="flag">-</span>
@@ -478,6 +549,28 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
 <span class="cmt"># 重新命名分支</span>
 <span class="cmd">git branch</span> <span class="flag">-m</span> <span class="br">old-name</span> <span class="br">new-name</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_branch_switch">
+<pre><code><span class="cmt"># 切換分支</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>
+
+<span class="cmt"># 切回上一個分支</span>
+<span class="cmd">git checkout</span> <span class="flag">-</span>
+
+<span class="cmt"># 刪除已合併的分支（安全）</span>
+<span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 強制刪除（未合併也刪）</span>
+<span class="cmd">git branch</span> <span class="flag">-D</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 刪除遠端分支（相同）</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 重新命名分支（相同）</span>
+<span class="cmd">git branch</span> <span class="flag">-m</span> <span class="br">old-name</span> <span class="br">new-name</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>分支命名慣例（公司常用）</h3>
   <table>
@@ -547,12 +640,31 @@ origin  https://github.com/company/project.git (push)</span>
   </div>
 
   <h3>追蹤遠端分支</h3>
-  <pre><code><span class="cmt"># 切換到遠端已有的分支</span>
-<span class="cmd">git switch</span> <span class="br">develop</span>          <span class="cmt"># Git 會自動追蹤 origin/develop</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_remote_track')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_remote_track')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_remote_track">
+<pre><code><span class="cmt"># 切換到遠端已有的分支（自動建立追蹤）</span>
+<span class="cmd">git switch</span> <span class="br">develop</span>
 
 <span class="cmt"># 手動設定追蹤</span>
 <span class="cmd">git branch</span> <span class="flag">--set-upstream-to</span>=origin/<span class="br">develop</span> <span class="br">develop</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_remote_track">
+<pre><code><span class="cmt"># 切換到遠端已有的分支（-t 同時設定追蹤）</span>
+<span class="cmd">git checkout</span> <span class="flag">-t</span> origin/<span class="br">develop</span>
+<span class="cmt"># 或先 fetch 後再 checkout</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>
+
+<span class="cmt"># 手動設定追蹤（相同）</span>
+<span class="cmd">git branch</span> <span class="flag">--set-upstream-to</span>=origin/<span class="br">develop</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <div class="nav-buttons">
     <button class="btn" onclick="showSection('branch')">← 分支操作</button>
@@ -569,7 +681,13 @@ origin  https://github.com/company/project.git (push)</span>
   </div>
 
   <h3>Merge — 合併分支</h3>
-  <pre><code><span class="cmt"># 把 feature/login 合併進 develop</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_merge_main')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_merge_main')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_merge_main">
+<pre><code><span class="cmt"># 把 feature/login 合併進 develop</span>
 <span class="cmd">git switch</span> <span class="br">develop</span>
 <span class="cmd">git merge</span> <span class="br">feature/login</span>
 
@@ -580,9 +698,30 @@ origin  https://github.com/company/project.git (push)</span>
 <span class="cmd">git merge</span> <span class="flag">--squash</span> <span class="br">feature/login</span>
 <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login feature"</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_merge_main">
+<pre><code><span class="cmt"># 把 feature/login 合併進 develop</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>
+<span class="cmd">git merge</span> <span class="br">feature/login</span>
+
+<span class="cmt"># --no-ff（相同）</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/login</span>
+
+<span class="cmt"># --squash（相同）</span>
+<span class="cmd">git merge</span> <span class="flag">--squash</span> <span class="br">feature/login</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: add login feature"</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>Rebase — 變基</h3>
-  <pre><code><span class="cmt"># 情境：main 有新 commit，feature 要跟上最新進度</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_rebase_main')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_rebase_main')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_rebase_main">
+<pre><code><span class="cmt"># 情境：main 有新 commit，feature 要跟上最新進度</span>
 
 <span class="cmt"># Merge 方式（會多一個 merge commit）</span>
 <span class="cmd">git switch</span> <span class="br">feature/login</span>
@@ -592,6 +731,20 @@ origin  https://github.com/company/project.git (push)</span>
 <span class="cmd">git switch</span> <span class="br">feature/login</span>
 <span class="cmd">git rebase</span> <span class="br">main</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_rebase_main">
+<pre><code><span class="cmt"># 情境：main 有新 commit，feature 要跟上最新進度</span>
+
+<span class="cmt"># Merge 方式</span>
+<span class="cmd">git checkout</span> <span class="br">feature/login</span>
+<span class="cmd">git merge</span> <span class="br">main</span>
+
+<span class="cmt"># Rebase 方式</span>
+<span class="cmd">git checkout</span> <span class="br">feature/login</span>
+<span class="cmd">git rebase</span> <span class="br">main</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <div class="git-graph">
 <span class="cmt">Merge 結果：</span>
@@ -708,13 +861,32 @@ stash@{1}: On develop: WIP: navbar experiment</span>
   </div>
 
   <h3>restore — 還原工作目錄</h3>
-  <pre><code><span class="cmt"># 放棄工作目錄的修改，還原到最後一次 commit（⚠️ 不可恢復）</span>
+<div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_undo_restore')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_undo_restore')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_undo_restore">
+<pre><code><span class="cmt"># 放棄工作目錄的修改，還原到最後一次 commit（⚠️ 不可恢復）</span>
 <span class="cmd">git restore</span> <span class="arg">src/app.vue</span>
 <span class="cmd">git restore</span> <span class="flag">.</span>  <span class="cmt"># 還原所有</span>
 
 <span class="cmt"># 把暫存區的檔案退回工作目錄（取消 git add）</span>
 <span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">src/app.vue</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_undo_restore">
+<pre><code><span class="cmt"># 放棄工作目錄的修改（⚠️ 不可恢復）</span>
+<span class="cmt"># 注意：-- 後面加檔案路徑</span>
+<span class="cmd">git checkout</span> <span class="flag">--</span> <span class="arg">src/app.vue</span>
+<span class="cmd">git checkout</span> <span class="flag">--</span> <span class="flag">.</span>  <span class="cmt"># 還原所有</span>
+
+<span class="cmt"># 把暫存區的檔案退回工作目錄（取消 git add）</span>
+<span class="cmd">git reset HEAD</span> <span class="arg">src/app.vue</span>
+<span class="cmd">git reset HEAD</span>  <span class="cmt"># 取消所有暫存</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>reset — 移動 HEAD 位置</h3>
   <pre><code><span class="cmt"># --soft：HEAD 往回移，commit 取消，但變更保留在暫存區</span>
@@ -804,7 +976,13 @@ c2d4e5f chore: update dependencies</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>git diff</h3>
-  <pre><code><span class="cmt"># 查看工作目錄與暫存區的差異</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_diff')">🆕 新版</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_diff')">📦 舊版（--cached）</div>
+  </div>
+  <div class="ver-pane active" id="new_diff">
+<pre><code><span class="cmt"># 查看工作目錄與暫存區的差異</span>
 <span class="cmd">git diff</span>
 
 <span class="cmt"># 查看暫存區與最後 commit 的差異</span>
@@ -816,6 +994,23 @@ c2d4e5f chore: update dependencies</span>
 <span class="cmt"># 只顯示有差異的檔案名稱</span>
 <span class="cmd">git diff</span> <span class="flag">--name-only</span> <span class="br">main</span>..<span class="br">feature/login</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_diff">
+<pre><code><span class="cmt"># 查看工作目錄與暫存區的差異（相同）</span>
+<span class="cmd">git diff</span>
+
+<span class="cmt"># 查看暫存區與最後 commit 的差異</span>
+<span class="cmt"># --cached 是 --staged 的舊名稱，功能完全相同</span>
+<span class="cmd">git diff</span> <span class="flag">--cached</span>
+
+<span class="cmt"># 比較兩個分支的差異（相同）</span>
+<span class="cmd">git diff</span> <span class="br">main</span>..<span class="br">feature/login</span>
+
+<span class="cmt"># 只顯示有差異的檔案名稱（相同）</span>
+<span class="cmd">git diff</span> <span class="flag">--name-only</span> <span class="br">main</span>..<span class="br">feature/login</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>git blame — 追查每行的修改者</h3>
   <pre><code><span class="cmt"># 查看每一行是誰、什麼時候修改的</span>
@@ -858,15 +1053,38 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
       <div class="step-num">1</div>
       <div class="step-content">
         <p><strong>同步最新的 develop</strong></p>
-        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="br">develop</span>
+        <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_wf_step1')">🆕 新版</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_wf_step1')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_wf_step1">
+<pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="br">develop</span>
 <span class="cmd">git pull</span> <span class="arg">origin</span> <span class="br">develop</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_wf_step1">
+<pre style="margin:8px 0;padding:12px"><code><span class="cmd">git checkout</span> <span class="br">develop</span>
+<span class="cmd">git pull</span> <span class="arg">origin</span> <span class="br">develop</span></code></pre>
+  </div>
+</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-content">
         <p><strong>從 develop 建立 feature 分支</strong></p>
-        <pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/user-login</span></code></pre>
+        <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_wf_step2')">🆕 新版</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_wf_step2')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_wf_step2">
+<pre style="margin:8px 0;padding:12px"><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/user-login</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_wf_step2">
+<pre style="margin:8px 0;padding:12px"><code><span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/user-login</span></code></pre>
+  </div>
+</div>
       </div>
     </div>
     <div class="step">
@@ -900,10 +1118,11 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
       <div class="step-content">
         <p><strong>PR 核准後，合併進 develop（通常由 GitHub 操作）</strong></p>
         <pre style="margin:8px 0;padding:12px"><code><span class="cmt"># GitHub 上點 Merge Pull Request</span>
-<span class="cmt"># 或本地：</span>
+<span class="cmt"># 或本地操作：</span>
 <span class="cmd">git switch</span> <span class="br">develop</span>
 <span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/user-login</span>
-<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span></code></pre>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span>
+<span class="cmt"># ── 舊版同上，git switch → git checkout ──</span></code></pre>
       </div>
     </div>
     <div class="step">
@@ -917,7 +1136,13 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
   </div>
 
   <h3>Hotfix 緊急修復流程</h3>
-  <pre><code><span class="cmt"># 1. 從 main 建立 hotfix 分支</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_hotfix')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_hotfix')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_hotfix">
+<pre><code><span class="cmt"># 1. 從 main 建立 hotfix 分支</span>
 <span class="cmd">git switch</span> <span class="br">main</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">hotfix/payment-crash</span>
 
@@ -930,11 +1155,33 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
 <span class="cmd">git tag</span> <span class="flag">-a</span> v1.0.1 <span class="flag">-m</span> <span class="str">"fix: payment crash"</span>
 <span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">main</span> <span class="flag">--tags</span>
 
-<span class="cmt"># 4. 同步回 develop（讓 develop 也有這個修復）</span>
+<span class="cmt"># 4. 同步回 develop</span>
 <span class="cmd">git switch</span> <span class="br">develop</span>
 <span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">hotfix/payment-crash</span>
 <span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_hotfix">
+<pre><code><span class="cmt"># 1. 從 main 建立 hotfix 分支</span>
+<span class="cmd">git checkout</span> <span class="br">main</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">hotfix/payment-crash</span>
+
+<span class="cmt"># 2. 修復、commit（相同）</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: resolve payment calculation error"</span>
+
+<span class="cmt"># 3. 合併回 main（上線）</span>
+<span class="cmd">git checkout</span> <span class="br">main</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">hotfix/payment-crash</span>
+<span class="cmd">git tag</span> <span class="flag">-a</span> v1.0.1 <span class="flag">-m</span> <span class="str">"fix: payment crash"</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">main</span> <span class="flag">--tags</span>
+
+<span class="cmt"># 4. 同步回 develop</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>
+<span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">hotfix/payment-crash</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <div class="nav-buttons">
     <button class="btn" onclick="showSection('log')">← 查看歷史</button>
@@ -952,6 +1199,7 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
 
   <h3>開 PR 前的準備</h3>
   <pre><code><span class="cmt"># 1. 確保分支是最新的，先 rebase 到最新 develop</span>
+<span class="cmt"># （新舊版 rebase 指令本身相同，差異只在切換分支那步）</span>
 <span class="cmd">git fetch</span> <span class="arg">origin</span>
 <span class="cmd">git rebase</span> origin/<span class="br">develop</span>
 
@@ -981,13 +1229,30 @@ c2d4e5f (Cooper  2024-03-01 10:30)   submitForm()}</span>
   </ul>
 
   <h3>Review 別人的 PR — 本地拉下來測試</h3>
-  <pre><code><span class="cmt"># 方法一：fetch 後 checkout</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_pr_checkout')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_pr_checkout')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_pr_checkout">
+<pre><code><span class="cmt"># 方法一：fetch 後 switch</span>
 <span class="cmd">git fetch</span> <span class="arg">origin</span>
 <span class="cmd">git switch</span> <span class="br">feature/user-login</span>
 
 <span class="cmt"># 方法二：用 GitHub CLI（更快）</span>
 <span class="cmd">gh pr checkout</span> <span class="num">42</span>  <span class="cmt"># PR #42</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_pr_checkout">
+<pre><code><span class="cmt"># fetch 後 checkout</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>
+<span class="cmd">git checkout</span> <span class="br">feature/user-login</span>
+
+<span class="cmt"># 方法二：用 GitHub CLI（相同）</span>
+<span class="cmd">gh pr checkout</span> <span class="num">42</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>Review 收到修改意見後</h3>
   <pre><code><span class="cmt"># 修改程式碼後</span>
@@ -1081,7 +1346,7 @@ fix: fix the bug that was wrong</span>
   <pre><code><span class="cmt"># 把其他分支的某個 commit 搬過來</span>
 <span class="cmt"># 情境：develop 有個 bug fix，要快速移植到 main</span>
 
-<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git switch</span> <span class="br">main</span>              <span class="cmt"># 舊版：git checkout main</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>         <span class="cmt"># 搬一個</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span> <span class="hash">b7e9a1c</span>  <span class="cmt"># 搬多個</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>..<span class="hash">b7e9a1c</span> <span class="cmt"># 搬範圍</span>
@@ -1124,6 +1389,7 @@ d1e2f3a HEAD@{3}: checkout: moving from main to feature/login</span>
 <span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">c2d4e5f</span>  <span class="cmt"># 回到那個 commit</span>
 <span class="cmt"># 或建立新分支從那個點繼續</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">recovered-branch</span> <span class="hash">c2d4e5f</span>
+<span class="cmt">                         # 舊版：git checkout -b recovered-branch c2d4e5f</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>互動式 Rebase — 整理 commit 歷史</h3>
@@ -1177,11 +1443,11 @@ squash d1e2f3a fix: final adjustments</span>
 <span class="ok">a3f1c2d feat: add login form  ← 記下這個</span>
 
 <span class="cmt"># 2. 在 feature 分支 cherry-pick 過來</span>
-<span class="cmd">git switch</span> <span class="br">feature/login</span>
+<span class="cmd">git switch</span> <span class="br">feature/login</span>       <span class="cmt"># 舊版：git checkout feature/login</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>
 
 <span class="cmt"># 3. 回到 main，撤銷那個 commit</span>
-<span class="cmd">git switch</span> <span class="br">main</span>
+<span class="cmd">git switch</span> <span class="br">main</span>              <span class="cmt"># 舊版：git checkout main</span>
 <span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1
 <span class="lang-tag">BASH</span></code></pre>
 
@@ -1248,13 +1514,30 @@ squash d1e2f3a fix: final adjustments</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>🌿 分支</h3>
-  <pre><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/name</span>         <span class="cmt"># 建立並切換</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_cs_branch')">🆕 新版</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_cs_branch')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_cs_branch">
+<pre><code><span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/name</span>         <span class="cmt"># 建立並切換</span>
 <span class="cmd">git switch</span> <span class="br">develop</span>                  <span class="cmt"># 切換分支</span>
 <span class="cmd">git switch</span> <span class="flag">-</span>                        <span class="cmt"># 切回上個分支</span>
 <span class="cmd">git branch</span>                          <span class="cmt"># 查看所有分支</span>
 <span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/name</span>         <span class="cmt"># 刪除分支</span>
 <span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/name</span> <span class="cmt"># 刪除遠端分支</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_cs_branch">
+<pre><code><span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/name</span>        <span class="cmt"># 建立並切換</span>
+<span class="cmd">git checkout</span> <span class="br">develop</span>               <span class="cmt"># 切換分支</span>
+<span class="cmd">git checkout</span> <span class="flag">-</span>                      <span class="cmt"># 切回上個分支</span>
+<span class="cmd">git branch</span>                          <span class="cmt"># 查看所有分支（相同）</span>
+<span class="cmd">git branch</span> <span class="flag">-d</span> <span class="br">feature/name</span>         <span class="cmt"># 刪除分支（相同）</span>
+<span class="cmd">git push origin</span> <span class="flag">--delete</span> <span class="br">feature/name</span> <span class="cmt"># 刪除遠端（相同）</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>🔀 合併</h3>
   <pre><code><span class="cmd">git merge</span> <span class="flag">--no-ff</span> <span class="br">feature/name</span>    <span class="cmt"># merge（保留分支歷史）</span>
@@ -1264,13 +1547,30 @@ squash d1e2f3a fix: final adjustments</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>↩️ 還原</h3>
-  <pre><code><span class="cmd">git restore</span> <span class="arg">file.vue</span>              <span class="cmt"># 放棄工作目錄修改</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_cs_undo')">🆕 新版</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_cs_undo')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_cs_undo">
+<pre><code><span class="cmd">git restore</span> <span class="arg">file.vue</span>              <span class="cmt"># 放棄工作目錄修改</span>
 <span class="cmd">git restore</span> <span class="flag">--staged</span> <span class="arg">file.vue</span>     <span class="cmt"># 取消 git add</span>
 <span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">-m</span> <span class="str">"new msg"</span>   <span class="cmt"># 修改最後 commit（未 push）</span>
 <span class="cmd">git reset</span> <span class="flag">--soft</span> HEAD~1           <span class="cmt"># 取消 commit，保留暫存</span>
 <span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1           <span class="cmt"># 完全還原到上個 commit</span>
 <span class="cmd">git revert</span> HEAD                   <span class="cmt"># 安全撤銷（已 push 用）</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_cs_undo">
+<pre><code><span class="cmd">git checkout</span> <span class="flag">--</span> <span class="arg">file.vue</span>          <span class="cmt"># 放棄工作目錄修改</span>
+<span class="cmd">git reset HEAD</span> <span class="arg">file.vue</span>           <span class="cmt"># 取消 git add</span>
+<span class="cmd">git commit</span> <span class="flag">--amend</span> <span class="flag">-m</span> <span class="str">"new msg"</span>   <span class="cmt"># 相同</span>
+<span class="cmd">git reset</span> <span class="flag">--soft</span> HEAD~1           <span class="cmt"># 相同</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1           <span class="cmt"># 相同</span>
+<span class="cmd">git revert</span> HEAD                   <span class="cmt"># 相同</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>📦 Stash</h3>
   <pre><code><span class="cmd">git stash push</span> <span class="flag">-m</span> <span class="str">"WIP: desc"</span>    <span class="cmt"># 暫存</span>
@@ -1324,6 +1624,15 @@ const sectionMap = {
 }
 
 const visited = new Set(['overview'])
+
+
+function switchVer(btn, paneId) {
+  const block = btn.closest('.ver-block');
+  block.querySelectorAll('.ver-tab').forEach(t => t.classList.remove('active-new','active-old'));
+  block.querySelectorAll('.ver-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add(btn.dataset.cls);
+  block.querySelector('#' + paneId).classList.add('active');
+}
 
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
