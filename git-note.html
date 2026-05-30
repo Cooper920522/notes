@@ -505,7 +505,13 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
   </div>
 
   <h3>查看 & 建立分支</h3>
-  <pre><code><span class="cmt"># 查看所有本地分支（* 是當前分支）</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_branch_create')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_branch_create')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_branch_create">
+<pre><code><span class="cmt"># 查看所有本地分支（* 是當前分支）</span>
 <span class="cmd">git branch</span>
 
 <span class="cmt"># 查看所有分支（含遠端）</span>
@@ -514,15 +520,37 @@ Thumbs.db         <span class="cmt"># Windows 系統檔</span>
 <span class="cmt"># 查看遠端分支</span>
 <span class="cmd">git branch</span> <span class="flag">-r</span>
 
-<span class="cmt"># 建立新分支</span>
+<span class="cmt"># 建立新分支（不切換）</span>
 <span class="cmd">git branch</span> <span class="br">feature/login</span>
 
 <span class="cmt"># 建立並立刻切換（最常用）</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span>
 
-<span class="cmt"># 從指定分支建立</span>
+<span class="cmt"># 從指定分支建立並切換</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">feature/login</span> <span class="br">develop</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_branch_create">
+<pre><code><span class="cmt"># 查看所有本地分支（相同）</span>
+<span class="cmd">git branch</span>
+
+<span class="cmt"># 查看所有分支（含遠端）（相同）</span>
+<span class="cmd">git branch</span> <span class="flag">-a</span>
+
+<span class="cmt"># 查看遠端分支（相同）</span>
+<span class="cmd">git branch</span> <span class="flag">-r</span>
+
+<span class="cmt"># 建立新分支（不切換）（相同）</span>
+<span class="cmd">git branch</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 建立並立刻切換</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/login</span>
+
+<span class="cmt"># 從指定分支建立並切換</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">feature/login</span> <span class="br">develop</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>切換 & 刪除分支</h3>
   <div class="ver-block">
@@ -1343,10 +1371,16 @@ fix: fix the bug that was wrong</span>
   </div>
 
   <h3>cherry-pick — 撿指定的 commit</h3>
-  <pre><code><span class="cmt"># 把其他分支的某個 commit 搬過來</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_cherry_pick')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_cherry_pick')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_cherry_pick">
+<pre><code><span class="cmt"># 把其他分支的某個 commit 搬過來</span>
 <span class="cmt"># 情境：develop 有個 bug fix，要快速移植到 main</span>
 
-<span class="cmd">git switch</span> <span class="br">main</span>              <span class="cmt"># 舊版：git checkout main</span>
+<span class="cmd">git switch</span> <span class="br">main</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>         <span class="cmt"># 搬一個</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span> <span class="hash">b7e9a1c</span>  <span class="cmt"># 搬多個</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>..<span class="hash">b7e9a1c</span> <span class="cmt"># 搬範圍</span>
@@ -1354,6 +1388,21 @@ fix: fix the bug that was wrong</span>
 <span class="cmt"># 搬過來但不自動 commit（先看結果）</span>
 <span class="cmd">git cherry-pick</span> <span class="flag">--no-commit</span> <span class="hash">a3f1c2d</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_cherry_pick">
+<pre><code><span class="cmt"># 把其他分支的某個 commit 搬過來</span>
+<span class="cmt"># 情境：develop 有個 bug fix，要快速移植到 main</span>
+
+<span class="cmd">git checkout</span> <span class="br">main</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>         <span class="cmt"># 搬一個（相同）</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span> <span class="hash">b7e9a1c</span>  <span class="cmt"># 搬多個（相同）</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>..<span class="hash">b7e9a1c</span> <span class="cmt"># 搬範圍（相同）</span>
+
+<span class="cmt"># 搬過來但不自動 commit（相同）</span>
+<span class="cmd">git cherry-pick</span> <span class="flag">--no-commit</span> <span class="hash">a3f1c2d</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>tag — 版本標籤</h3>
   <pre><code><span class="cmt"># 建立輕量標籤</span>
@@ -1378,7 +1427,13 @@ fix: fix the bug that was wrong</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>reflog — Git 的黑盒子</h3>
-  <pre><code><span class="cmt"># 查看本地所有 HEAD 的移動記錄（包含 reset --hard 等危險操作）</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_reflog')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_reflog')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_reflog">
+<pre><code><span class="cmt"># 查看本地所有 HEAD 的移動記錄（包含 reset --hard 等危險操作）</span>
 <span class="cmd">git reflog</span>
 <span class="ok">a3f1c2d HEAD@{0}: commit: feat: add login
 b7e9a1c HEAD@{1}: reset --hard: moving to HEAD~1
@@ -1389,8 +1444,23 @@ d1e2f3a HEAD@{3}: checkout: moving from main to feature/login</span>
 <span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">c2d4e5f</span>  <span class="cmt"># 回到那個 commit</span>
 <span class="cmt"># 或建立新分支從那個點繼續</span>
 <span class="cmd">git switch</span> <span class="flag">-c</span> <span class="br">recovered-branch</span> <span class="hash">c2d4e5f</span>
-<span class="cmt">                         # 舊版：git checkout -b recovered-branch c2d4e5f</span>
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_reflog">
+<pre><code><span class="cmt"># 查看 reflog（相同）</span>
+<span class="cmd">git reflog</span>
+<span class="ok">a3f1c2d HEAD@{0}: commit: feat: add login
+b7e9a1c HEAD@{1}: reset --hard: moving to HEAD~1
+c2d4e5f HEAD@{2}: commit: fix: email validation
+d1e2f3a HEAD@{3}: checkout: moving from main to feature/login</span>
+
+<span class="cmt"># 回到那個 commit（相同）</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> <span class="hash">c2d4e5f</span>
+<span class="cmt"># 或建立新分支從那個點繼續</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="br">recovered-branch</span> <span class="hash">c2d4e5f</span>
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>互動式 Rebase — 整理 commit 歷史</h3>
   <pre><code><span class="cmt"># 整理最後 4 個 commit（PR 前整理常用）</span>
@@ -1436,20 +1506,44 @@ squash d1e2f3a fix: final adjustments</span>
 <span class="lang-tag">BASH</span></code></pre>
 
   <h3>情境二：在錯誤的分支 commit 了</h3>
-  <pre><code><span class="cmt"># 不小心在 main 上 commit，應該在 feature 分支</span>
+  <div class="ver-block">
+  <div class="ver-tabs">
+    <div class="ver-tab active-new" data-cls="active-new" onclick="switchVer(this,'new_emergency_wrongbranch')">🆕 新版（Git 2.23+）</div>
+    <div class="ver-tab" data-cls="active-old" onclick="switchVer(this,'old_emergency_wrongbranch')">📦 舊版</div>
+  </div>
+  <div class="ver-pane active" id="new_emergency_wrongbranch">
+<pre><code><span class="cmt"># 不小心在 main 上 commit，應該在 feature 分支</span>
 
 <span class="cmt"># 1. 先記下 commit hash</span>
 <span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">-1</span>
 <span class="ok">a3f1c2d feat: add login form  ← 記下這個</span>
 
-<span class="cmt"># 2. 在 feature 分支 cherry-pick 過來</span>
-<span class="cmd">git switch</span> <span class="br">feature/login</span>       <span class="cmt"># 舊版：git checkout feature/login</span>
+<span class="cmt"># 2. 切到 feature 分支，cherry-pick 過來</span>
+<span class="cmd">git switch</span> <span class="br">feature/login</span>
 <span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>
 
-<span class="cmt"># 3. 回到 main，撤銷那個 commit</span>
-<span class="cmd">git switch</span> <span class="br">main</span>              <span class="cmt"># 舊版：git checkout main</span>
+<span class="cmt"># 3. 切回 main，撤銷那個 commit</span>
+<span class="cmd">git switch</span> <span class="br">main</span>
 <span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1
 <span class="lang-tag">BASH</span></code></pre>
+  </div>
+  <div class="ver-pane old-pane" id="old_emergency_wrongbranch">
+<pre><code><span class="cmt"># 不小心在 main 上 commit，應該在 feature 分支</span>
+
+<span class="cmt"># 1. 先記下 commit hash（相同）</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span> <span class="flag">-1</span>
+<span class="ok">a3f1c2d feat: add login form  ← 記下這個</span>
+
+<span class="cmt"># 2. 切到 feature 分支，cherry-pick 過來</span>
+<span class="cmd">git checkout</span> <span class="br">feature/login</span>
+<span class="cmd">git cherry-pick</span> <span class="hash">a3f1c2d</span>
+
+<span class="cmt"># 3. 切回 main，撤銷那個 commit</span>
+<span class="cmd">git checkout</span> <span class="br">main</span>
+<span class="cmd">git reset</span> <span class="flag">--hard</span> HEAD~1
+<span class="lang-tag">BASH</span></code></pre>
+  </div>
+</div>
 
   <h3>情境三：reset --hard 之後後悔了</h3>
   <pre><code><span class="cmt"># 用 reflog 找回消失的 commit</span>
